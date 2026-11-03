@@ -18,19 +18,19 @@ const COPY = {
     cta2: "Se connecter",
     panels: [
       {
-        title: "Fixez le cap.",
-        text: "Un voyage au Japon, un premier appartement. Donnez un nom au projet et décidez de ce que chacun met de côté chaque mois.",
-        caption: "Budget mensuel par personne",
+        title: "Rêvez grand. Visez juste.",
+        text: "Une terrasse sur la côte amalfitaine, un premier appartement à vous. Nommez le rêve, choisissez la date : Wishpot calcule ce que chacun met de côté chaque mois.",
+        caption: "Votre objectif, découpé en mensualités",
       },
       {
-        title: "Collez un lien.",
-        text: "Le canapé repéré chez Maisons du Monde, l'hôtel trouvé sur Booking. La photo, le nom et le prix s'ajoutent tout seuls.",
-        caption: "Ajout automatique depuis n'importe quelle boutique",
+        title: "Repérez. Collez. C'est noté.",
+        text: "Le fauteuil vu chez AM.PM, la villa dénichée sur Booking. Collez le lien : photo, nom et prix apparaissent seuls, et votre liste prend des airs de moodboard.",
+        caption: "Compatible avec presque toutes les boutiques",
       },
       {
-        title: "Avancez à deux.",
-        text: "Chaque versement remplit la cagnotte. Vous voyez ce qu'il reste et le mois où tout sera prêt.",
-        caption: "Invitation par simple lien",
+        title: "Arrivez-y ensemble.",
+        text: "Votre moitié, vos colocs, la bande d'amis : un lien suffit pour les inviter. Chaque versement fait monter la jauge, et vous savez exactement quand vous y serez.",
+        caption: "Invitation par lien · gratuit",
       },
     ],
     listTitle: "Une liste, deux envies.",
@@ -73,19 +73,19 @@ const COPY = {
     cta2: "Log in",
     panels: [
       {
-        title: "Set the course.",
-        text: "A trip to Japan, a first flat. Name the plan and decide what each of you puts aside every month.",
-        caption: "Monthly budget per person",
+        title: "Dream big. Aim true.",
+        text: "A terrace on the Amalfi coast, a first place of your own. Name the dream, pick the date: Wishpot works out what each of you puts aside every month.",
+        caption: "Your goal, split into monthly steps",
       },
       {
-        title: "Paste a link.",
-        text: "The sofa you spotted, the hotel you found. Photo, name and price fill in by themselves.",
+        title: "Spot it. Paste it. Done.",
+        text: "The armchair you saw at AM.PM, the villa you found on Booking. Paste the link: photo, name and price appear on their own, and your list starts to look like a moodboard.",
         caption: "Works with almost any shop",
       },
       {
-        title: "Move forward together.",
-        text: "Every deposit fills the pot. You see what's left and the month everything will be ready.",
-        caption: "Invite with a single link",
+        title: "Get there together.",
+        text: "Your partner, your flatmates, the whole crew: one link invites them. Every deposit lifts the gauge, and you know exactly when you'll be there.",
+        caption: "Invite by link · free",
       },
     ],
     listTitle: "One list, two wishes.",
@@ -126,7 +126,7 @@ export default async function Home() {
   if (user) redirect("/dashboard");
   const c = COPY[lang];
 
-  const panelImgs = [PHOTOS.seaWindow, PHOTOS.loft, PHOTOS.seaSunset];
+  const panelImgs = [PHOTOS.positano, PHOTOS.parisSalon, PHOTOS.terrace];
 
   return (
     <div className="-mt-24 sm:-mt-28">
