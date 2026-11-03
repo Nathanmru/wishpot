@@ -44,21 +44,21 @@ export default function MaisonInspiration() {
             </p>
           </div>
         </Reveal>
-        <div className="mx-[calc(50%-50vw)] mt-14 flex h-[460px] sm:h-[520px]">
+        <div className="mx-[calc(50%-50vw)] mt-14 flex flex-col sm:h-[520px] sm:flex-row">
           {COLORS.map((c) => {
             const light = ["#E3C77A", "#A9B9A3", "#C9A19A", "#EEEAE0"].includes(c.hex);
             return (
               <div
                 key={c.name}
                 tabIndex={0}
-                className={`group relative flex flex-1 flex-col justify-end overflow-hidden p-4 outline-none transition-[flex-grow] duration-700 ease-out hover:flex-[3] focus:flex-[3] sm:p-6 ${light ? "text-ink" : "text-bone"}`}
+                className={`group relative flex min-h-[120px] flex-1 flex-col justify-end overflow-hidden p-5 outline-none transition-[flex-grow] duration-700 ease-out sm:min-h-0 sm:p-6 sm:hover:flex-[2.6] sm:focus:flex-[2.6] ${light ? "text-ink" : "text-bone"}`}
                 style={{ backgroundColor: c.hex }}
               >
-                <p className="display whitespace-nowrap text-2xl sm:text-4xl [writing-mode:vertical-rl] [transform:rotate(180deg)] group-hover:[writing-mode:horizontal-tb] group-hover:[transform:none] group-focus:[writing-mode:horizontal-tb] group-focus:[transform:none]">
+                <p className="display text-3xl leading-none sm:text-[2rem] lg:text-4xl">
                   {c.name}
                 </p>
-                <p className="mt-3 hidden max-w-xs text-sm leading-relaxed opacity-80 group-hover:block group-focus:block">{c.text}</p>
-                <p className="mt-2 hidden text-[10px] uppercase tracking-label opacity-60 group-hover:block group-focus:block">{c.hex}</p>
+                <p className="mt-3 max-w-xs text-sm leading-relaxed opacity-80 sm:hidden sm:group-hover:block sm:group-focus:block">{c.text}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-label opacity-60">{c.hex}</p>
               </div>
             );
           })}
