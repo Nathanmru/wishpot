@@ -7,6 +7,7 @@ import { cover, KIND_STYLE } from "@/lib/covers";
 import type { Kind } from "@/lib/config";
 import Jar from "@/components/Jar";
 import InspirationDoors from "@/components/InspirationDoors";
+import { InstallCard } from "@/components/AppInstall";
 
 export const metadata = { title: "Mes cagnottes" };
 
@@ -44,6 +45,8 @@ export default async function Dashboard() {
           <Link href="/new" className="btn-primary">+ {fr ? "Nouvelle cagnotte" : "New pot"}</Link>
         )}
       </div>
+
+      <InstallCard lang={lang} />
 
       {projects.length === 0 ? (
         <div className="mt-10 grid gap-6 md:grid-cols-2">
