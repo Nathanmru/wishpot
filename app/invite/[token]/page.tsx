@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import { joinProject } from "@/app/actions";
+import { cover } from "@/lib/covers";
 
 export const metadata = { title: "Invitation" };
 
@@ -39,22 +40,32 @@ export default async function InvitePage({
 
   const join = joinProject.bind(null, token);
 
+  const kind = preview.kind === "travel" ? "travel" : "home";
+
   return (
-    <div className="mx-auto max-w-sm pt-10 text-center">
-      <p className="text-5xl">{preview.kind === "travel" ? "✈️" : "🛋️"}</p>
-      <p className="eyebrow mt-6">{t.inviteJoinTitle}</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold">{preview.name}</h1>
-      <p className="mt-2 text-sm text-muted">👥 {preview.members}</p>
-      <div className="mt-8">
-        {user ? (
-          <form action={join}>
-            <button className="btn-accent w-full !py-3 text-base">{t.join}</button>
-          </form>
-        ) : (
-          <Link href={`/login?next=${encodeURIComponent(`/invite/${token}?auto=1`)}`} className="btn-accent w-full !py-3 text-base">
-            {t.loginToJoin}
-          </Link>
-        )}
+    <div className="mx-auto max-w-lg overflow-hidden rounded-xl3 border border-line bg-white text-center shadow-lift">
+      <div className="relative h-56">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={cover(kind, 1000)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        <h1 className="display absolute bottom-5 left-5 right-5 text-5xl leading-none text-white">{preview.name}</h1>
+      </div>
+      <div className="p-8">
+        <p className="text-lg font-semibold">{t.inviteJoinTitle}</p>
+        <p className="mt-1 text-muted">
+          {t.inviteJoinText}, 👥 {preview.members}
+        </p>
+        <div className="mt-8">
+          {user ? (
+            <form action={join}>
+              <button className="btn-primary w-full !py-4 text-base">{t.join}</button>
+            </form>
+          ) : (
+            <Link href={`/login?next=${encodeURIComponent(`/invite/${token}?auto=1`)}`} className="btn-primary w-full !py-4 text-base">
+              {t.loginToJoin}
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
