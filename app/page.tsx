@@ -4,6 +4,7 @@ import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import { PHOTOS, photo } from "@/lib/covers";
 import Jar from "@/components/Jar";
+import InspirationDoors from "@/components/InspirationDoors";
 import { Coverflow, HeroDoors, Reveal, StackedPanels } from "@/components/Motion";
 
 const COPY = {
@@ -154,6 +155,8 @@ export default async function Home() {
           tag: kind === "home" ? c.tagHome : c.tagTravel,
         }))}
       />
+
+      <InspirationDoors lang={lang} />
 
       {/* ---------- La jauge ---------- */}
       <section className="mx-[calc(50%-50vw)] bg-night px-6 py-28 text-bone sm:px-12 sm:py-40">
