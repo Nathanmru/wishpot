@@ -80,6 +80,9 @@ export function HeroDoors({
       r.current.style.filter = `brightness(${1 - e * 0.55})`;
       r.current.style.pointerEvents = p > 0.15 ? "none" : "auto";
     }
+    const fade = String(1 - clamp((p - 0.55) / 0.35));
+    if (l.current) l.current.style.opacity = fade;
+    if (r.current) r.current.style.opacity = fade;
     if (wall.current) wall.current.style.opacity = String(1 - clamp(p * 4));
     if (hintRef.current) hintRef.current.style.opacity = String(1 - clamp(p * 6));
     if (inner.current) {
@@ -94,8 +97,8 @@ export function HeroDoors({
     <section ref={wrap} className="relative mx-[calc(50%-50vw)] h-[260vh] bg-night">
       <div className="sticky top-0 h-[100dvh] overflow-hidden [perspective:1800px]">
         {/* Ce qu'il y a derrière les portes */}
-        <div ref={inner} className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-bone opacity-0 [transform-style:preserve-3d]">
-          <h1 className="display max-w-5xl text-[2.9rem] leading-[0.95] sm:text-7xl lg:text-[6.5rem]">{headline}</h1>
+        <div ref={inner} className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center text-bone opacity-0">
+          <h1 className="display max-w-3xl text-[2.4rem] leading-[1.02] sm:text-6xl lg:max-w-4xl lg:text-7xl">{headline}</h1>
           <p className="mt-6 max-w-xl text-base text-bone/70 sm:text-lg">{sub}</p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link href={ctaPrimary.href} className="btn bg-bone !px-8 !py-4 text-[12px] uppercase tracking-label text-ink hover:bg-white">
