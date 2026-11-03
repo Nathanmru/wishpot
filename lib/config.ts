@@ -12,6 +12,7 @@ export type Project = {
   kind: Kind;
   currency: string;
   invite_token: string;
+  share_token?: string | null;
   created_by: string;
   created_at: string;
 };
@@ -27,6 +28,9 @@ export type Item = {
   quantity: number;
   category: string | null;
   purchased: boolean;
+  room?: string | null;
+  reserved_by?: string | null;
+  reserved_at?: string | null;
   created_at: string;
 };
 
