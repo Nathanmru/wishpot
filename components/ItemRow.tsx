@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { deleteItem, updateItem } from "@/app/actions";
-import type { Item } from "@/lib/config";
+import type { Item, Kind } from "@/lib/config";
+import { illustrationFor } from "@/lib/itemImage";
 
 type T = Record<"buy" | "markBought" | "bought" | "remove" | "addedBy" | "price" | "qty" | "save", string>;
 
@@ -21,6 +22,7 @@ export default function ItemRow({
   currency,
   lang,
   addedBy,
+  kind = "home",
   t,
 }: {
   item: Item;
@@ -28,6 +30,7 @@ export default function ItemRow({
   currency: string;
   lang: "fr" | "en";
   addedBy: string;
+  kind?: Kind;
   t: T;
 }) {
   const [pending, start] = useTransition();
@@ -40,6 +43,9 @@ export default function ItemRow({
 
   const total = Number(item.price) * item.quantity;
   const site = host(item.url);
+  const fallback = illustrationFor(item.title, kind);
+  const [img, setImg] = useState(item.image_url || fallback);
+  const illustrative = img === fallback;
 
   return (
     <li
@@ -48,13 +54,19 @@ export default function ItemRow({
       } ${pending ? "animate-pulse" : ""}`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-paper">
-        {item.image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.image_url} alt="" referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="display text-6xl text-ink/15">{item.title.slice(0, 1).toUpperCase()}</span>
-          </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={img}
+          alt=""
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          onError={() => img !== fallback && setImg(fallback)}
+          className={`h-full w-full object-cover transition duration-700 group-hover:scale-[1.03] ${illustrative ? "saturate-[0.85]" : ""}`}
+        />
+        {illustrative && (
+          <span className="absolute bottom-2 right-2 rounded-full bg-black/45 px-2 py-0.5 text-[10px] text-white/90 backdrop-blur-sm">
+            {lang === "fr" ? "Illustration" : "Illustration"}
+          </span>
         )}
         {item.purchased && (
           <span className="absolute left-3 top-3 rounded-full bg-moss px-3 py-1 text-xs font-semibold text-white">✓ {t.bought}</span>

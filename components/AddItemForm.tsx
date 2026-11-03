@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { addItem } from "@/app/actions";
+import { illustrationFor } from "@/lib/itemImage";
 
 type T = Record<
   "addTitle" | "pasteLink" | "fetch" | "fetching" | "orManual" | "title" | "price" | "qty" | "add" | "cancel" | "priceNotFound" | "fetchError",
@@ -20,8 +21,10 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
   const [saving, start] = useTransition();
 
   async function fetchLink(raw?: string) {
-    const url = (raw ?? link).trim();
-    if (!/^https?:\/\//i.test(url)) return;
+    // Accepte aussi un texte partagé depuis une appli ("Regarde ça https://…")
+    const url = ((raw ?? link).match(/https?:\/\/[^\s<>"']+/i)?.[0] ?? "").replace(/[).,;!?]+$/, "");
+    if (!url) return;
+    setLink(url);
     setLoading(true);
     setNotice(null);
     try {
@@ -80,14 +83,14 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
             }}
           >
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               value={link}
               onChange={(e) => setLink(e.target.value)}
               onPaste={(e) => {
                 const pasted = e.clipboardData.getData("text");
-                if (/^https?:\/\//i.test(pasted.trim())) {
+                if (/https?:\/\//i.test(pasted)) {
                   e.preventDefault();
-                  setLink(pasted.trim());
                   fetchLink(pasted);
                 }
               }}
@@ -105,10 +108,18 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
       ) : (
         <form onSubmit={save} className="mt-5 rounded-xl2 bg-white p-4 text-ink sm:p-5">
           <div className="flex gap-4">
-            {draft.image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={draft.image} alt="" referrerPolicy="no-referrer" className="h-28 w-28 shrink-0 rounded-xl border border-line object-cover" />
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={draft.image || draft.title}
+              src={draft.image || illustrationFor(draft.title || "")}
+              alt=""
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                const fb = illustrationFor(draft.title || "");
+                if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+              }}
+              className="h-28 w-28 shrink-0 rounded-xl border border-line object-cover"
+            />
             <div className="min-w-0 flex-1 space-y-3">
               {draft.site && <p className="text-xs font-medium text-muted">{draft.site}</p>}
               <div>
