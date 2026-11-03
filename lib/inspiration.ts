@@ -246,10 +246,10 @@ export const NICHE: Destination[] = [
   },
   {
     id: "quynhon",
-    name: "Quy Nhơn",
+    name: "Quy Nhon",
     country: "Viêt Nam",
     img: U("1722944175475-6bbc2d6812c6"),
-    pitch: "La côte centrale sans la foule : longues plages, rochers sculptés par la mer et tours cham, entre Hội An et Nha Trang.",
+    pitch: "La côte centrale sans la foule : longues plages, rochers sculptés par la mer et tours cham, entre Hoi An et Nha Trang.",
     months: [3, 4, 5, 6],
     flight: "≈ 15 h avec escale",
     budget: 1,
