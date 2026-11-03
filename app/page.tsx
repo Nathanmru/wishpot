@@ -11,8 +11,10 @@ const COPY = {
     title: "Mettez de côté à deux, pour le canapé ou pour Kyoto.",
     sub: "Listez ce que vous voulez acheter, fixez combien chacun épargne par mois, et regardez la cagnotte se remplir.",
     homeCta: "Meubler notre chez-nous",
+    homeShort: "Maison",
     homeSub: "Meubles, déco, électroménager",
     travelCta: "Préparer un voyage",
+    travelShort: "Voyage",
     travelSub: "Vols, hébergement, activités",
     howTitle: "Trois étapes, et la cagnotte avance toute seule",
     steps: [
@@ -55,8 +57,10 @@ const COPY = {
     title: "Save up together, for the sofa or for Kyoto.",
     sub: "List what you want to buy, set how much each of you saves per month, and watch the pot fill up.",
     homeCta: "Furnish our place",
+    homeShort: "Home",
     homeSub: "Furniture, decor, appliances",
     travelCta: "Plan a trip",
+    travelShort: "Trip",
     travelSub: "Flights, stays, activities",
     howTitle: "Three steps, then the pot keeps moving",
     steps: [
@@ -107,14 +111,14 @@ export default async function Home() {
       {/* ---------- Scène : intérieur | mur | vue ---------- */}
       <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2">
         <div className="relative flex h-[calc(100dvh-4rem)] min-h-[560px] overflow-hidden bg-walnut-soft">
-          <SceneHalf href="/new?kind=home" img={cover("home", 1400)} emoji="🛋️" title={c.homeCta} desc={c.homeSub} />
+          <SceneHalf href="/new?kind=home" img={cover("home", 1400)} emoji="🛋️" short={c.homeShort} title={c.homeCta} desc={c.homeSub} />
           <div
             aria-hidden
             className="relative z-10 w-3 shrink-0 bg-gradient-to-r from-[#CDBBA6] via-[#F5ECE0] to-[#CDBBA6] shadow-[0_0_50px_rgba(0,0,0,0.45)] sm:w-6"
           />
-          <SceneHalf href="/new?kind=travel" img={cover("travel", 1400)} emoji="✈️" title={c.travelCta} desc={c.travelSub} />
+          <SceneHalf href="/new?kind=travel" img={cover("travel", 1400)} emoji="✈️" short={c.travelShort} title={c.travelCta} desc={c.travelSub} />
 
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/55 via-black/20 to-transparent px-5 pb-32 pt-10 text-center text-white sm:pt-16">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/70 via-black/35 to-transparent px-5 pb-40 pt-10 text-center text-white sm:pt-16">
             <h1 className="display mx-auto max-w-4xl text-[2.6rem] leading-[0.98] drop-shadow-[0_2px_16px_rgba(0,0,0,0.35)] sm:text-7xl lg:text-[5.5rem]">
               {c.title}
             </h1>
@@ -232,7 +236,7 @@ export default async function Home() {
   );
 }
 
-function SceneHalf({ href, img, emoji, title, desc }: { href: string; img: string; emoji: string; title: string; desc: string }) {
+function SceneHalf({ href, img, emoji, short, title, desc }: { href: string; img: string; emoji: string; short: string; title: string; desc: string }) {
   return (
     <Link href={href} className="group relative block min-w-0 flex-1 overflow-hidden">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -246,7 +250,8 @@ function SceneHalf({ href, img, emoji, title, desc }: { href: string; img: strin
         <span className="flex max-w-full items-center gap-3 rounded-full bg-white/95 py-2.5 pl-2.5 pr-5 text-ink shadow-lift backdrop-blur transition duration-300 group-hover:-translate-y-1 group-hover:bg-white sm:py-3 sm:pl-3 sm:pr-7">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper text-lg sm:h-11 sm:w-11 sm:text-xl">{emoji}</span>
           <span className="min-w-0 text-left">
-            <span className="block truncate text-sm font-bold sm:text-base">{title}</span>
+            <span className="block text-sm font-bold sm:hidden">{short}</span>
+            <span className="hidden truncate text-base font-bold sm:block">{title}</span>
             <span className="hidden text-sm text-muted sm:block">{desc}</span>
           </span>
         </span>
