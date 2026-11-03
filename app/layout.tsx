@@ -7,8 +7,8 @@ import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import SiteHeader from "@/components/SiteHeader";
 
-const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-display", weight: ["400", "500"], style: ["normal", "italic"] });
-const sans = Jost({ subsets: ["latin"], variable: "--font-sans", weight: ["300", "400", "500", "600"] });
+const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const sans = Jost({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getDict();
