@@ -67,13 +67,13 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
   }
 
   return (
-    <section className="card">
-      <h2 className="font-semibold">＋ {t.addTitle}</h2>
+    <section className="rounded-xl3 bg-ink p-5 text-white shadow-lift sm:p-7">
+      <h2 className="display text-3xl">{t.addTitle}</h2>
 
       {!draft ? (
         <>
           <form
-            className="mt-3 flex gap-2"
+            className="mt-4 flex flex-col gap-2 sm:flex-row"
             onSubmit={(e) => {
               e.preventDefault();
               fetchLink();
@@ -92,25 +92,25 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
                 }
               }}
               placeholder={t.pasteLink}
-              className="input"
+              className="w-full rounded-full border border-white/15 bg-white/10 px-5 py-3.5 text-base text-white outline-none transition placeholder:text-white/50 focus:border-apricot focus:bg-white/15"
             />
-            <button disabled={loading || !link} className="btn-primary whitespace-nowrap">
+            <button disabled={loading || !link} className="btn shrink-0 bg-apricot !px-6 !py-3.5 text-ink hover:bg-white">
               {loading ? t.fetching : t.fetch}
             </button>
           </form>
-          <button type="button" onClick={() => setDraft({ ...EMPTY })} className="mt-3 text-sm text-muted underline-offset-4 hover:underline">
+          <button type="button" onClick={() => setDraft({ ...EMPTY })} className="mt-3 text-sm text-white/60 underline-offset-4 hover:text-white hover:underline">
             {t.orManual}
           </button>
         </>
       ) : (
-        <form onSubmit={save} className="mt-4">
+        <form onSubmit={save} className="mt-5 rounded-xl2 bg-white p-4 text-ink sm:p-5">
           <div className="flex gap-4">
             {draft.image && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={draft.image} alt="" referrerPolicy="no-referrer" className="h-24 w-24 shrink-0 rounded-xl border border-line object-cover" />
+              <img src={draft.image} alt="" referrerPolicy="no-referrer" className="h-28 w-28 shrink-0 rounded-xl border border-line object-cover" />
             )}
             <div className="min-w-0 flex-1 space-y-3">
-              {draft.site && <p className="eyebrow">{draft.site}</p>}
+              {draft.site && <p className="text-xs font-medium text-muted">{draft.site}</p>}
               <div>
                 <label className="label" htmlFor="it-title">{t.title}</label>
                 <input
@@ -148,12 +148,19 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
               </div>
             </div>
           </div>
-          {notice && <p className="mt-3 rounded-xl bg-terra-soft px-3 py-2 text-sm text-terra-dark">{notice}</p>}
-          <div className="mt-4 flex justify-end gap-2">
-            <button type="button" onClick={() => { setDraft(null); setNotice(null); }} className="btn-ghost">
+          {notice && <p className="mt-4 rounded-xl bg-apricot-soft px-3 py-2 text-sm text-walnut-dark">{notice}</p>}
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setDraft(null);
+                setNotice(null);
+              }}
+              className="btn-ghost"
+            >
               {t.cancel}
             </button>
-            <button disabled={saving} className="btn-accent">{saving ? "…" : t.add}</button>
+            <button disabled={saving} className="btn-primary">{saving ? "…" : t.add}</button>
           </div>
         </form>
       )}
