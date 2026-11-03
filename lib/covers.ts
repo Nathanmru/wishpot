@@ -13,6 +13,9 @@ export const PHOTOS = {
   palms: "1618360945198-3460f54d2ee5", // palmiers, ciel bleu
   curtain: "1534432189786-f47e376dc8c7", // rideau, soleil couchant
   palmWindow: "1562865582-d6317ab58923", // palmier à travers la fenêtre
+  positano: "1583844056361-4418a8f2a985", // Positano illuminé au crépuscule
+  parisSalon: "1687877954051-3c24d2c60c7d", // salon parisien, bibliothèque et moulures
+  terrace: "1783597165321-e4fdd8e7c930", // couple sur une terrasse face à la mer
 } as const;
 
 export function photo(id: string, width = 1600) {
