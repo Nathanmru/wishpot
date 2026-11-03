@@ -20,14 +20,16 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 8);
+    const on = () => setScrolled(window.scrollY > 40);
     on();
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
 
   const tone = immersive
-    ? "text-white mix-blend-difference"
+    ? scrolled
+      ? "text-bone bg-night/85 backdrop-blur-md"
+      : "text-white bg-gradient-to-b from-black/50 to-transparent"
     : `text-ink ${scrolled ? "bg-paper/90 backdrop-blur-md border-b border-line" : "bg-paper"}`;
 
   const link = "text-[11px] font-medium uppercase tracking-label transition-opacity hover:opacity-60";
