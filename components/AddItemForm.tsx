@@ -97,6 +97,20 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
               placeholder={t.pasteLink}
               className="w-full rounded-full border border-white/15 bg-white/10 px-5 py-3.5 text-base text-white outline-none transition placeholder:text-white/50 focus:border-apricot focus:bg-white/15"
             />
+            {!link && (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const txt = await navigator.clipboard.readText();
+                    if (txt) fetchLink(txt);
+                  } catch {}
+                }}
+                className="btn shrink-0 border border-white/25 !px-5 !py-3.5 text-white hover:bg-white/10"
+              >
+                Coller
+              </button>
+            )}
             <button disabled={loading || !link} className="btn shrink-0 bg-apricot !px-6 !py-3.5 text-ink hover:bg-white">
               {loading ? t.fetching : t.fetch}
             </button>

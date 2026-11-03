@@ -4,6 +4,7 @@ import { getUser } from "@/lib/supabase/server";
 import { isSafeUrl } from "@/lib/extract";
 import { CLASSICS, NICHE, TRENDS, activitiesUrl, bookingUrl, type Destination } from "@/lib/inspiration";
 import { MONTHS, euro, goUrl } from "@/components/InspirationBits";
+import { guessRoom } from "@/lib/rooms";
 
 /** Ajoute une pièce repérée dans l'inspiration directement à cette cagnotte. */
 async function addPiece(projectId: string, formData: FormData) {
@@ -21,6 +22,7 @@ async function addPiece(projectId: string, formData: FormData) {
     quantity: 1,
     url: url && isSafeUrl(url) ? url : null,
     image_url: /^https:\/\//.test(img) ? img : null,
+    room: guessRoom(String(formData.get("title") || ""), "home"),
   });
   revalidatePath(`/p/${projectId}`);
 }
