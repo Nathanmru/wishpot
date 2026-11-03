@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSafeUrl } from "@/lib/extract";
+import { guessRoom, ROOMS } from "@/lib/rooms";
+import type { Kind } from "@/lib/config";
 
 function num(v: FormDataEntryValue | null, fallback = 0) {
   const n = parseFloat(String(v ?? "").replace(",", "."));
@@ -98,6 +100,7 @@ export type NewItem = {
   url?: string | null;
   image_url?: string | null;
   category?: string | null;
+  room?: string | null;
 };
 
 export async function addItem(projectId: string, item: NewItem) {
@@ -113,6 +116,7 @@ export async function addItem(projectId: string, item: NewItem) {
     url,
     image_url: image,
     category: item.category?.slice(0, 40) || null,
+    room: await roomFor(supabase, projectId, item.title, item.room),
   });
   if (error) throw new Error(error.message);
   revalidatePath(`/p/${projectId}`);
@@ -136,5 +140,56 @@ export async function updateItem(
 export async function deleteItem(projectId: string, itemId: string) {
   const supabase = await createClient();
   await supabase.from("items").delete().eq("id", itemId).eq("project_id", projectId);
+  revalidatePath(`/p/${projectId}`);
+}
+
+/* ---------- Pièces ---------- */
+type Sb = Awaited<ReturnType<typeof createClient>>;
+
+async function roomFor(supabase: Sb, projectId: string, title: string, chosen?: string | null) {
+  const { data } = await supabase.from("projects").select("kind").eq("id", projectId).maybeSingle();
+  const kind: Kind = data?.kind === "travel" ? "travel" : "home";
+  if (chosen && ROOMS[kind].some((r) => r.id === chosen)) return chosen;
+  return guessRoom(title || "", kind);
+}
+
+export async function setItemRoom(projectId: string, itemId: string, room: string | null) {
+  const { supabase } = await requireUser();
+  await supabase.from("items").update({ room: room ? room.slice(0, 40) : null }).eq("id", itemId).eq("project_id", projectId);
+  revalidatePath(`/p/${projectId}`);
+}
+
+/* ---------- Cœurs et commentaires ---------- */
+export async function toggleLike(projectId: string, itemId: string, like: boolean) {
+  const { supabase, user } = await requireUser();
+  if (like) await supabase.from("item_likes").upsert({ item_id: itemId, user_id: user.id });
+  else await supabase.from("item_likes").delete().eq("item_id", itemId).eq("user_id", user.id);
+  revalidatePath(`/p/${projectId}`);
+}
+
+export async function addComment(projectId: string, itemId: string, body: string) {
+  const { supabase, user } = await requireUser();
+  const text = body.trim().slice(0, 500);
+  if (!text) return;
+  await supabase.from("item_comments").insert({ item_id: itemId, user_id: user.id, body: text });
+  revalidatePath(`/p/${projectId}`);
+}
+
+export async function deleteComment(projectId: string, commentId: string) {
+  const { supabase, user } = await requireUser();
+  await supabase.from("item_comments").delete().eq("id", commentId).eq("user_id", user.id);
+  revalidatePath(`/p/${projectId}`);
+}
+
+/* ---------- Liste à partager avec les proches ---------- */
+export async function setShare(projectId: string, enabled: boolean) {
+  const { supabase } = await requireUser();
+  await supabase.rpc("set_share", { pid: projectId, enabled });
+  revalidatePath(`/p/${projectId}`);
+}
+
+export async function clearReservation(projectId: string, itemId: string) {
+  const { supabase } = await requireUser();
+  await supabase.from("items").update({ reserved_by: null, reserved_at: null }).eq("id", itemId).eq("project_id", projectId);
   revalidatePath(`/p/${projectId}`);
 }

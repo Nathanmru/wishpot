@@ -6,6 +6,8 @@ import { APP_NAME, siteUrl } from "@/lib/config";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import SiteHeader from "@/components/SiteHeader";
+import { RegisterSW } from "@/components/AppInstall";
+import { Analytics } from "@vercel/analytics/next";
 
 const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 const sans = Jost({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -17,6 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: `${APP_NAME} — ${t.tagline}`, template: `%s · ${APP_NAME}` },
     description: t.heroText,
     openGraph: { title: APP_NAME, description: t.heroText, type: "website" },
+    icons: { icon: "/favicon-32.png", apple: "/apple-touch-icon.png" },
+    appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "black-translucent" },
   };
 }
 
@@ -32,6 +36,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} className={`${display.variable} ${sans.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <RegisterSW />
+        <Analytics />
         <SiteHeader
           appName={APP_NAME}
           lang={lang}
