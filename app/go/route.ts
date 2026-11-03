@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { affiliateUrl, hostOf } from "@/lib/affiliate";
 import { allowedShopHosts } from "@/lib/suggestions";
+import { inspirationHosts } from "@/lib/inspiration";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
     target = data?.url ?? null;
   } else if (raw) {
     const host = hostOf(raw);
-    if (allowedShopHosts().some((h) => host === h || host.endsWith("." + h))) target = raw;
+    if ([...allowedShopHosts(), ...inspirationHosts()].some((h) => host === h || host.endsWith("." + h))) target = raw;
   }
 
   if (!target) return NextResponse.redirect(new URL("/", req.url));
