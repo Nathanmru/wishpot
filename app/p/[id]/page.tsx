@@ -13,6 +13,7 @@ import IdeaChips from "@/components/IdeaChips";
 import InviteBox from "@/components/InviteBox";
 import ConfirmButton from "@/components/ConfirmButton";
 import Jar from "@/components/Jar";
+import ProjectInspiration from "@/components/ProjectInspiration";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -164,6 +165,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               </ul>
             )}
           </section>
+
+          <ProjectInspiration projectId={p.id} kind={p.kind} existingUrls={list.map((i) => i.url ?? "").filter(Boolean)} />
 
           <section>
             <h2 className="display text-4xl">{t.ideas}</h2>
