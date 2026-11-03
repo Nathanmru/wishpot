@@ -246,10 +246,10 @@ export const NICHE: Destination[] = [
   },
   {
     id: "quynhon",
-    name: "Quy Nhon",
+    name: "Quy Nhơn",
     country: "Viêt Nam",
     img: U("1722944175475-6bbc2d6812c6"),
-    pitch: "La côte centrale sans la foule : longues plages, rochers sculptés par la mer et tours cham, entre Hoi An et Nha Trang.",
+    pitch: "La côte centrale sans la foule : longues plages, rochers sculptés par la mer et tours cham, entre Hội An et Nha Trang.",
     months: [3, 4, 5, 6],
     flight: "≈ 15 h avec escale",
     budget: 1,
@@ -355,7 +355,7 @@ export function bookingUrl(q: string) {
   return `https://www.booking.com/searchresults.fr.html?ss=${encodeURIComponent(q)}`;
 }
 export function activitiesUrl(q: string) {
-  return `https://www.getyourguide.fr/s/?q=${encodeURIComponent(q)}`;
+  return `https://www.getyourguide.com/s/?q=${encodeURIComponent(q)}`;
 }
 
 /** Domaines autorisés pour la redirection /go depuis les pages Inspiration. */
@@ -364,7 +364,7 @@ export function inspirationHosts(): string[] {
     ...TRENDS.flatMap((t) => t.products.map((p) => p.url)),
     ...HOME_SITES.map((s) => s.url),
     "https://www.booking.com/",
-    "https://www.getyourguide.fr/",
+    "https://www.getyourguide.com/",
   ];
   return Array.from(new Set(urls.map((u) => new URL(u).hostname.replace(/^www\d?\./, ""))));
 }
