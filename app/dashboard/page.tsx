@@ -6,6 +6,7 @@ import { computeStats, money, monthYear } from "@/lib/format";
 import { cover, KIND_STYLE } from "@/lib/covers";
 import type { Kind } from "@/lib/config";
 import Jar from "@/components/Jar";
+import InspirationDoors from "@/components/InspirationDoors";
 
 export const metadata = { title: "Mes cagnottes" };
 
@@ -111,6 +112,8 @@ export default async function Dashboard() {
           </li>
         </ul>
       )}
+
+      <InspirationDoors lang={lang} compact />
     </div>
   );
 }
