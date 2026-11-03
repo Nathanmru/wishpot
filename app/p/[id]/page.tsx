@@ -159,6 +159,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                     currency={cur}
                     lang={lang}
                     addedBy={nameOf(it.added_by)}
+                    kind={p.kind}
                     t={{ buy: t.buy, markBought: t.markBought, bought: t.bought, remove: t.remove, addedBy: t.addedBy, price: t.price, qty: t.qty, save: t.save }}
                   />
                 ))}
