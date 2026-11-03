@@ -280,20 +280,11 @@ async function getHtml(target: string, headers: Record<string, string>, timeoutM
 
 const BROWSER_HEADERS: Record<string, string> = {
   "user-agent": UA,
-  accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  accept: "text/html,application/xhtml+xml",
   "accept-language": "fr-FR,fr;q=0.9,en;q=0.8",
-  "cache-control": "no-cache",
-  "sec-ch-ua": '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
-  "sec-ch-ua-mobile": "?0",
-  "sec-ch-ua-platform": '"macOS"',
-  "sec-fetch-dest": "document",
-  "sec-fetch-mode": "navigate",
-  "sec-fetch-site": "none",
-  "sec-fetch-user": "?1",
-  "upgrade-insecure-requests": "1",
 };
 
-// Pages de blocage anti-robot : on les ignore pour passer à la méthode suivante.
+// Pages de refus (le site n'autorise pas la lecture automatique) : on ne les analyse pas.
 const BLOCKED = /(captcha|access denied|are you a robot|just a moment|attention required|request unsuccessful|pardon our interruption|bot detection|incapsula|datadome|perimeterx|px-captcha)/i;
 
 function usable(f: Fetched) {
@@ -311,8 +302,6 @@ function merge(a: Extracted, b: Partial<Extracted>): Extracted {
   };
 }
 
-const complete = (e: Extracted) => !!(e.title && e.image && e.price !== null);
-
 function analyse(html: string, url: string): Extracted {
   const r = parseHtml(html, url);
   if (r.price === null) r.price = guessPrice(html);
@@ -322,9 +311,8 @@ function analyse(html: string, url: string): Extracted {
 export type Attempt = { via: string; status?: number; bytes?: number; ok: boolean; error?: string };
 
 /**
- * Plusieurs méthodes, de la plus rapide à la plus robuste :
- * 1. la page directement ; 2. la page rendue par un navigateur distant (r.jina.ai) ;
- * 3. l'aperçu de lien Microlink pour au moins le nom et la photo.
+ * Lit la page produit. Si le site refuse la lecture automatique, on renvoie au moins
+ * un nom tiré de l'adresse ; l'image d'illustration et le prix manuel prennent le relais.
  */
 export async function fetchProduct(raw: string, log?: Attempt[]): Promise<Extracted> {
   const u = isSafeUrl(raw);
@@ -345,35 +333,8 @@ export async function fetchProduct(raw: string, log?: Attempt[]): Promise<Extrac
   } catch (e) {
     log?.push({ via: "direct", ok: false, error: String(e).slice(0, 120) });
   }
-  if (complete(best)) return best;
-
-  // 2) Navigateur distant (exécute le JavaScript de la page, passe la plupart des protections)
-  try {
-    const headers: Record<string, string> = { accept: "text/html", "x-return-format": "html", "x-timeout": "15", "x-locale": "fr-FR" };
-    if (process.env.JINA_API_KEY) headers.authorization = `Bearer ${process.env.JINA_API_KEY}`;
-    const f = await getHtml(`https://r.jina.ai/${target}`, headers, 20000);
-    const ok = usable(f);
-    log?.push({ via: "reader", status: f.status, bytes: f.html.length, ok });
-    if (ok) best = merge(best, analyse(f.html, target));
-  } catch (e) {
-    log?.push({ via: "reader", ok: false, error: String(e).slice(0, 120) });
-  }
-  if (complete(best)) return best;
-
-  // 3) Aperçu de lien (nom + image)
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 9000);
-    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(target)}`, { signal: ctrl.signal, cache: "no-store" });
-    clearTimeout(timer);
-    const j = (await res.json()) as { status?: string; data?: { title?: string; image?: { url?: string }; logo?: { url?: string } } };
-    log?.push({ via: "preview", status: res.status, ok: j.status === "success" });
-    if (j.status === "success" && j.data) {
-      best = merge(best, { title: j.data.title ?? null, image: j.data.image?.url ?? null });
-    }
-  } catch (e) {
-    log?.push({ via: "preview", ok: false, error: String(e).slice(0, 120) });
-  }
+  // "Tapis Kadey | Westwing" → "Tapis Kadey"
+  if (best.title) best.title = best.title.replace(/\s+[|–—]\s+[^|–—]{2,40}$/, "").trim();
 
   // Dernier recours pour le nom : le slug de l'adresse ("canape-nuage-2-places-lilo-243044.htm" → "Canape nuage 2 places lilo")
   if (!best.title) {
