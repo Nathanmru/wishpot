@@ -16,7 +16,7 @@ type Props = {
 
 export default function SiteHeader({ appName, lang, signedIn, avatar, initial, labels }: Props) {
   const path = usePathname();
-  const immersive = path === "/";
+  const immersive = path === "/" || path.startsWith("/inspiration");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -38,8 +38,8 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
     <header className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${tone}`}>
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:h-20 sm:px-8">
         <nav className="hidden flex-1 items-center gap-7 md:flex">
-          <Link href="/new?kind=home" className={link}>{labels.home}</Link>
-          <Link href="/new?kind=travel" className={link}>{labels.travel}</Link>
+          <Link href="/inspiration/maison" className={link}>{labels.home}</Link>
+          <Link href="/inspiration/voyage" className={link}>{labels.travel}</Link>
         </nav>
 
         <Link href={signedIn ? "/dashboard" : "/"} aria-label={appName} className="font-display text-2xl uppercase tracking-[0.22em] sm:text-[1.9rem]">
