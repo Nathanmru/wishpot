@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { fetchProduct, isSafeUrl, type Attempt } from "@/lib/extract";
+import { fetchProduct, isSafeUrl } from "@/lib/extract";
 import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 45;
+export const maxDuration = 20;
 
 export async function POST(req: Request) {
   // Réservé aux utilisateurs connectés (évite que l'outil serve de proxy public)
@@ -27,17 +27,3 @@ export async function POST(req: Request) {
   }
 }
 
-// Diagnostic temporaire (sera retiré)
-export async function GET(req: Request) {
-  const sp = new URL(req.url).searchParams;
-  if (sp.get("k") !== "wp-diag-7f3a91") return NextResponse.json({ error: "not found" }, { status: 404 });
-  const url = sp.get("url") || "";
-  const log: Attempt[] = [];
-  const t0 = Date.now();
-  try {
-    const result = await fetchProduct(url, log);
-    return NextResponse.json({ ms: Date.now() - t0, result, log });
-  } catch (e) {
-    return NextResponse.json({ ms: Date.now() - t0, error: String(e), log });
-  }
-}
