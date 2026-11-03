@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-cream text-ink font-sans antialiased;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl2 border border-line bg-white/80 p-5 shadow-[0_1px_0_rgba(31,27,22,0.04)];
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition active:scale-[0.98] disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-cream hover:bg-black;
+  }
+  .btn-accent {
+    @apply btn bg-terra text-white hover:bg-terra-dark;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-white hover:bg-cream;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-base outline-none transition focus:border-ink focus:ring-2 focus:ring-ink/10;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-muted;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+}
