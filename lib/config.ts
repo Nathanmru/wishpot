@@ -1,5 +1,5 @@
-/** Le nom de la maison : « pièce » comme la pièce qu'on décore, « piécette » comme celle qu'on met de côté. */
-export const APP_NAME = "Maison Piécette";
+/** Le nom de la maison. */
+export const APP_NAME = "Atelier Nama";
 
 export function siteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
