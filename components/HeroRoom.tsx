@@ -88,7 +88,7 @@ export default function HeroRoom({ name, fr }: { name: string; fr: boolean }) {
         title.current.style.transform = `translateY(${-p * 140}px) scale(${1 + p * 0.18})`;
         title.current.style.opacity = String(Math.max(0, 1 - p * 1.7));
       }
-      if (word.current) word.current.style.letterSpacing = `${0.02 + p * 0.3}em`;
+      if (word.current) word.current.style.letterSpacing = `${0.01 + p * 0.3}em`;
       if (room.current) room.current.style.transform = `scale(${1 + p * 0.14})`;
       if (ui.current) {
         ui.current.style.opacity = String(Math.max(0, 1 - p * 2.4));
@@ -194,9 +194,14 @@ export default function HeroRoom({ name, fr }: { name: string; fr: boolean }) {
             {fr ? "La cagnotte déco, pièce à pièce" : "The decor savings pot, piece by piece"}
           </p>
           <div className="mt-4">
-            <h1 ref={word} style={{ letterSpacing: "0.02em" }} className="display whitespace-nowrap text-[13vw] leading-none text-[#2B211A] sm:text-[8.4vw] lg:text-[7.2rem]" aria-label={name}>
+            <h1
+              ref={word}
+              style={{ letterSpacing: "0.01em", fontFamily: "var(--font-hero), serif", fontWeight: 300 }}
+              className="whitespace-nowrap text-[15vw] leading-[0.9] text-[#2B211A] sm:text-[10vw] lg:text-[9rem]"
+              aria-label={name}
+            >
               {letters.map((c, i) => (
-                <span key={i} className="inline-block overflow-hidden align-bottom">
+                <span key={i} className={`inline-block overflow-hidden pb-[0.08em] align-bottom ${i > name.indexOf(" ") && name.includes(" ") ? "italic" : ""}`}>
                   <span className="wp-line inline-block" style={{ animationDelay: `${0.15 + i * 0.045}s` }}>
                     {c === " " ? "\u00a0" : c}
                   </span>
