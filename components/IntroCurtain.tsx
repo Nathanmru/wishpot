@@ -9,7 +9,7 @@ export default function IntroCurtain() {
         }}
       />
       <div aria-hidden className="wp-intro pointer-events-none fixed inset-0 z-[100] flex items-center justify-center bg-night text-bone">
-        <span className="wp-intro-word font-display text-3xl uppercase sm:text-6xl">Wishpot</span>
+        <span className="wp-intro-word font-display text-3xl uppercase sm:text-6xl">Maison Piécette</span>
       </div>
     </>
   );
