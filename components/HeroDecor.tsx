@@ -48,8 +48,8 @@ export default function HeroDecor({ fr, total, shops, photos, sample }: Props) {
           </h2>
           <p className="wp-rise mt-6 max-w-lg text-[15px] leading-relaxed text-muted sm:text-lg" style={{ animationDelay: "0.5s" }}>
             {fr
-              ? "Maison Piécette rassemble la déco de grandes enseignes, de petites maisons et de brocanteurs. Ajoutez ce qui vous plaît à une cagnotte : on calcule ce qu'il faut mettre de côté chaque mois, seul ou à plusieurs, pour s'offrir le projet."
-              : "Maison Piécette gathers decor from big retailers, small makers and vintage dealers. Add what you love to a pot: we work out what to set aside each month, alone or together, to make the project happen."}
+              ? "Atelier Nama rassemble la déco de grandes enseignes, de petites maisons et de brocanteurs. Ajoutez ce qui vous plaît à une cagnotte : on calcule ce qu'il faut mettre de côté chaque mois, seul ou à plusieurs, pour s'offrir le projet."
+              : "Atelier Nama gathers decor from big retailers, small makers and vintage dealers. Add what you love to a pot: we work out what to set aside each month, alone or together, to make the project happen."}
           </p>
 
           <form action="/catalogue" className="wp-rise mt-8 flex max-w-xl items-center gap-2 border border-ink bg-white p-1.5 pl-5" style={{ animationDelay: "0.62s" }}>
