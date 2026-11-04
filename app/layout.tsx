@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
-import { Bodoni_Moda, Jost } from "next/font/google";
+import { Bodoni_Moda, Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
 import { APP_NAME, siteUrl } from "@/lib/config";
 import { getDict } from "@/lib/i18n";
@@ -12,6 +12,7 @@ import CompareBar from "@/components/CompareBar";
 import { Analytics } from "@vercel/analytics/next";
 
 const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const hero = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400"], style: ["normal", "italic"], variable: "--font-hero", display: "swap" });
 const sans = Jost({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const fr = lang === "fr";
 
   return (
-    <html lang={lang} className={`${display.variable} ${sans.variable}`}>
+    <html lang={lang} className={`${display.variable} ${hero.variable} ${sans.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <ShopStateProvider signedIn={!!user} fr={fr}>
         <RegisterSW />
