@@ -31,13 +31,13 @@ export default function HeroDecor({ fr, total, shops, photos, sample }: Props) {
 
   return (
     <section className="relative mx-[calc(50%-50vw)] overflow-hidden bg-paper">
-      <div className="mx-auto grid min-h-[100dvh] max-w-[1400px] gap-10 px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-24 sm:px-8 sm:py-32 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-16">
         {/* Le message */}
         <div>
           <p className="caps wp-rise text-muted" style={{ animationDelay: "0.05s" }}>
             {fr ? `${total.toLocaleString("fr-FR")} pièces · ${shops} maisons · neuf & chiné` : `${total} pieces · ${shops} brands · new & vintage`}
           </p>
-          <h1 className="display mt-5 text-[2.7rem] leading-[0.95] sm:text-7xl xl:text-[4.6rem]">
+          <h2 className="display mt-5 text-[2.7rem] leading-[0.95] sm:text-7xl xl:text-[4.6rem]">
             {(fr ? ["Trouvez vos pièces.", "Fixez le budget.", "Épargnez pour chez vous."] : ["Find your pieces.", "Set the budget.", "Save for your home."]).map((l, i) => (
               <span key={l} className="block overflow-hidden pb-[0.06em]">
                 <span className={`wp-line block ${i === 2 ? "italic text-walnut" : ""}`} style={{ animationDelay: `${0.12 + i * 0.12}s` }}>
@@ -45,11 +45,11 @@ export default function HeroDecor({ fr, total, shops, photos, sample }: Props) {
                 </span>
               </span>
             ))}
-          </h1>
+          </h2>
           <p className="wp-rise mt-6 max-w-lg text-[15px] leading-relaxed text-muted sm:text-lg" style={{ animationDelay: "0.5s" }}>
             {fr
-              ? "Wishpot rassemble la déco de grandes enseignes, de petites maisons et de brocanteurs. Ajoutez ce qui vous plaît à une cagnotte : on calcule ce qu'il faut mettre de côté chaque mois, seul ou à plusieurs, pour s'offrir le projet."
-              : "Wishpot gathers decor from big retailers, small makers and vintage dealers. Add what you love to a pot: we work out what to set aside each month, alone or together, to make the project happen."}
+              ? "Maison Piécette rassemble la déco de grandes enseignes, de petites maisons et de brocanteurs. Ajoutez ce qui vous plaît à une cagnotte : on calcule ce qu'il faut mettre de côté chaque mois, seul ou à plusieurs, pour s'offrir le projet."
+              : "Maison Piécette gathers decor from big retailers, small makers and vintage dealers. Add what you love to a pot: we work out what to set aside each month, alone or together, to make the project happen."}
           </p>
 
           <form action="/catalogue" className="wp-rise mt-8 flex max-w-xl items-center gap-2 border border-ink bg-white p-1.5 pl-5" style={{ animationDelay: "0.62s" }}>
