@@ -9,6 +9,9 @@ export type Product = {
   url: string;
   room: string;
   category: string;
+  style?: string | null;
+  color?: string | null;
+  niche?: boolean | null;
 };
 
 const U = (id: string, w = 1200) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=75`;
@@ -65,3 +68,105 @@ export function normalize(s: string) {
 }
 
 export const PRICE_STEPS = [50, 100, 250, 500, 1000];
+
+/** Les styles, devinés à partir des matières et des formes. */
+export const STYLES: { id: string; fr: string; en: string; hint: string; img: string }[] = [
+  { id: "vintage", fr: "Vintage & cuir", en: "Vintage & leather", hint: "Cuir patiné, teck, pièces chinées", img: U("1606425288528-4cebbfc69de7", 900) },
+  { id: "boheme", fr: "Bohème", en: "Boho", hint: "Rotin, jute, macramé", img: U("1558603668-6570496b66f8", 900) },
+  { id: "art-deco", fr: "Art déco", en: "Art deco", hint: "Laiton, marbre, velours, arches", img: U("1563219125-1db796e20ff2", 900) },
+  { id: "naturel", fr: "Naturel & japandi", en: "Natural & japandi", hint: "Lin, grès, travertin", img: U("1512972972907-6d71529c5e92", 900) },
+  { id: "scandinave", fr: "Scandinave", en: "Scandinavian", hint: "Chêne clair, lignes simples", img: U("1609081144289-eacc3108cd03", 900) },
+  { id: "classique", fr: "Classique parisien", en: "Parisian classic", hint: "Moulures, bistrot, capitonné", img: U("1785441513847-aa6a6576b99e", 900) },
+  { id: "industriel", fr: "Industriel", en: "Industrial", hint: "Métal noir, béton, atelier", img: U("1783990349147-906f62b882c1", 900) },
+  { id: "contemporain", fr: "Contemporain", en: "Contemporary", hint: "Formes nettes, tons doux", img: U("1605774337664-7a846e9cdf17", 900) },
+];
+
+/** Les couleurs dominantes et leur nuancier. */
+export const COLORS: { id: string; fr: string; en: string; hex: string }[] = [
+  { id: "beige", fr: "Beige & lin", en: "Beige & linen", hex: "#E3D7C3" },
+  { id: "blanc", fr: "Blanc", en: "White", hex: "#F7F4EE" },
+  { id: "bois", fr: "Bois clair", en: "Light wood", hex: "#C9A57B" },
+  { id: "brun", fr: "Cognac & noyer", en: "Cognac & walnut", hex: "#8A5530" },
+  { id: "terracotta", fr: "Terracotta", en: "Terracotta", hex: "#B8623E" },
+  { id: "jaune", fr: "Moutarde", en: "Mustard", hex: "#D2A23A" },
+  { id: "rose", fr: "Rose poudré", en: "Dusty pink", hex: "#D9A9A0" },
+  { id: "rouge", fr: "Bordeaux", en: "Burgundy", hex: "#7E2C2C" },
+  { id: "vert", fr: "Vert sauge & olive", en: "Sage & olive", hex: "#8C9A76" },
+  { id: "bleu", fr: "Bleu", en: "Blue", hex: "#3F5C7A" },
+  { id: "gris", fr: "Gris", en: "Grey", hex: "#A3A3A0" },
+  { id: "noir", fr: "Noir", en: "Black", hex: "#1F1D1B" },
+  { id: "dore", fr: "Laiton & doré", en: "Brass & gold", hex: "#B8954F" },
+];
+
+/**
+ * La recherche comprend les synonymes, le pluriel et l'anglais des marques nordiques :
+ * chaque mot devient une liste de variantes, dont une au moins doit apparaître.
+ */
+const SYNONYMS: string[][] = [
+  ["canape", "sofa", "banquette", "meridienne"],
+  ["fauteuil", "armchair", "lounge chair", "bergere"],
+  ["chaise", "chair"],
+  ["tabouret", "stool"],
+  ["lampe", "lamp", "luminaire", "lampadaire", "suspension", "applique", "baladeuse"],
+  ["suspension", "pendant", "plafonnier"],
+  ["tapis", "rug", "kilim"],
+  ["miroir", "mirror"],
+  ["coussin", "cushion"],
+  ["plaid", "throw", "couverture", "blanket"],
+  ["vase", "soliflore"],
+  ["bougie", "candle", "bougeoir", "photophore"],
+  ["etagere", "shelf", "bibliotheque", "shelving"],
+  ["table basse", "coffee table"],
+  ["bureau", "desk"],
+  ["lit", "bed", "tete de lit", "headboard"],
+  ["assiette", "plate"],
+  ["verre", "glass", "verres"],
+  ["tasse", "mug", "cup"],
+  ["bol", "bowl"],
+  ["plateau", "tray"],
+  ["panier", "basket", "corbeille"],
+  ["rotin", "rattan", "osier", "wicker", "cannage", "cane"],
+  ["cuir", "leather"],
+  ["lin", "linen"],
+  ["laine", "wool"],
+  ["chene", "oak"],
+  ["noyer", "walnut"],
+  ["laiton", "brass", "dore"],
+  ["marbre", "marble"],
+  ["velours", "velvet"],
+  ["ceramique", "ceramic", "gres", "stoneware"],
+  ["verre", "glass"],
+  ["noir", "black"],
+  ["blanc", "white"],
+  ["vert", "green", "sauge", "sage", "olive", "kaki"],
+  ["bleu", "blue"],
+  ["rose", "pink"],
+  ["beige", "sable", "sand", "ecru", "creme"],
+  ["vintage", "retro", "annees", "chine", "ancien"],
+  ["boheme", "boho"],
+  ["scandinave", "nordic", "scandi"],
+  ["exterieur", "outdoor", "jardin", "terrasse", "balcon"],
+];
+
+const STOP = new Set(["de", "du", "des", "le", "la", "les", "en", "et", "un", "une", "pour", "a", "au", "aux", "avec", "the", "and"]);
+
+export function searchTerms(q: string): string[][] {
+  let s = ` ${normalize(q)} `;
+  const groups: string[][] = [];
+  // Les expressions de plusieurs mots d'abord (« table basse »)
+  for (const g of SYNONYMS) {
+    const hit = g.find((w) => w.includes(" ") && s.includes(` ${w} `));
+    if (hit) {
+      groups.push(g);
+      s = s.replace(` ${hit} `, " ");
+    }
+  }
+  for (const raw of s.trim().split(" ")) {
+    if (raw.length < 2 || STOP.has(raw)) continue;
+    // Pluriel : « lampes » → « lampe », « bureaux » → « bureau »
+    const w = raw.length > 3 && /[sx]$/.test(raw) ? raw.slice(0, -1) : raw;
+    const g = SYNONYMS.find((x) => x.includes(w) || x.includes(raw));
+    groups.push(g ? [...new Set([w, ...g])] : [w]);
+  }
+  return groups.slice(0, 5);
+}
