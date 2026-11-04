@@ -120,3 +120,49 @@ html[data-intro="seen"] .wp-intro {
     display: none;
   }
 }
+
+/* ---------- Accueil : apparition du titre et de l'arche ---------- */
+html {
+  scroll-behavior: smooth;
+}
+.wp-line {
+  transform: translateY(105%);
+  animation: wp-line 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.wp-rise {
+  opacity: 0;
+  animation: wp-rise 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.wp-layer-in {
+  opacity: 0;
+  animation: wp-fade 1.6s ease-out 0.35s forwards;
+}
+@keyframes wp-line {
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes wp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes wp-fade {
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-line,
+  .wp-rise,
+  .wp-layer-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
