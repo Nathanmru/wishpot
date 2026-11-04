@@ -37,7 +37,7 @@ export default function HeroDecor({ fr, total, shops, photos, sample }: Props) {
           <p className="caps wp-rise text-muted" style={{ animationDelay: "0.05s" }}>
             {fr ? `${total.toLocaleString("fr-FR")} pièces · ${shops} maisons · neuf & chiné` : `${total} pieces · ${shops} brands · new & vintage`}
           </p>
-          <h1 className="display mt-5 text-[2.7rem] leading-[0.95] sm:text-7xl xl:text-[5.4rem]">
+          <h1 className="display mt-5 text-[2.7rem] leading-[0.95] sm:text-7xl xl:text-[4.6rem]">
             {(fr ? ["Trouvez vos pièces.", "Fixez le budget.", "Épargnez pour chez vous."] : ["Find your pieces.", "Set the budget.", "Save for your home."]).map((l, i) => (
               <span key={l} className="block overflow-hidden pb-[0.06em]">
                 <span className={`wp-line block ${i === 2 ? "italic text-walnut" : ""}`} style={{ animationDelay: `${0.12 + i * 0.12}s` }}>
