@@ -48,9 +48,9 @@ export function InstallCard({ lang = "fr" }: { lang?: "fr" | "en" }) {
   };
 
   return (
-    <div className="mt-8 flex items-center gap-4 rounded-xl3 bg-night p-5 text-bone">
+    <div className="mt-8 flex items-center gap-4 bg-night p-5 text-bone sm:p-6">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/icon-192.png" alt="" className="h-14 w-14 shrink-0 rounded-2xl" />
+      <img src="/icon-192.png" alt="" className="h-12 w-12 shrink-0" />
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{fr ? "Wishpot sur ton téléphone" : "Wishpot on your phone"}</p>
         <p className="mt-0.5 text-sm text-bone/70">
@@ -69,7 +69,7 @@ export function InstallCard({ lang = "fr" }: { lang?: "fr" | "en" }) {
             await evt.prompt();
             setHidden(true);
           }}
-          className="btn shrink-0 bg-bone !px-5 !py-2.5 text-ink hover:bg-white"
+          className="btn shrink-0 bg-bone !px-5 !py-2.5 text-[11px] uppercase tracking-label text-ink hover:bg-white"
         >
           {fr ? "Installer" : "Install"}
         </button>
