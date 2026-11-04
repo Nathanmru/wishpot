@@ -99,3 +99,5 @@ supabase/schema.sql     Tables + sécurité (chacun ne voit que ses cagnottes)
 - Vote / priorité sur les objets, catégories par pièce ou par étape du voyage
 - Page publique partageable en lecture seule (liste de pendaison de crémaillère)
 - Comparateur de prix sur un même objet
+
+_Wishpot — la cagnotte déco à plusieurs, pièce par pièce._
