@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { HOME_HERO, NICHE, TRAVEL_HERO, TRENDS } from "@/lib/inspiration";
+import { HOME_HERO, TRENDS } from "@/lib/inspiration";
+import { CATALOG_ROOMS } from "@/lib/catalog";
 
 type Lang = "fr" | "en";
 
@@ -7,16 +8,16 @@ const COPY = {
   fr: {
     kicker: "Le carnet d'inspiration",
     title: "Pas encore d'idée ? Commencez par rêver.",
-    sub: "Deux pages mises à jour avec la saison : les tendances déco et de vrais meubles à acheter, des voyages encore préservés et les grands classiques.",
-    home: { label: "Maison & déco", title: "Les tendances 2026", cta: "Voir les tendances" },
-    travel: { label: "Voyage", title: "Où partir en 2026", cta: "Voir les destinations" },
+    sub: "Les tendances déco de la saison, et tout le catalogue rangé pièce par pièce : de vraies pièces à ajouter en un geste.",
+    home: { label: "Inspiration", title: "Les tendances 2026", cta: "Voir les tendances" },
+    travel: { label: "Le catalogue", title: "Toute la maison", cta: "Parcourir" },
   },
   en: {
     kicker: "The inspiration book",
     title: "No idea yet? Start by dreaming.",
-    sub: "Two seasonal pages: decor trends with real pieces to buy, off-the-beaten-track trips and the great classics.",
-    home: { label: "Home & decor", title: "2026 trends", cta: "See the trends" },
-    travel: { label: "Travel", title: "Where to go in 2026", cta: "See destinations" },
+    sub: "This season's decor trends, and the whole catalogue sorted room by room.",
+    home: { label: "Inspiration", title: "2026 trends", cta: "See the trends" },
+    travel: { label: "The catalogue", title: "The whole home", cta: "Browse" },
   },
 };
 
@@ -31,10 +32,10 @@ export default function InspirationDoors({ lang = "fr", compact = false }: { lan
       tags: TRENDS.map((t) => t.title),
     },
     {
-      href: "/inspiration/voyage",
-      img: TRAVEL_HERO,
+      href: "/catalogue",
+      img: CATALOG_ROOMS[1].img,
       ...c.travel,
-      tags: NICHE.slice(0, 4).map((d) => d.name),
+      tags: CATALOG_ROOMS.slice(0, 5).map((r) => (lang === "fr" ? r.fr : r.en)),
     },
   ];
 
