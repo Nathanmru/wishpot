@@ -45,8 +45,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           avatar={avatar}
           initial={firstName.slice(0, 1).toUpperCase() || "?"}
           labels={{
-            home: fr ? "Maison" : "Home",
-            travel: fr ? "Voyage" : "Travel",
+            home: fr ? "Catalogue" : "Catalogue",
+            travel: fr ? "Inspiration" : "Inspiration",
             myPots: t.myPots,
             newPot: fr ? "Nouvelle cagnotte" : "New pot",
             login: t.login,
@@ -64,7 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
               <Link href="/inspiration/maison" className="hover:opacity-60">{fr ? "Tendances maison" : "Home trends"}</Link>
-              <Link href="/inspiration/voyage" className="hover:opacity-60">{fr ? "Idées de voyage" : "Travel ideas"}</Link>
+              <Link href="/catalogue" className="hover:opacity-60">{fr ? "Le catalogue" : "The catalogue"}</Link>
               <Link href="/dashboard" className="hover:opacity-60">{t.myPots}</Link>
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
