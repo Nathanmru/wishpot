@@ -41,9 +41,10 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
   if (cat) query = query.eq("category", cat);
   for (const w of q.split(" ").filter((x) => x.length > 1).slice(0, 5)) query = query.ilike("search", `%${w}%`);
   if (max) query = query.lte("price", max);
-  query = tri === "prix" ? query.order("price", { ascending: true }) : tri === "prix-desc" ? query.order("price", { ascending: false }) : query.order("category").order("id");
-  const { data, count } = await query.range(0, limit - 1);
-  const products = (data ?? []) as Product[];
+  query = tri === "prix" ? query.order("price", { ascending: true }) : tri === "prix-desc" ? query.order("price", { ascending: false }) : query.order("id", { ascending: false });
+  const { data, count } = await query.range(0, tri === "selection" ? 799 : limit - 1);
+  // « Sélection » : on alterne les familles et les enseignes pour une vitrine variée
+  const products = (tri === "selection" ? mix((data ?? []) as Product[]) : ((data ?? []) as Product[])).slice(0, limit);
   const total = count ?? products.length;
 
   // Les cagnottes de l'utilisateur (maison uniquement)
@@ -262,4 +263,31 @@ function Chip({ href, active, label, meta }: { href: string; active: boolean; la
       {meta != null && <span className={`ml-1.5 text-xs ${active ? "text-white/60" : "text-muted"}`}>{meta}</span>}
     </Link>
   );
+}
+
+/** Alterne les familles (les essentiels d'abord) pour que la vitrine ne commence pas par 40 cadres. */
+function mix(list: Product[]) {
+  const groups = new Map<string, Product[]>();
+  for (const p of list) {
+    const g = groups.get(p.category) ?? [];
+    g.push(p);
+    groups.set(p.category, g);
+  }
+  // Dans chaque famille, on alterne aussi les enseignes
+  for (const [k, g] of groups) {
+    const byShop = new Map<string, Product[]>();
+    for (const p of g) byShop.set(p.shop, [...(byShop.get(p.shop) ?? []), p]);
+    const lanes = [...byShop.values()];
+    const out: Product[] = [];
+    for (let i = 0; out.length < g.length; i++) for (const l of lanes) if (l[i]) out.push(l[i]);
+    groups.set(k, out);
+  }
+  const order = ["assises", "luminaires", "tables", "tapis", "lits", "rangement", "deco", "textiles", "miroirs", "vaisselle", "plantes", "art"];
+  const keys = [...groups.keys()].sort((a, b) => (order.indexOf(a) + 99) % 99 - (order.indexOf(b) + 99) % 99);
+  const res: Product[] = [];
+  for (let i = 0; res.length < list.length; i++) for (const k of keys) {
+    const p = groups.get(k)![i];
+    if (p) res.push(p);
+  }
+  return res;
 }
