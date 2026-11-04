@@ -54,23 +54,33 @@ export default async function Dashboard() {
       {projects.length === 0 ? (
         <div className="py-16">
           <p className="display max-w-2xl text-4xl leading-tight sm:text-5xl">
-            {fr ? "Tout commence par une envie. Maison ou voyage ?" : "It all starts with a wish. Home or travel?"}
+            {fr ? "Tout commence par une pièce." : "It all starts with one room."}
           </p>
           <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {(["home", "travel"] as const).map((k) => (
-              <Link key={k} href={`/new?kind=${k}`} className="group relative block h-[420px] overflow-hidden bg-night text-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={cover(k, 1200)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-[1400ms] group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-8">
-                  <p className="caps text-white/70">{k === "home" ? t.homeDesc : t.travelDesc}</p>
-                  <p className="display mt-3 text-5xl">{k === "home" ? t.home : t.travel}</p>
-                  <span className="caps mt-6 inline-flex items-center gap-2 border-b border-white/60 pb-0.5">
-                    {t.start} <span aria-hidden>→</span>
-                  </span>
-                </div>
-              </Link>
-            ))}
+            <Link href="/new" className="group relative block h-[420px] overflow-hidden bg-night text-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={cover("home", 1200)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-[1400ms] group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-8">
+                <p className="caps text-white/70">{fr ? "Appartement, maison" : "Flat, house"}</p>
+                <p className="display mt-3 text-5xl">{fr ? "Créer ma cagnotte" : "Create my pot"}</p>
+                <span className="caps mt-6 inline-flex items-center gap-2 border-b border-white/60 pb-0.5">
+                  {t.start} <span aria-hidden>→</span>
+                </span>
+              </div>
+            </Link>
+            <Link href="/composer" className="group relative block h-[420px] overflow-hidden bg-night text-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1200&q=75" alt="" className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-[1400ms] group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-8">
+                <p className="caps text-white/70">{fr ? "Une pièce, un budget" : "One room, one budget"}</p>
+                <p className="display mt-3 text-5xl">{fr ? "Composer une pièce" : "Plan a room"}</p>
+                <span className="caps mt-6 inline-flex items-center gap-2 border-b border-white/60 pb-0.5">
+                  {fr ? "Essayer" : "Try it"} <span aria-hidden>→</span>
+                </span>
+              </div>
+            </Link>
           </div>
         </div>
       ) : (
