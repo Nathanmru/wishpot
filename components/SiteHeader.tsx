@@ -50,7 +50,7 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
         </Link>
 
         <nav className="flex flex-1 items-center justify-end gap-5 sm:gap-7">
-          <Link href="/catalogue" className={`${link} md:hidden`}>{lang === "fr" ? "Dénicher" : "Find"}</Link>
+          <Link href="/catalogue" className={`${link} hidden sm:inline md:hidden`}>{lang === "fr" ? "Dénicher" : "Find"}</Link>
           <Link href="/selection" aria-label={lang === "fr" ? "Ma sélection" : "My picks"} className="relative flex items-center gap-2 transition-opacity hover:opacity-60">
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill={saved.length ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.5">
               <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
@@ -79,7 +79,7 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
               </form>
             </>
           ) : (
-            <Link href="/login" className={link}>{labels.login}</Link>
+            <Link href="/login" className={`${link} whitespace-nowrap`}>{labels.login}</Link>
           )}
         </nav>
       </div>
