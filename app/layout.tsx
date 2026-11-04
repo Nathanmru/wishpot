@@ -7,6 +7,8 @@ import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import SiteHeader from "@/components/SiteHeader";
 import { RegisterSW } from "@/components/AppInstall";
+import { ShopStateProvider } from "@/components/ShopState";
+import CompareBar from "@/components/CompareBar";
 import { Analytics } from "@vercel/analytics/next";
 
 const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-display", display: "swap" });
@@ -36,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang} className={`${display.variable} ${sans.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <ShopStateProvider signedIn={!!user} fr={fr}>
         <RegisterSW />
         <Analytics />
         <SiteHeader
@@ -64,7 +67,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
               <Link href="/inspiration/maison" className="hover:opacity-60">{fr ? "Tendances maison" : "Home trends"}</Link>
-              <Link href="/catalogue" className="hover:opacity-60">{fr ? "Le catalogue" : "The catalogue"}</Link>
+              <Link href="/catalogue" className="hover:opacity-60">{fr ? "Dénicher une pièce" : "Find a piece"}</Link>
+              <Link href="/selection" className="hover:opacity-60">{fr ? "Ma sélection" : "My picks"}</Link>
+              <Link href="/aide-deco" className="hover:opacity-60">{fr ? "Aide déco" : "Decor guide"}</Link>
               <Link href="/dashboard" className="hover:opacity-60">{t.myPots}</Link>
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
@@ -81,6 +86,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             {t.affiliateNote} © {new Date().getFullYear()} {APP_NAME}
           </div>
         </footer>
+        <CompareBar fr={fr} />
+        </ShopStateProvider>
       </body>
     </html>
   );
