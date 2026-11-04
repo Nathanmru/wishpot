@@ -16,7 +16,7 @@ type Props = {
 
 export default function SiteHeader({ appName, lang, signedIn, avatar, initial, labels }: Props) {
   const path = usePathname();
-  const immersive = path.startsWith("/inspiration") || path.startsWith("/l/") || path.startsWith("/p/");
+  const immersive = path.startsWith("/inspiration") || path.startsWith("/aide-deco") || path.startsWith("/l/") || path.startsWith("/p/");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
         <nav className="hidden flex-1 items-center gap-7 md:flex">
           <Link href="/catalogue" className={link}>{labels.home}</Link>
           <Link href="/composer" className={link}>{lang === "fr" ? "Composer" : "Plan a room"}</Link>
-          <Link href="/inspiration/maison" className={link}>{labels.travel}</Link>
+          <Link href="/aide-deco" className={link}>{lang === "fr" ? "Aide déco" : "Decor guide"}</Link>
         </nav>
 
         <Link href={signedIn ? "/dashboard" : "/"} aria-label={appName} className="font-display text-2xl uppercase tracking-[0.22em] sm:text-[1.9rem]">
