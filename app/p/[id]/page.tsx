@@ -261,7 +261,7 @@ export default async function ProjectPage({
             currency={cur}
             t={{
               addTitle: fr ? "Ajouter une envie" : "Add a wish",
-              pasteLink: fr ? "Collez le lien d'un produit, d'un hôtel…" : "Paste a product or hotel link…",
+              pasteLink: fr ? "Collez le lien d'un produit, de n'importe quelle boutique…" : "Paste a product link from any shop…",
               fetch: fr ? "Ajouter" : "Add",
               fetching: fr ? "Lecture…" : "Reading…",
               orManual: fr ? "Saisir à la main" : "Enter manually",
@@ -274,6 +274,25 @@ export default async function ProjectPage({
               fetchError: t.fetchError,
             }}
           />
+
+          {p.kind !== "travel" && (
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <Link href={`/catalogue?pot=${p.id}${activeRoom && activeRoom !== "none" ? `&piece=${activeRoom}` : ""}`} className="group flex items-center justify-between bg-night px-6 py-5 text-bone transition hover:bg-ink">
+                <span>
+                  <span className="caps block text-bone/50">{fr ? "Le catalogue" : "The catalogue"}</span>
+                  <span className="display mt-1 block text-2xl">{fr ? "Piocher pièce par pièce" : "Browse room by room"}</span>
+                </span>
+                <span aria-hidden className="text-2xl transition group-hover:translate-x-1">→</span>
+              </Link>
+              <Link href="/composer" className="group flex items-center justify-between border border-ink/20 px-6 py-5 transition hover:border-ink">
+                <span>
+                  <span className="caps block text-muted">{fr ? "Une pièce, un budget" : "One room, one budget"}</span>
+                  <span className="display mt-1 block text-2xl">{fr ? "Composer une pièce" : "Plan a room"}</span>
+                </span>
+                <span aria-hidden className="text-2xl transition group-hover:translate-x-1">→</span>
+              </Link>
+            </div>
+          )}
 
           {list.length === 0 ? (
             <div className="py-20 text-center">
