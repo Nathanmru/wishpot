@@ -143,7 +143,7 @@ function Tile({ item, fr, className = "", big = false }: { item: BoardItem; fr: 
         alt={item.title}
         loading="lazy"
         referrerPolicy="no-referrer"
-        className={`absolute inset-0 h-full w-full transition duration-700 group-hover:scale-105 ${big ? "object-cover" : "object-contain p-3 mix-blend-multiply"}`}
+        className={`absolute inset-0 h-full w-full transition duration-700 group-hover:scale-105 ${big ? "object-contain p-6 mix-blend-multiply" : "object-contain p-3 mix-blend-multiply"}`}
       />
       <span className="absolute bottom-2 left-2 bg-paper/90 px-2 py-1 text-[10px] uppercase tracking-label text-ink">
         {item.shop} · {eur(item.price, fr)}
