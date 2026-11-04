@@ -5,9 +5,11 @@ import { getUser } from "@/lib/supabase/server";
 import { PHOTOS, photo } from "@/lib/covers";
 import InspirationDoors from "@/components/InspirationDoors";
 import Composer from "@/components/Composer";
-import IntroCurtain from "@/components/IntroCurtain";
-import { HeroDoors, Reveal, StackedPanels } from "@/components/Motion";
-import { ScrollWords, StorySlider, type Story } from "@/components/Luxe";
+import HeroArch from "@/components/HeroArch";
+import HowItWorks from "@/components/HowItWorks";
+import { Reveal } from "@/components/Motion";
+import { StorySlider, type Story } from "@/components/Luxe";
+import { TRENDS } from "@/lib/inspiration";
 
 const ROAD = "https://images.unsplash.com/photo-1468818438311-4bab781ab9b8?auto=format&fit=crop&w=1000&q=75";
 
@@ -15,34 +17,22 @@ const newHref = (kind: "home" | "travel", name: string) => `/new?${new URLSearch
 
 const COPY = {
   fr: {
-    doorL: { label: "Maison", title: "Maison", cta: "Meubler un intérieur" },
-    doorR: { label: "Voyage", title: "Voyage", cta: "Préparer un départ" },
-    hint: "Faites défiler",
-    headline: "Le beau se prépare à plusieurs.",
-    sub: "Une liste d'envies, un budget par mois, une date d'arrivée. Pour meubler votre intérieur ou partir loin, à deux ou entre amis.",
-    cta1: "Essayer sans compte",
+    kicker: "Cagnottes partagées · Maison & voyage",
+    lines: ["Le beau se prépare", "à plusieurs."],
+    sub: "Listez vos envies, décidez ce que chacun met de côté chaque mois : Wishpot vous dit quand vous pourrez vous les offrir.",
+    cta1: "Faire l'essai sans compte",
     cta2: "Créer ma cagnotte",
-    manifestoKicker: "Le principe",
-    manifesto:
-      "Un canapé repéré un dimanche, une villa au bord de l'eau, un premier appartement. Vous choisissez ce qui vous fait envie, chacun décide ce qu'il met de côté, et la date d'arrivée se rapproche à chaque versement.",
+    sceneHome: { word: "Maison", caption: "Maison & déco" },
+    sceneTravel: { word: "Voyage", caption: "Voyages" },
+    openTitle: "Un intérieur ou un ailleurs.",
+    openText: "Une cagnotte pour l'un ou pour l'autre, à deux, en famille ou entre amis.",
+    openLink: "Voir les inspirations",
     howKicker: "Comment ça marche",
-    howTitle: "Trois gestes, pas un de plus.",
-    panels: [
-      {
-        title: "Rêvez grand. Visez juste.",
-        text: "Nommez le projet, fixez ce que chacun met de côté chaque mois. Wishpot calcule la date à laquelle vous y serez.",
-        caption: "L'objectif",
-      },
-      {
-        title: "Repérez. Collez. C'est noté.",
-        text: "Collez le lien d'un fauteuil ou d'un hôtel : la photo, le nom et le prix s'ajoutent, et la liste prend des airs de moodboard.",
-        caption: "La liste",
-      },
-      {
-        title: "Arrivez-y ensemble.",
-        text: "Un lien suffit pour inviter votre moitié ou vos amis. Chaque versement fait avancer la jauge, pour tout le monde.",
-        caption: "Le cercle",
-      },
+    howTitle: "Trois étapes, c'est tout.",
+    steps: [
+      { title: "Créez la cagnotte", text: "Donnez-lui un nom et dites combien chacun met de côté chaque mois. La date d'arrivée se calcule toute seule." },
+      { title: "Ajoutez vos envies", text: "Collez le lien d'un canapé ou d'un hôtel : la photo, le nom et le prix s'ajoutent. Ou piochez dans nos idées." },
+      { title: "Épargnez ensemble", text: "Invitez avec un lien. Chacun indique ce qu'il a mis de côté et la jauge avance pour tout le monde. L'argent reste sur vos comptes." },
     ],
     storiesKicker: "Pensé pour",
     storiesTitle: "Chaque projet a sa cagnotte.",
@@ -70,25 +60,25 @@ const COPY = {
     ],
     finalTitle: "Commencez par une seule envie.",
     finalCta: "Créer ma cagnotte",
-    finalAlt: "ou essayer sans compte",
+    finalAlt: "ou faire l'essai sans compte",
   },
   en: {
-    doorL: { label: "Home", title: "Home", cta: "Furnish a home" },
-    doorR: { label: "Travel", title: "Travel", cta: "Plan a trip" },
-    hint: "Scroll",
-    headline: "Beautiful things, saved for together.",
-    sub: "A wish list, a monthly budget, an arrival date. To furnish your home or travel far, as a couple or with friends.",
-    cta1: "Try without an account",
+    kicker: "Shared pots · Home & travel",
+    lines: ["Beautiful things,", "saved for together."],
+    sub: "List what you love, decide what each of you sets aside every month: Wishpot tells you when you can treat yourselves.",
+    cta1: "Try it without an account",
     cta2: "Create my pot",
-    manifestoKicker: "The idea",
-    manifesto:
-      "A sofa spotted on a Sunday, a villa by the water, a first flat. You choose what you love, each of you decides what to set aside, and the arrival date gets closer with every deposit.",
+    sceneHome: { word: "Home", caption: "Home & decor" },
+    sceneTravel: { word: "Travel", caption: "Travel" },
+    openTitle: "A home, or somewhere else.",
+    openText: "One pot for either, as a couple, a family or friends.",
+    openLink: "See the inspiration",
     howKicker: "How it works",
-    howTitle: "Three steps, no more.",
-    panels: [
-      { title: "Dream big. Aim true.", text: "Name the plan and set what each of you saves per month. Wishpot works out when you'll get there.", caption: "The goal" },
-      { title: "Spot it. Paste it. Done.", text: "Paste the link to an armchair or a hotel: photo, name and price appear, and the list looks like a moodboard.", caption: "The list" },
-      { title: "Get there together.", text: "One link invites your partner or friends. Every deposit moves the gauge, for everyone.", caption: "The circle" },
+    howTitle: "Three steps, that's all.",
+    steps: [
+      { title: "Create the pot", text: "Name it and say how much each of you saves per month. The arrival date is worked out for you." },
+      { title: "Add your wishes", text: "Paste the link to a sofa or a hotel: photo, name and price appear. Or pick from our ideas." },
+      { title: "Save together", text: "Invite with a link. Everyone logs what they set aside and the gauge moves for all. The money stays in your accounts." },
     ],
     storiesKicker: "Made for",
     storiesTitle: "Every project has its pot.",
@@ -126,46 +116,31 @@ export default async function Home() {
   if (user) redirect("/dashboard");
   const c = COPY[lang];
 
-  const panelImgs = [PHOTOS.positano, PHOTOS.parisSalon, PHOTOS.terrace];
-
   return (
     <div className="-mt-24 sm:-mt-28">
-      <IntroCurtain />
-
-      <HeroDoors
-        left={{ href: "/inspiration/maison", img: photo(PHOTOS.leather, 1400), ...c.doorL }}
-        right={{ href: "/inspiration/voyage", img: photo(PHOTOS.palmWindow, 1400), ...c.doorR }}
-        headline={c.headline}
+      <HeroArch
+        kicker={c.kicker}
+        lines={c.lines}
         sub={c.sub}
-        ctaPrimary={{ href: "#essai", label: c.cta1 }}
-        ctaSecondary={{ href: "/new", label: c.cta2 }}
-        hint={c.hint}
+        cta1={c.cta1}
+        cta2={c.cta2}
+        scenes={{
+          home: { img: photo(PHOTOS.parisSalon, 2000), href: "/inspiration/maison", ...c.sceneHome },
+          travel: { img: photo(PHOTOS.positano, 2000), href: "/inspiration/voyage", ...c.sceneTravel },
+        }}
+        openTitle={c.openTitle}
+        openText={c.openText}
+        openLink={c.openLink}
       />
 
-      {/* ---------- Le principe ---------- */}
-      <section className="mx-auto max-w-5xl py-28 sm:py-44">
-        <p className="caps text-muted">{c.manifestoKicker}</p>
-        <ScrollWords text={c.manifesto} className="display mt-8 text-[2rem] leading-[1.15] sm:text-5xl sm:leading-[1.12] lg:text-6xl" />
-      </section>
+      <HowItWorks kicker={c.howKicker} title={c.howTitle} steps={c.steps} fr={lang === "fr"} sofaImg={TRENDS[0].products[0].img} />
 
-      {/* ---------- Essai interactif ---------- */}
       <div className="border-t border-line">
         <Composer lang={lang} />
       </div>
 
-      {/* ---------- Comment ça marche ---------- */}
-      <section className="mx-[calc(50%-50vw)] bg-night px-6 pb-4 pt-24 text-bone sm:px-12 sm:pt-32">
-        <Reveal className="mx-auto max-w-6xl">
-          <p className="caps text-bone/60">{c.howKicker}</p>
-          <h2 className="display mt-4 text-5xl leading-[0.95] sm:text-7xl">{c.howTitle}</h2>
-        </Reveal>
-      </section>
-      <StackedPanels
-        panels={c.panels.map((p, i) => ({ ...p, img: photo(panelImgs[i], 2000), align: i === 1 ? "right" : "left" }))}
-      />
-
       {/* ---------- Pensé pour ---------- */}
-      <section className="py-24 sm:py-36">
+      <section className="border-t border-line py-24 sm:py-36">
         <Reveal className="grid gap-6 md:grid-cols-2 md:items-end">
           <div>
             <p className="caps text-muted">{c.storiesKicker}</p>
