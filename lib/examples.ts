@@ -41,7 +41,7 @@ export const EXAMPLE_POTS: ExamplePot[] = [
       { id: 2870, role: { fr: "Le bois qui répond", en: "Matching wood" } },
       { id: 939, role: { fr: "La matière douce", en: "Soft texture" } },
       { id: 3869, role: { fr: "La lumière", en: "The light" } },
-      { id: 5340, role: { fr: "La touche de couleur", en: "A touch of colour" } },
+      { id: 1392, role: { fr: "La touche de couleur", en: "A touch of colour" } },
     ],
   },
   {
@@ -50,8 +50,8 @@ export const EXAMPLE_POTS: ExamplePot[] = [
     title: { fr: "La chambre lin & terracotta", en: "The linen & terracotta bedroom" },
     mood: { fr: "Bohème apaisé", en: "Calm boho" },
     why: {
-      fr: "Le lin lavé terracotta réchauffe, le rotin et le chêne restent dans les tons miel, et le laiton du miroir accroche la lumière.",
-      en: "Washed terracotta linen adds warmth, rattan and oak stay honey-toned, and the brass mirror catches the light.",
+      fr: "L'édredon terre brûlée réchauffe, le rotin et le chêne restent dans les tons miel, le papier de riz adoucit la lumière et le miroir doré l'accroche.",
+      en: "A burnt-earth quilt adds warmth, rattan and oak stay honey-toned, rice paper softens the light and the gilded mirror catches it.",
     },
     palette: [
       { hex: "#B8623E", fr: "Terracotta", en: "Terracotta" },
@@ -64,11 +64,11 @@ export const EXAMPLE_POTS: ExamplePot[] = [
     people: 2,
     items: [
       { id: 3576, role: { fr: "La tête de lit chinée", en: "Vintage headboard" } },
-      { id: 356, role: { fr: "Le linge lavé", en: "Washed linen" } },
+      { id: 1754, role: { fr: "L'édredon", en: "The quilt" } },
       { id: 1812, role: { fr: "Le motif", en: "The pattern" } },
-      { id: 4891, role: { fr: "Le chevet", en: "Bedside" } },
-      { id: 441, role: { fr: "La suspension", en: "Pendant" } },
-      { id: 395, role: { fr: "Le reflet", en: "The reflection" } },
+      { id: 6579, role: { fr: "Le chevet", en: "Bedside" } },
+      { id: 6798, role: { fr: "La suspension", en: "Pendant" } },
+      { id: 4075, role: { fr: "Le reflet", en: "The reflection" } },
     ],
   },
   {
@@ -77,8 +77,8 @@ export const EXAMPLE_POTS: ExamplePot[] = [
     title: { fr: "La salle à manger sauge & chêne", en: "The sage & oak dining room" },
     mood: { fr: "Maison de campagne", en: "Country house" },
     why: {
-      fr: "Une table en chêne des années 50 et un buffet ancien pour la patine, des chaises vert sauge pour la fraîcheur, la vaisselle mousse en écho.",
-      en: "A 1950s oak table and an old sideboard for patina, sage chairs for freshness, moss-green plates as an echo.",
+      fr: "Une table en chêne des années 50 et un buffet ancien pour la patine, des chaises vert sauge pour la fraîcheur, une soupière en céramique verte en écho.",
+      en: "A 1950s oak table and an old sideboard for patina, sage chairs for freshness, a green ceramic tureen as an echo.",
     },
     palette: [
       { hex: "#8C9A76", fr: "Sauge", en: "Sage" },
@@ -93,8 +93,8 @@ export const EXAMPLE_POTS: ExamplePot[] = [
       { id: 2932, role: { fr: "La table chinée", en: "Vintage table" } },
       { id: 1855, qty: 4, role: { fr: "Les chaises", en: "The chairs" } },
       { id: 3124, role: { fr: "Le buffet", en: "The sideboard" } },
-      { id: 443, role: { fr: "La suspension", en: "Pendant" } },
-      { id: 5784, qty: 6, role: { fr: "La vaisselle", en: "Tableware" } },
+      { id: 6162, role: { fr: "La suspension", en: "Pendant" } },
+      { id: 1323, role: { fr: "La touche verte", en: "A touch of green" } },
     ],
   },
 ];
