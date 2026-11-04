@@ -19,7 +19,7 @@ export default function GoogleButton({ next, label }: { next: string; label: str
     <button
       onClick={signIn}
       disabled={loading}
-      className="btn w-full gap-3 border border-line bg-white !py-3.5 text-base text-ink shadow-soft hover:border-ink/40 hover:shadow-lift"
+      className="btn w-full gap-3 border border-ink bg-white !py-4 text-[12px] uppercase tracking-label text-ink hover:bg-ink hover:text-white"
     >
       <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden>
         <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
