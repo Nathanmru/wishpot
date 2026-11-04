@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Wishpot — la cagnotte à plusieurs",
-    short_name: "Wishpot",
+    name: "Maison Piécette — la cagnotte déco",
+    short_name: "Piécette",
     description: "La cagnotte à plusieurs pour meubler et décorer votre appartement ou votre maison.",
     start_url: "/dashboard",
     scope: "/",
@@ -16,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
       { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
-    // « Partager vers Wishpot » depuis une autre appli (Android)
+    // « Partager vers Maison Piécette » depuis une autre appli (Android)
     share_target: {
       action: "/share",
       method: "GET",
