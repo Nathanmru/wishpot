@@ -5,7 +5,9 @@ import { getUser } from "@/lib/supabase/server";
 import { photo } from "@/lib/covers";
 import { CATALOG_ROOMS, STYLES } from "@/lib/catalog";
 import { EXAMPLE_POTS, exampleIds } from "@/lib/examples";
-import HeroDecor from "@/components/HeroDecor";
+import ProductStrip from "@/components/ProductStrip";
+import HeroRoom from "@/components/HeroRoom";
+import { APP_NAME } from "@/lib/config";
 import HowItWorks from "@/components/HowItWorks";
 import RoomPlanner from "@/components/RoomPlanner";
 import ExamplePots, { type Board } from "@/components/ExamplePots";
@@ -45,10 +47,32 @@ export default async function Home() {
   const fr = lang === "fr";
   const L = fr ? "fr" : "en";
 
-  const [{ data: fx }, { data: picks }] = await Promise.all([
+  const [{ data: fx }, { data: picks }, { data: gemsRaw }] = await Promise.all([
     supabase.rpc("catalog_facets", { p_room: null }),
     supabase.from("products").select("id, title, shop, price, image_url, url").in("id", exampleIds()),
+    supabase
+      .from("products")
+      .select("id, title, shop, price, image_url, url, category, niche")
+      .eq("active", true)
+      .eq("niche", true)
+      .in("category", ["assises", "luminaires", "deco", "tables", "miroirs", "tapis"])
+      .order("id", { ascending: false })
+      .limit(600),
   ]);
+
+  // Les pépites du jour : une pièce par maison et par famille, qui change chaque jour
+  const day = Math.floor(Date.now() / 86_400_000);
+  const pool = (gemsRaw ?? []).map((p) => ({ ...p, price: Number(p.price) })) as { id: number; title: string; shop: string; price: number; image_url: string; url: string; category: string; niche: boolean }[];
+  const rot = pool.length ? (day * 37) % pool.length : 0;
+  const gems: typeof pool = [];
+  const seen = new Set<string>();
+  for (const p of [...pool.slice(rot), ...pool.slice(0, rot)]) {
+    const k = `${p.shop}|${p.category}`;
+    if (seen.has(k) || gems.filter((g) => g.shop === p.shop).length >= 2) continue;
+    seen.add(k);
+    gems.push(p);
+    if (gems.length >= 12) break;
+  }
   const facets = (fx ?? { total: 0, rooms: {}, shops: {}, styles: {} }) as { total: number; rooms: Record<string, number>; shops: Record<string, number>; styles: Record<string, number> };
   const shops = Object.entries(facets.shops).sort((a, b) => b[1] - a[1]);
 
@@ -88,14 +112,14 @@ export default async function Home() {
 
   const faq = fr
     ? [
-        ["À quoi sert Wishpot ?", "À transformer une envie de déco en projet concret : vous choisissez les pièces, Wishpot calcule le budget et ce qu'il faut épargner chaque mois pour y arriver, seul ou à plusieurs."],
+        ["À quoi sert Maison Piécette ?", "À transformer une envie de déco en projet concret : vous choisissez les pièces, Maison Piécette calcule le budget et ce qu'il faut épargner chaque mois pour y arriver, seul ou à plusieurs."],
         ["L'argent passe-t-il par le site ?", "Non. Chacun garde son argent : le site sert à se fixer un objectif et à suivre ce que vous avez mis de côté."],
         ["D'où viennent les produits ?", `De ${shops.length} maisons : grandes enseignes, éditeurs de design, petites marques et brocanteurs en ligne. Les prix sont relevés à date ; le lien mène toujours à la fiche de la boutique.`],
         ["Je peux ajouter un objet qui n'est pas dans le catalogue ?", "Oui : collez le lien de n'importe quelle boutique, ou créez votre propre objet avec un nom et un prix. Une pièce chinée, un artisan, tout y va."],
         ["C'est vraiment gratuit ?", "Oui. Certains liens vers les boutiques sont affiliés : un achat peut nous rémunérer, sans rien vous coûter de plus."],
       ]
     : [
-        ["What is Wishpot for?", "Turning a decor wish into a real plan: you pick the pieces, Wishpot works out the budget and what to save each month, alone or together."],
+        ["What is Maison Piécette for?", "Turning a decor wish into a real plan: you pick the pieces, Maison Piécette works out the budget and what to save each month, alone or together."],
         ["Does money go through the site?", "No. Everyone keeps their own money: the site sets the goal and tracks what you've saved."],
         ["Where do products come from?", `From ${shops.length} brands: big retailers, design editors, small makers and online vintage dealers. Prices are collected at a date; links go to the shop's page.`],
         ["Can I add something that isn't in the catalogue?", "Yes: paste a link from any shop, or create your own item with a name and price."],
@@ -104,13 +128,116 @@ export default async function Home() {
 
   return (
     <div className="-mt-24 sm:-mt-28">
-      <HeroDecor
-        fr={fr}
-        total={facets.total}
-        shops={shops.length}
-        photos={{ main: photo(MOOD.armchair, 1600), side: photo(MOOD.cognacSofa, 800), detail: photo(MOOD.tufted, 300) }}
-        sample={sample}
-      />
+      <HeroRoom name={APP_NAME} fr={fr} />
+
+      {/* ---------- Deux façons de s'en servir ---------- */}
+      <section id="cagnotte" className="scroll-mt-20 py-20 sm:py-28">
+        <Reveal className="text-center">
+          <p className="caps text-muted">{fr ? "Deux façons de faire" : "Two ways to use it"}</p>
+          <h2 className="display mx-auto mt-4 max-w-3xl text-5xl leading-[0.95] sm:text-7xl">
+            {fr ? "Dénicher une pièce, ou préparer tout un projet." : "Find one piece, or plan a whole project."}
+          </h2>
+        </Reveal>
+        <div className="mt-14 grid gap-4 lg:grid-cols-2 lg:gap-6">
+          {/* 1 · Dénicher */}
+          <div className="flex flex-col bg-white p-7 sm:p-10">
+            <p className="caps text-muted">01 · {fr ? "Je cherche une pièce" : "I'm looking for a piece"}</p>
+            <p className="display mt-4 text-4xl leading-[1] sm:text-5xl">{fr ? "Dénicher." : "Find."}</p>
+            <p className="mt-4 max-w-md leading-relaxed text-muted">
+              {fr
+                ? `${facets.total.toLocaleString("fr-FR")} pièces de ${shops.length} maisons réunies au même endroit, neuves ou chinées. Triez par style, couleur ou budget, comparez, puis achetez directement chez la boutique.`
+                : `${facets.total} pieces from ${shops.length} brands in one place. Filter by style, colour or budget, compare, then buy from the shop.`}
+            </p>
+            <form action="/catalogue" className="mt-7 flex items-center gap-2 border border-ink bg-paper p-1.5 pl-4">
+              <span aria-hidden className="text-muted">⌕</span>
+              <input name="q" placeholder={fr ? "Un fauteuil en cuir, une lampe laiton…" : "A leather armchair, a brass lamp…"} className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] outline-none placeholder:text-muted" />
+              <button className="btn-primary !px-5 !py-2.5 text-[11px] uppercase tracking-label">{fr ? "Chercher" : "Search"}</button>
+            </form>
+            <ul className="mt-6 grid grid-cols-3 gap-3 text-sm">
+              {[
+                [fr ? "Comparer" : "Compare", fr ? "Jusqu'à 4 pièces côte à côte" : "Up to 4 side by side"],
+                [fr ? "Garder ♡" : "Save ♡", fr ? "Sur votre compte Google" : "On your Google account"],
+                [fr ? "Acheter" : "Buy", fr ? "Directement en boutique" : "Straight from the shop"],
+              ].map(([t, d]) => (
+                <li key={t} className="border-t border-line pt-3">
+                  <p className="font-medium">{t}</p>
+                  <p className="text-xs text-muted">{d}</p>
+                </li>
+              ))}
+            </ul>
+            <Link href="/catalogue" className="link-caps mt-auto self-start pt-8">
+              {fr ? "Ouvrir le catalogue" : "Open the catalogue"} →
+            </Link>
+          </div>
+
+          {/* 2 · Cagnotte */}
+          <div className="flex flex-col bg-night p-7 text-bone sm:p-10">
+            <p className="caps text-bone/60">02 · {fr ? "Je prépare un projet" : "I'm planning a project"}</p>
+            <p className="display mt-4 text-4xl leading-[1] sm:text-5xl">{fr ? "Créer une cagnotte." : "Start a pot."}</p>
+            <p className="mt-4 max-w-md leading-relaxed text-bone/70">
+              {fr
+                ? "Réunissez toutes les pièces d'un projet, un salon, une chambre, un premier appart. On calcule ce qu'il faut mettre de côté chaque mois, seul ou à plusieurs, et la date où vous pourrez tout vous offrir."
+                : "Gather every piece of a project. We work out what to set aside each month, alone or together, and when you'll get there."}
+            </p>
+            {sample && (
+              <div className="mt-7 bg-bone/[0.06] p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="display text-2xl leading-tight">{sample.title}</p>
+                  <div className="flex -space-x-3">
+                    {sample.items.slice(0, 4).map((x, k) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={k} src={x.image_url} alt="" referrerPolicy="no-referrer" className="h-11 w-11 rounded-full border-2 border-night bg-white object-contain" />
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-bone/10">
+                  <div className="h-full w-[38%] rounded-full bg-brass" />
+                </div>
+                <div className="mt-3 flex justify-between text-sm">
+                  <span>
+                    <b className="font-medium">{sample.monthly}</b>
+                    <span className="text-bone/60"> / {fr ? "mois à deux" : "mo for two"}</span>
+                  </span>
+                  <span className="text-bone/60">
+                    {sample.total} · {sample.months} {fr ? "mois" : "mo"}
+                  </span>
+                </div>
+              </div>
+            )}
+            <div className="mt-auto flex flex-wrap items-center gap-5 pt-8">
+              <Link href="/new" className="btn bg-bone !px-7 !py-4 text-[11px] uppercase tracking-label text-ink hover:bg-white">
+                {fr ? "Créer ma cagnotte" : "Create my pot"}
+              </Link>
+              <Link href="#exemples" className="caps border-b border-bone/40 pb-0.5 text-bone/80 hover:text-bone">
+                {fr ? "Voir des exemples" : "See examples"}
+              </Link>
+            </div>
+          </div>
+        </div>
+        <p className="mt-6 text-center text-sm text-muted">
+          {fr
+            ? "Vous pouvez passer de l'un à l'autre à tout moment : une pièce gardée ou comparée s'ajoute à une cagnotte en un geste."
+            : "Switch any time: a saved or compared piece goes into a pot in one tap."}
+        </p>
+      </section>
+
+      {/* ---------- Les pépites du jour ---------- */}
+      {gems.length > 0 && (
+        <section className="border-t border-line py-20 sm:py-28">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="caps text-muted">{fr ? "Les pépites du jour" : "Today's gems"}</p>
+              <h2 className="display mt-4 text-5xl leading-[0.95] sm:text-6xl">{fr ? "Ce que personne d'autre n'aura." : "What nobody else will have."}</h2>
+            </div>
+            <Link href="/catalogue?pepites=1" className="link-caps">
+              {fr ? "Toutes les pépites" : "All gems"} →
+            </Link>
+          </Reveal>
+          <div className="mt-12">
+            <ProductStrip items={gems} fr={fr} />
+          </div>
+        </section>
+      )}
 
       {/* ---------- Comment ça marche ---------- */}
       <HowItWorks
@@ -260,12 +387,12 @@ export default async function Home() {
             {(fr
               ? [
                   ["Gratuit", "Créer, inviter, partager : rien n'est payant."],
-                  ["Votre argent reste chez vous", "Rien ne transite par Wishpot."],
+                  ["Votre argent reste chez vous", "Rien ne transite par Maison Piécette."],
                   ["Privé", "Seul votre cercle voit votre cagnotte."],
                 ]
               : [
                   ["Free", "Creating, inviting, sharing: nothing to pay."],
-                  ["Your money stays with you", "Nothing goes through Wishpot."],
+                  ["Your money stays with you", "Nothing goes through Maison Piécette."],
                   ["Private", "Only your circle sees your pot."],
                 ]
             ).map(([t, d]) => (
