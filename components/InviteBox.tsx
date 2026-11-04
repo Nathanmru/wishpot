@@ -33,22 +33,24 @@ export default function InviteBox({
   }
 
   return (
-    <section className="overflow-hidden rounded-xl2 bg-dusk p-5 text-white shadow-soft">
-      <h2 className="text-lg font-semibold">{t.invite}</h2>
-      <p className="mt-1 text-sm text-white/75">{t.inviteText}</p>
-      <div className="mt-4 truncate rounded-xl bg-white/10 px-3 py-2.5 text-xs text-white/85">{url}</div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button onClick={copy} className="btn bg-apricot text-ink hover:bg-white">{copied ? t.copied : t.copy}</button>
+    <section className="border border-line bg-white p-6 sm:p-8">
+      <p className="caps text-muted">{t.invite}</p>
+      <p className="mt-3 leading-relaxed">{t.inviteText}</p>
+      <p className="mt-5 truncate border-b border-line pb-2 text-sm text-muted">{url}</p>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <button onClick={copy} className="btn-primary !px-6 !py-3 text-[12px] uppercase tracking-label">
+          {copied ? t.copied : t.copy}
+        </button>
         {canShare && (
           <button
             onClick={() => navigator.share({ title: projectName, url }).catch(() => null)}
-            className="btn border border-white/25 text-white hover:bg-white/10"
+            className="btn-ghost !px-6 !py-3 text-[12px] uppercase tracking-label"
           >
             {t.share}
           </button>
         )}
         {canRegenerate && (
-          <button disabled={pending} onClick={() => start(() => regenerate())} className="ml-auto px-1 text-xs text-white/60 hover:text-white">
+          <button disabled={pending} onClick={() => start(() => regenerate())} className="ml-auto text-xs text-muted hover:text-ink">
             ↻ {t.newLink}
           </button>
         )}

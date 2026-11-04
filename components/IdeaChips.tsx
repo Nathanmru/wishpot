@@ -19,7 +19,7 @@ export default function IdeaChips({
   const [added, setAdded] = useState<string[]>([]);
 
   return (
-    <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+    <div className="mt-6 flex flex-wrap gap-2">
       {ideas.map((idea) => {
         const label = lang === "en" ? idea.en : idea.fr;
         const done = added.includes(idea.fr);
@@ -37,15 +37,12 @@ export default function IdeaChips({
                 setAdded((a) => [...a, idea.fr]);
               })
             }
-            className={`flex items-center gap-3 rounded-xl2 border p-3 text-left transition ${
-              done ? "border-moss/40 bg-moss-soft" : "border-line bg-white hover:border-ink/30 hover:shadow-soft"
+            className={`border px-4 py-2.5 text-sm transition ${
+              done ? "border-ink bg-ink text-white" : "border-line bg-white hover:border-ink"
             }`}
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-paper text-xl">{done ? "✓" : idea.emoji}</span>
-            <span className="min-w-0">
-              <span className="block truncate text-sm font-semibold">{label}</span>
-              <span className="text-xs text-muted">≈ {est}</span>
-            </span>
+            {done ? "✓ " : "+ "}
+            {label} <span className={done ? "text-white/60" : "text-muted"}>· ≈ {est}</span>
           </button>
         );
       })}

@@ -70,13 +70,20 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
   }
 
   return (
-    <section className="rounded-xl3 bg-ink p-5 text-white shadow-lift sm:p-7">
-      <h2 className="display text-3xl">{t.addTitle}</h2>
+    <section className="border-y border-line py-8 sm:py-10">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 className="display text-3xl sm:text-4xl">{t.addTitle}</h2>
+        {!draft && (
+          <button type="button" onClick={() => setDraft({ ...EMPTY })} className="caps text-muted underline-offset-4 hover:text-ink hover:underline">
+            {t.orManual}
+          </button>
+        )}
+      </div>
 
       {!draft ? (
         <>
           <form
-            className="mt-4 flex flex-col gap-2 sm:flex-row"
+            className="mt-6 flex items-center gap-4 border-b border-ink pb-2"
             onSubmit={(e) => {
               e.preventDefault();
               fetchLink();
@@ -95,9 +102,10 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
                 }
               }}
               placeholder={t.pasteLink}
-              className="w-full rounded-full border border-white/15 bg-white/10 px-5 py-3.5 text-base text-white outline-none transition placeholder:text-white/50 focus:border-apricot focus:bg-white/15"
+              aria-label={t.pasteLink}
+              className="min-w-0 flex-1 bg-transparent py-2 text-lg outline-none placeholder:text-muted/60"
             />
-            {!link && (
+            {!link && !loading && (
               <button
                 type="button"
                 onClick={async () => {
@@ -106,86 +114,83 @@ export default function AddItemForm({ projectId, currency, t }: { projectId: str
                     if (txt) fetchLink(txt);
                   } catch {}
                 }}
-                className="btn shrink-0 border border-white/25 !px-5 !py-3.5 text-white hover:bg-white/10"
+                className="caps shrink-0 text-muted hover:text-ink"
               >
                 Coller
               </button>
             )}
-            <button disabled={loading || !link} className="btn shrink-0 bg-apricot !px-6 !py-3.5 text-ink hover:bg-white">
-              {loading ? t.fetching : t.fetch}
+            <button disabled={loading || !link} className="caps shrink-0 disabled:opacity-40">
+              {loading ? t.fetching : `${t.fetch} →`}
             </button>
           </form>
-          <button type="button" onClick={() => setDraft({ ...EMPTY })} className="mt-3 text-sm text-white/60 underline-offset-4 hover:text-white hover:underline">
-            {t.orManual}
-          </button>
+          <p className="mt-3 text-sm text-muted">La photo, le nom et le prix sont récupérés tout seuls quand la boutique le permet.</p>
         </>
       ) : (
-        <form onSubmit={save} className="mt-5 rounded-xl2 bg-white p-4 text-ink sm:p-5">
-          <div className="flex gap-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              key={draft.image || draft.title}
-              src={draft.image || illustrationFor(draft.title || "")}
-              alt=""
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                const fb = illustrationFor(draft.title || "");
-                if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-              }}
-              className="h-28 w-28 shrink-0 rounded-xl border border-line object-cover"
-            />
-            <div className="min-w-0 flex-1 space-y-3">
-              {draft.site && <p className="text-xs font-medium text-muted">{draft.site}</p>}
-              <div>
-                <label className="label" htmlFor="it-title">{t.title}</label>
+        <form onSubmit={save} className="mt-8 grid gap-6 sm:grid-cols-[200px_1fr] sm:gap-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={draft.image || draft.title}
+            src={draft.image || illustrationFor(draft.title || "")}
+            alt=""
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const fb = illustrationFor(draft.title || "");
+              if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+            }}
+            className="aspect-[4/5] w-full bg-white object-cover sm:w-[200px]"
+          />
+          <div className="space-y-5">
+            {draft.site && <p className="caps text-muted">{draft.site}</p>}
+            <label className="block">
+              <span className="label">{t.title}</span>
+              <input
+                required
+                autoFocus={!draft.title}
+                value={draft.title}
+                onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                className="input-line text-lg"
+              />
+            </label>
+            <div className="grid grid-cols-[1fr_88px] gap-5">
+              <label className="block">
+                <span className="label">
+                  {t.price} ({currency})
+                </span>
                 <input
-                  id="it-title"
                   required
-                  autoFocus={!draft.title}
-                  value={draft.title}
-                  onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-                  className="input"
+                  inputMode="decimal"
+                  autoFocus={!!draft.title && !draft.price}
+                  value={draft.price}
+                  onChange={(e) => setDraft({ ...draft, price: e.target.value })}
+                  className="input-line text-lg"
                 />
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="label" htmlFor="it-price">{t.price} ({currency})</label>
-                  <input
-                    id="it-price"
-                    required
-                    inputMode="decimal"
-                    autoFocus={!!draft.title && !draft.price}
-                    value={draft.price}
-                    onChange={(e) => setDraft({ ...draft, price: e.target.value })}
-                    className="input"
-                  />
-                </div>
-                <div className="w-20">
-                  <label className="label" htmlFor="it-qty">{t.qty}</label>
-                  <input
-                    id="it-qty"
-                    inputMode="numeric"
-                    value={draft.quantity}
-                    onChange={(e) => setDraft({ ...draft, quantity: e.target.value })}
-                    className="input"
-                  />
-                </div>
-              </div>
+              </label>
+              <label className="block">
+                <span className="label">{t.qty}</span>
+                <input
+                  inputMode="numeric"
+                  value={draft.quantity}
+                  onChange={(e) => setDraft({ ...draft, quantity: e.target.value })}
+                  className="input-line text-lg"
+                />
+              </label>
             </div>
-          </div>
-          {notice && <p className="mt-4 rounded-xl bg-apricot-soft px-3 py-2 text-sm text-walnut-dark">{notice}</p>}
-          <div className="mt-5 flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setDraft(null);
-                setNotice(null);
-              }}
-              className="btn-ghost"
-            >
-              {t.cancel}
-            </button>
-            <button disabled={saving} className="btn-primary">{saving ? "…" : t.add}</button>
+            {notice && <p className="border-l-2 border-brass pl-3 text-sm text-muted">{notice}</p>}
+            <div className="flex items-center gap-6 pt-2">
+              <button disabled={saving} className="btn-primary !px-8 !py-3.5 text-[12px] uppercase tracking-label">
+                {saving ? "…" : t.add}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDraft(null);
+                  setNotice(null);
+                }}
+                className="caps text-muted hover:text-ink"
+              >
+                {t.cancel}
+              </button>
+            </div>
           </div>
         </form>
       )}

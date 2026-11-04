@@ -31,13 +31,11 @@ export function Simulator({
   const max = Math.max(50, Math.ceil(Math.max(monthly, 100) / 50) * 50);
 
   return (
-    <div className="mt-6 rounded-xl2 bg-paper p-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="text-sm font-semibold">{fr ? "Et si on mettait un peu plus ?" : "What if we saved a bit more?"}</p>
-        <p className="text-sm text-muted">
-          +{fmt(extra)} {fr ? "/ mois" : "/ month"}
-        </p>
-      </div>
+    <div className="border border-line bg-white p-6 sm:p-8">
+      <p className="caps text-muted">{fr ? "Et si on mettait un peu plus ?" : "What if we saved a bit more?"}</p>
+      <p className="display mt-4 text-4xl">
+        +{fmt(extra)} <span className="text-lg text-muted">{fr ? "/ mois" : "/ month"}</span>
+      </p>
       <input
         type="range"
         min={0}
@@ -45,16 +43,17 @@ export function Simulator({
         step={10}
         value={extra}
         onChange={(e) => setExtra(Number(e.target.value))}
-        className="mt-3 w-full accent-[#8A5A3B]"
+        className="mt-5 w-full accent-[#15120F]"
         aria-label={fr ? "Montant en plus par mois" : "Extra per month"}
       />
-      <p className="mt-2 text-sm">
+      <p className="mt-4 leading-relaxed">
         {sim ? (
           <>
-            {fr ? "Prêt en" : "Ready by"} <b className="capitalize">{sim.label}</b>
+            {fr ? "Vous y seriez en" : "You'd get there by"} <span className="font-medium capitalize">{sim.label}</span>
             {extra > 0 && gained > 0 && (
-              <span className="ml-2 rounded-full bg-moss-soft px-2 py-0.5 text-xs font-semibold text-moss">
-                {gained} {fr ? (gained > 1 ? "mois plus tôt" : "mois plus tôt") : gained > 1 ? "months sooner" : "month sooner"}
+              <span className="text-muted">
+                {" "}
+                — {gained} {fr ? "mois plus tôt" : gained > 1 ? "months sooner" : "month sooner"}
               </span>
             )}
           </>
@@ -91,24 +90,27 @@ export function Milestones({ progress, projectId, lang }: { progress: number; pr
   }, [reached, projectId]);
 
   const msg = fr
-    ? ["", "Un quart du chemin !", "La moitié, bravo !", "Plus que la dernière ligne droite.", "Objectif atteint ! 🎉"][reached]
-    : ["", "A quarter of the way!", "Halfway there!", "On the home stretch.", "Goal reached! 🎉"][reached];
+    ? ["", "Un quart du chemin !", "La moitié, bravo !", "Plus que la dernière ligne droite.", "Objectif atteint !"][reached]
+    : ["", "A quarter of the way!", "Halfway there!", "On the home stretch.", "Goal reached!"][reached];
 
   return (
     <>
-      <div className="mt-5 flex items-center gap-2">
+      <div className="relative mt-12">
+        <div className="h-px w-full bg-line" />
+        <div
+          className="absolute left-0 top-[-1px] h-[3px] bg-ink transition-[width] duration-[1600ms] ease-out"
+          style={{ width: `${Math.max(progress, 0.004) * 100}%` }}
+        />
         {steps.map((s) => (
-          <span
-            key={s}
-            className={`flex h-7 min-w-[3rem] items-center justify-center rounded-full px-2 text-[11px] font-semibold transition ${
-              progress >= s ? "bg-ink text-white" : "border border-line text-muted"
-            }`}
-          >
-            {s * 100} %
-          </span>
+          <div key={s} className="absolute top-0 -translate-x-1/2" style={{ left: `${s * 100}%` }}>
+            <span className={`block h-3 w-px -translate-y-1/2 ${progress >= s ? "bg-ink" : "bg-line"}`} />
+            <span className={`caps mt-2 block whitespace-nowrap ${s === 1 ? "-translate-x-1/2" : ""} ${progress >= s ? "text-ink" : "text-muted/70"}`}>
+              {s * 100} %
+            </span>
+          </div>
         ))}
-        {reached > 0 && <span className="ml-1 text-sm text-muted">{msg}</span>}
       </div>
+      {reached > 0 && <p className="mt-10 text-sm text-muted">{msg}</p>}
       {burst && <Confetti />}
     </>
   );
@@ -160,7 +162,7 @@ export function CopyLink({ url, label, done }: { url: string; label: string; don
           setTimeout(() => setOk(false), 2000);
         } catch {}
       }}
-      className="btn-primary w-full"
+      className="btn-primary w-full !py-3 text-[12px] uppercase tracking-label"
     >
       {ok ? done : label}
     </button>

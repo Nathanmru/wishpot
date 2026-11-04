@@ -16,7 +16,7 @@ type Props = {
 
 export default function SiteHeader({ appName, lang, signedIn, avatar, initial, labels }: Props) {
   const path = usePathname();
-  const immersive = path === "/" || path.startsWith("/inspiration") || path.startsWith("/l/");
+  const immersive = path === "/" || path.startsWith("/inspiration") || path.startsWith("/l/") || path.startsWith("/p/");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
