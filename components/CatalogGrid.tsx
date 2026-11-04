@@ -106,7 +106,14 @@ export default function CatalogGrid({
                 )}
               </div>
               <div className="mt-3">
-                <p className="caps text-[10px] text-muted">{p.shop}</p>
+                <p className="caps flex items-center gap-2 text-[10px] text-muted">
+                  {p.shop}
+                  {p.shop === "Selency" ? (
+                    <span className="bg-walnut-soft px-1.5 py-0.5 text-[9px] text-walnut">{fr ? "Seconde main" : "Pre-loved"}</span>
+                  ) : p.niche ? (
+                    <span className="border border-brass/50 px-1.5 py-0.5 text-[9px] text-brass">{fr ? "Pépite" : "Gem"}</span>
+                  ) : null}
+                </p>
                 <p className="mt-1 line-clamp-2 text-sm leading-snug">{p.title}</p>
                 <p className="display mt-1 text-xl">{eur(Number(p.price))}</p>
               </div>
