@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { addItem, addProduct } from "@/app/actions";
 import { CATALOG_ROOMS, type Product } from "@/lib/catalog";
+import { CompareToggle, SaveButton } from "./ShopState";
 
 type Pot = { id: string; name: string };
 
@@ -62,36 +63,32 @@ export default function CatalogGrid({
           return (
             <li key={p.id} className="group relative">
               <div className="relative aspect-square overflow-hidden bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={p.image_url}
-                  alt={p.title}
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                  className="h-full w-full object-contain p-5 mix-blend-multiply transition duration-700 ease-out group-hover:scale-[1.06] sm:p-7"
-                />
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noopener nofollow sponsored"
-                  className="caps absolute left-3 top-3 bg-paper/90 px-2 py-1 text-[10px] text-muted opacity-0 transition group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-                >
-                  {p.shop} ↗
+                <a href={p.url} target="_blank" rel="noopener nofollow sponsored" aria-label={`${p.title} · ${p.shop}`} className="block h-full w-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.image_url}
+                    alt={p.title}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-contain p-5 mix-blend-multiply transition duration-700 ease-out group-hover:scale-[1.06] sm:p-7"
+                  />
                 </a>
+                <SaveButton p={mini(p)} fr={fr} className="absolute right-3 top-3" />
                 <button
                   type="button"
                   onClick={() => add(p)}
                   disabled={pending}
-                  aria-label={fr ? "Ajouter à ma cagnotte" : "Add to my pot"}
-                  className={`absolute bottom-3 right-3 flex h-10 items-center gap-2 px-3 text-[11px] font-medium uppercase tracking-label transition ${
+                  aria-label={fr ? "Ajouter à une cagnotte" : "Add to a pot"}
+                  title={fr ? "Ajouter à une cagnotte" : "Add to a pot"}
+                  className={`absolute bottom-3 right-3 flex h-9 items-center gap-1.5 px-3 text-[10px] font-medium uppercase tracking-label transition ${
                     done ? "bg-moss text-white" : "bg-ink text-white hover:bg-black"
                   } sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 ${done ? "!translate-y-0 !opacity-100" : ""}`}
                 >
-                  {done ? "✓" : "+"} <span className="hidden sm:inline">{done ? (fr ? "Ajouté" : "Added") : fr ? "Ajouter" : "Add"}</span>
+                  {done ? "✓" : "+"} <span className="hidden sm:inline">{done ? (fr ? "Dans la cagnotte" : "In the pot") : fr ? "Cagnotte" : "Pot"}</span>
                 </button>
 
                 {menu === p.id && (
-                  <div className="absolute inset-x-3 bottom-16 z-10 border border-ink bg-paper p-3 shadow-xl">
+                  <div className="absolute inset-x-3 bottom-14 z-10 border border-ink bg-paper p-3 shadow-xl">
                     <p className="caps text-muted">{fr ? "Dans quelle cagnotte ?" : "Which pot?"}</p>
                     <ul className="mt-2">
                       {pots.map((pt) => (
@@ -114,8 +111,16 @@ export default function CatalogGrid({
                     <span className="border border-brass/50 px-1.5 py-0.5 text-[9px] text-brass">{fr ? "Pépite" : "Gem"}</span>
                   ) : null}
                 </p>
-                <p className="mt-1 line-clamp-2 text-sm leading-snug">{p.title}</p>
+                <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="mt-1 line-clamp-2 text-sm leading-snug hover:underline">
+                  {p.title}
+                </a>
                 <p className="display mt-1 text-xl">{eur(Number(p.price))}</p>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <CompareToggle p={mini(p)} fr={fr} />
+                  <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="caps border-b border-ink pb-0.5 text-[10px]">
+                    {fr ? "Voir" : "View"} ↗
+                  </a>
+                </div>
               </div>
             </li>
           );
@@ -133,6 +138,8 @@ export default function CatalogGrid({
     </>
   );
 }
+
+const mini = (p: Product) => ({ id: p.id, title: p.title, image_url: p.image_url, price: Number(p.price), shop: p.shop, url: p.url, category: p.category });
 
 /* ---------- Créer son propre objet ---------- */
 function CustomItem({
