@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
-import { CATALOG_ROOMS, CATEGORIES, ESSENTIALS, PRICE_STEPS, normalize, type Product } from "@/lib/catalog";
+import { CATALOG_ROOMS, CATEGORIES, COLORS, ESSENTIALS, PRICE_STEPS, STYLES, searchTerms, type Product } from "@/lib/catalog";
 import CatalogGrid from "@/components/CatalogGrid";
 
 export const metadata = {
   title: "Le catalogue déco",
-  description: "Des centaines de pièces pour toute la maison, rangées pièce par pièce, à ajouter à votre cagnotte.",
+  description: "Des milliers de pièces de déco et de mobilier, neuves ou chinées, à trier par pièce, style, couleur et marque, puis à ajouter à votre cagnotte.",
 };
 
-type Search = { piece?: string; cat?: string; q?: string; max?: string; tri?: string; pot?: string; n?: string };
+type Search = { piece?: string; cat?: string; q?: string; max?: string; tri?: string; pot?: string; n?: string; style?: string; couleur?: string; marque?: string; pepites?: string };
+
+type Facets = { total: number; rooms: Record<string, number>; cats: Record<string, number>; styles: Record<string, number>; colors: Record<string, number>; shops: Record<string, number>; niche: number };
 
 const PAGE = 47;
 
@@ -21,25 +23,31 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
 
   const room = CATALOG_ROOMS.find((r) => r.id === sp.piece) ?? null;
   const cat = sp.cat && CATEGORIES[sp.cat] ? sp.cat : null;
-  const q = normalize(sp.q || "");
+  const terms = searchTerms(sp.q || "");
+  const style = STYLES.some((x) => x.id === sp.style) ? sp.style! : null;
+  const color = COLORS.some((x) => x.id === sp.couleur) ? sp.couleur! : null;
+  const pepites = sp.pepites === "1";
   const max = PRICE_STEPS.includes(Number(sp.max)) ? Number(sp.max) : 0;
   const tri = sp.tri === "prix" || sp.tri === "prix-desc" ? sp.tri : "selection";
   const limit = Math.min(Math.max(Number(sp.n) || PAGE, PAGE), 600);
 
-  // Compteurs (le catalogue reste léger : on lit pièce + famille de tout)
-  const { data: facets } = await supabase.from("products").select("room, category").eq("active", true);
-  const all = facets ?? [];
-  const byRoom = new Map<string, number>();
-  const byCat = new Map<string, number>();
-  for (const f of all) {
-    byRoom.set(f.room, (byRoom.get(f.room) ?? 0) + 1);
-    if (!room || f.room === room.id) byCat.set(f.category, (byCat.get(f.category) ?? 0) + 1);
-  }
+  // Compteurs calculés côté base (le catalogue dépasse les 1 000 lignes d'une requête)
+  const { data: fx } = await supabase.rpc("catalog_facets", { p_room: room?.id ?? null });
+  const facets = (fx ?? { total: 0, rooms: {}, cats: {}, styles: {}, colors: {}, shops: {}, niche: 0 }) as Facets;
+  const byRoom = new Map(Object.entries(facets.rooms));
+  const byCat = new Map(Object.entries(facets.cats));
+  const shops = Object.entries(facets.shops).sort((a, b) => b[1] - a[1]);
+  const shop = sp.marque && facets.shops[sp.marque] != null ? sp.marque : null;
 
-  let query = supabase.from("products").select("id, shop, title, price, image_url, url, room, category", { count: "exact" }).eq("active", true);
+  let query = supabase.from("products").select("id, shop, title, price, image_url, url, room, category, style, color, niche", { count: "exact" }).eq("active", true);
   if (room) query = query.eq("room", room.id);
   if (cat) query = query.eq("category", cat);
-  for (const w of q.split(" ").filter((x) => x.length > 1).slice(0, 5)) query = query.ilike("search", `%${w}%`);
+  if (style) query = query.eq("style", style);
+  if (color) query = query.eq("color", color);
+  if (shop) query = query.eq("shop", shop);
+  if (pepites) query = query.eq("niche", true);
+  // Chaque mot cherché accepte ses synonymes (canapé = sofa, rotin = rattan…)
+  for (const g of terms) query = query.or(g.map((w) => `search.ilike."*${w.replace(/"/g, "")}*"`).join(","));
   if (max) query = query.lte("price", max);
   query = tri === "prix" ? query.order("price", { ascending: true }) : tri === "prix-desc" ? query.order("price", { ascending: false }) : query.order("id", { ascending: false });
   const { data, count } = await query.range(0, tri === "selection" ? 799 : limit - 1);
@@ -71,7 +79,19 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
 
   const href = (patch: Partial<Record<keyof Search, string | null>>) => {
     const u = new URLSearchParams();
-    const next = { piece: room?.id ?? null, cat, q: sp.q || null, max: max ? String(max) : null, tri: tri !== "selection" ? tri : null, pot: potId, ...patch };
+    const next = {
+      piece: room?.id ?? null,
+      cat,
+      q: sp.q || null,
+      style,
+      couleur: color,
+      marque: shop,
+      pepites: pepites ? "1" : null,
+      max: max ? String(max) : null,
+      tri: tri !== "selection" ? tri : null,
+      pot: potId,
+      ...patch,
+    };
     for (const [k, v] of Object.entries(next)) if (v) u.set(k, v);
     const s = u.toString();
     return `/catalogue${s ? `?${s}` : ""}`;
@@ -87,7 +107,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
       {/* ---------- En-tête ---------- */}
       <header className="grid gap-8 pt-6 md:grid-cols-[1.3fr_1fr] md:items-end">
         <div>
-          <p className="caps text-muted">{fr ? `Le catalogue · ${all.length} pièces` : `The catalogue · ${all.length} pieces`}</p>
+          <p className="caps text-muted">{fr ? `Le catalogue · ${facets.total.toLocaleString("fr-FR")} pièces · ${Object.keys(facets.shops).length} maisons` : `The catalogue · ${facets.total} pieces`}</p>
           <h1 className="display mt-4 text-5xl leading-[0.95] sm:text-7xl">
             {room ? (fr ? room.fr : room.en) : fr ? "Toute la maison, pièce par pièce." : "The whole home, room by room."}
           </h1>
@@ -95,10 +115,12 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
         <form action="/catalogue" className="flex items-end gap-3 md:justify-self-end md:w-full md:max-w-sm">
           {room && <input type="hidden" name="piece" value={room.id} />}
           {potId && <input type="hidden" name="pot" value={potId} />}
+          {style && <input type="hidden" name="style" value={style} />}
+          {color && <input type="hidden" name="couleur" value={color} />}
           <input
             name="q"
             defaultValue={sp.q || ""}
-            placeholder={fr ? "Chercher : canapé, lin, rotin…" : "Search: sofa, linen, rattan…"}
+            placeholder={fr ? "Canapé cuir, lampe laiton, tapis berbère…" : "Leather sofa, brass lamp, rug…"}
             className="input-line flex-1 !text-lg"
           />
           <button className="caps border-b border-ink pb-2">{fr ? "Chercher" : "Search"}</button>
@@ -107,7 +129,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
 
       {/* ---------- Les pièces ---------- */}
       <nav className="-mx-4 mt-10 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden">
-        <RoomTile href={href({ piece: null, cat: null, n: null })} active={!room} label={fr ? "Toute la maison" : "Whole home"} count={all.length} />
+        <RoomTile href={href({ piece: null, cat: null, n: null })} active={!room} label={fr ? "Toute la maison" : "Whole home"} count={facets.total} />
         {CATALOG_ROOMS.map((r) => (
           <RoomTile key={r.id} href={href({ piece: r.id, cat: null, n: null })} active={room?.id === r.id} label={fr ? r.fr : r.en} count={byRoom.get(r.id) ?? 0} img={r.img} />
         ))}
@@ -178,6 +200,88 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
         </section>
       )}
 
+      {/* ---------- Affiner : style, couleur, marque ---------- */}
+      <section className="mt-10 border-y border-line py-6">
+        <div className="flex items-baseline justify-between gap-4">
+          <p className="caps text-muted">{fr ? "Par style" : "By style"}</p>
+          <Link href={href({ pepites: pepites ? null : "1", n: null })} scroll={false} className={`flex items-center gap-2 text-sm transition ${pepites ? "text-ink" : "text-muted hover:text-ink"}`}>
+            <span className={`relative inline-block h-4 w-7 rounded-full transition ${pepites ? "bg-ink" : "bg-line"}`}>
+              <span className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-all ${pepites ? "left-3.5" : "left-0.5"}`} />
+            </span>
+            {fr ? `Pépites seulement · ${facets.niche}` : `Hidden gems only · ${facets.niche}`}
+          </Link>
+        </div>
+        <div className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {STYLES.filter((x) => facets.styles[x.id]).map((x) => {
+            const on = style === x.id;
+            return (
+              <Link key={x.id} href={href({ style: on ? null : x.id, n: null })} scroll={false} className={`group relative h-24 w-32 shrink-0 overflow-hidden bg-night sm:h-28 sm:w-40 ${on ? "ring-2 ring-ink ring-offset-2 ring-offset-paper" : ""}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={x.img.replace("w=900", "w=400")} alt="" loading="lazy" className={`absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 ${on ? "opacity-90" : "opacity-70"}`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-2.5 text-left text-white">
+                  <p className="text-sm font-medium leading-tight">{fr ? x.fr : x.en}</p>
+                  <p className="text-[10px] text-white/70">{facets.styles[x.id]}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="caps mr-2 text-muted">{fr ? "Couleur" : "Colour"}</span>
+            {COLORS.filter((x) => facets.colors[x.id]).map((x) => {
+              const on = color === x.id;
+              return (
+                <Link
+                  key={x.id}
+                  href={href({ couleur: on ? null : x.id, n: null })}
+                  scroll={false}
+                  title={`${fr ? x.fr : x.en} · ${facets.colors[x.id]}`}
+                  aria-label={fr ? x.fr : x.en}
+                  className={`h-8 w-8 rounded-full border transition hover:scale-110 ${on ? "border-ink ring-2 ring-ink ring-offset-2 ring-offset-paper" : "border-black/10"}`}
+                  style={{ background: x.hex }}
+                />
+              );
+            })}
+            {color && (
+              <span className="ml-2 text-sm">
+                {(fr ? COLORS.find((x) => x.id === color)?.fr : COLORS.find((x) => x.id === color)?.en) ?? ""}
+              </span>
+            )}
+          </div>
+          <details className="group relative">
+            <summary className="caps flex cursor-pointer list-none items-center gap-2 border-b border-ink pb-1 [&::-webkit-details-marker]:hidden">
+              {shop ?? (fr ? "Toutes les maisons" : "All brands")} <span className="transition group-open:rotate-180">▾</span>
+            </summary>
+            <div className="absolute right-0 z-30 mt-3 max-h-80 w-64 overflow-y-auto border border-line bg-white p-2 shadow-xl">
+              <Link href={href({ marque: null, n: null })} className={`flex justify-between px-3 py-2 text-sm hover:bg-paper ${!shop ? "font-medium" : ""}`}>
+                {fr ? "Toutes les maisons" : "All brands"}
+              </Link>
+              {shops.map(([name, n]) => (
+                <Link key={name} href={href({ marque: name, n: null })} className={`flex justify-between px-3 py-2 text-sm hover:bg-paper ${shop === name ? "font-medium" : ""}`}>
+                  {name} <span className="text-muted">{n}</span>
+                </Link>
+              ))}
+            </div>
+          </details>
+        </div>
+
+        {(style || color || shop || pepites || sp.q) && (
+          <div className="mt-5 flex flex-wrap items-center gap-2 text-sm">
+            {style && <Pill href={href({ style: null, n: null })} label={(fr ? STYLES.find((x) => x.id === style)?.fr : STYLES.find((x) => x.id === style)?.en) ?? style} />}
+            {color && <Pill href={href({ couleur: null, n: null })} label={(fr ? COLORS.find((x) => x.id === color)?.fr : COLORS.find((x) => x.id === color)?.en) ?? color} />}
+            {shop && <Pill href={href({ marque: null, n: null })} label={shop} />}
+            {pepites && <Pill href={href({ pepites: null, n: null })} label={fr ? "Pépites" : "Gems"} />}
+            {sp.q && <Pill href={href({ q: null, n: null })} label={`« ${sp.q} »`} />}
+            <Link href={href({ style: null, couleur: null, marque: null, pepites: null, q: null, n: null })} className="caps ml-2 text-muted hover:text-ink">
+              {fr ? "Tout effacer" : "Clear all"}
+            </Link>
+          </div>
+        )}
+      </section>
+
       {/* ---------- Filtres ---------- */}
       <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
         <div className="-mx-1 flex max-w-full gap-2 overflow-x-auto px-1 pb-1">
@@ -212,6 +316,15 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
         {total} {fr ? (total > 1 ? "pièces" : "pièce") : total > 1 ? "pieces" : "piece"}
         {sp.q ? (fr ? ` pour « ${sp.q} »` : ` for “${sp.q}”`) : ""}
       </p>
+
+      {products.length === 0 && (
+        <div className="mt-10 bg-white p-10 text-center">
+          <p className="display text-3xl">{fr ? "Rien de tel pour l'instant." : "Nothing like that yet."}</p>
+          <p className="mt-3 text-muted">
+            {fr ? "Retirez un filtre, ou créez votre propre objet : une pièce chinée, un artisan, tout y va." : "Remove a filter, or create your own item."}
+          </p>
+        </div>
+      )}
 
       {/* ---------- La grille ---------- */}
       <div className="mt-6">
@@ -248,6 +361,14 @@ function RoomTile({ href, active, label, count, img }: { href: string; active: b
         <p className="text-[11px] text-white/70">{count}</p>
       </div>
       <span className={`pointer-events-none absolute inset-0 border-[3px] transition ${active ? "border-bone" : "border-transparent"}`} />
+    </Link>
+  );
+}
+
+function Pill({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} scroll={false} className="flex items-center gap-2 border border-ink px-3 py-1 hover:bg-ink hover:text-white">
+      {label} <span aria-hidden>×</span>
     </Link>
   );
 }
