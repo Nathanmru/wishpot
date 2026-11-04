@@ -38,6 +38,8 @@ const SHOP_NOTES: Record<string, { fr: string; en: string }> = {
   "Audo Copenhagen": { fr: "Pièces de designers", en: "Designer pieces" },
   IKEA: { fr: "Les bases, bien pensées", en: "Well-made basics" },
   "Hartô": { fr: "Éditeur français, luminaires", en: "French editor, lighting" },
+  "NV Gallery": { fr: "Design parisien, pièces signature", en: "Parisian design, signature pieces" },
+  Westwing: { fr: "Westwing Collection, chic et feutré", en: "Westwing Collection, quiet luxury" },
 };
 
 export default async function Home() {
