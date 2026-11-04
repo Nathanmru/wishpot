@@ -3,96 +3,46 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createProject } from "@/app/actions";
-import { parseExtra, startersFor, starterTotal } from "@/lib/starters";
+import { parseExtra } from "@/lib/starters";
 
-type Kind = "travel" | "home";
-type T = Record<
-  "step1" | "step2" | "step3" | "travel" | "home" | "travelDesc" | "homeDesc" | "namePhTravel" | "namePhHome" | "monthlyHint" | "create" | "perMonth",
-  string
->;
+export type Picked = { id: number; title: string; shop: string; price: number; image_url: string; qty: number };
 
 const PRESETS = [50, 100, 150, 200, 300];
-const COVERS: Record<Kind, string> = {
-  home: "https://images.unsplash.com/photo-1560185007-c5ca9d2c014d?auto=format&fit=crop&w=900&q=80",
-  travel: "https://images.unsplash.com/photo-1562865582-d6317ab58923?auto=format&fit=crop&w=900&q=80",
+const NAMES = {
+  fr: ["Premier appartement", "Notre salon", "Notre chambre", "La maison", "Crémaillère"],
+  en: ["First flat", "Our living room", "Our bedroom", "The house", "Housewarming"],
 };
 
-const eur = (v: number) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
-
 export default function NewProjectForm({
-  initialKind,
   initialName = "",
   initialMonthly,
-  initialStarters = [],
+  initialProducts = [],
   initialExtras = [],
-  t,
+  lang = "fr",
 }: {
-  initialKind: Kind | null;
   initialName?: string;
   initialMonthly?: number;
-  initialStarters?: string[];
+  initialProducts?: Picked[];
   initialExtras?: string[];
-  t: T;
+  lang?: "fr" | "en";
 }) {
-  const [kind, setKind] = useState<Kind | null>(initialKind);
+  const fr = lang === "fr";
   const [name, setName] = useState(initialName);
   const [monthly, setMonthly] = useState(String(initialMonthly ?? 100));
-  const [picked, setPicked] = useState<string[]>(initialStarters);
+  const [products, setProducts] = useState<Picked[]>(initialProducts);
   const [extras, setExtras] = useState<string[]>(initialExtras);
-  const ready = !!kind;
-  const starters = kind ? startersFor(kind) : [];
-  const chosen = starters.filter((s) => picked.includes(s.id));
+  const eur = (v: number) =>
+    new Intl.NumberFormat(fr ? "fr-FR" : "en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v);
+  const total = products.reduce((a, p) => a + p.price * p.qty, 0) + extras.reduce((a, v) => a + (parseExtra(v)?.price ?? 0), 0);
+  const count = products.length + extras.length;
 
   return (
     <form action={createProject} className="mt-14 space-y-16">
-      {/* 1 — Le type */}
-      <fieldset>
-        <Step n="01" title={t.step1} />
-        <input type="hidden" name="kind" value={kind ?? ""} />
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {(
-            [
-              ["home", t.home, t.homeDesc],
-              ["travel", t.travel, t.travelDesc],
-            ] as const
-          ).map(([k, title, desc]) => {
-            const active = kind === k;
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() => {
-                  setKind(k);
-                  if (k !== kind) {
-                    setPicked([]);
-                    setExtras([]);
-                  }
-                }}
-                aria-pressed={active}
-                className="group relative block h-56 overflow-hidden bg-night text-left sm:h-64"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={COVERS[k]}
-                  alt=""
-                  className={`absolute inset-0 h-full w-full object-cover transition duration-[1200ms] group-hover:scale-105 ${active || !kind ? "opacity-90" : "opacity-45"}`}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                <div className="absolute bottom-5 left-6 right-6 text-white">
-                  <p className="display text-4xl">{title}</p>
-                  <p className="mt-1 text-sm text-white/80">{desc}</p>
-                </div>
-                <span className={`pointer-events-none absolute inset-0 border-[3px] transition ${active ? "border-bone" : "border-transparent"}`} />
-                {active && <span className="caps absolute right-4 top-4 bg-bone px-2.5 py-1.5 text-ink">Choisi</span>}
-              </button>
-            );
-          })}
-        </div>
-      </fieldset>
+      <input type="hidden" name="kind" value="home" />
 
-      {/* 2 — Le nom */}
-      <div className={`transition duration-500 ${ready ? "" : "pointer-events-none opacity-30"}`}>
-        <Step n="02" title={t.step2} />
+      {/* 1 — Le nom */}
+      <div>
+        <Step n="01" title={fr ? "Donnez-lui un nom" : "Give it a name"} />
         <input
           name="name"
           required
@@ -100,22 +50,28 @@ export default function NewProjectForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input-line display mt-6 !text-4xl sm:!text-5xl"
-          placeholder={kind === "travel" ? t.namePhTravel : t.namePhHome}
+          placeholder={fr ? "Notre appart" : "Our flat"}
         />
+        <div className="mt-4 flex flex-wrap gap-2">
+          {NAMES[lang].map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setName(n)}
+              className={`border px-3 py-1.5 text-xs transition ${name === n ? "border-ink bg-ink text-white" : "border-line hover:border-ink"}`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 3 — Le budget */}
-      <div className={`transition duration-500 ${ready ? "" : "pointer-events-none opacity-30"}`}>
-        <Step n="03" title={t.step3} />
+      {/* 2 — Le budget */}
+      <div>
+        <Step n="02" title={fr ? "Combien mettez-vous de côté par mois ?" : "How much do you set aside each month?"} />
         <div className="mt-6 flex items-end gap-4">
-          <input
-            name="monthly"
-            inputMode="decimal"
-            value={monthly}
-            onChange={(e) => setMonthly(e.target.value)}
-            className="input-line display max-w-[10rem] !text-5xl"
-          />
-          <span className="display pb-2 text-2xl text-muted">€ {t.perMonth}</span>
+          <input name="monthly" inputMode="decimal" value={monthly} onChange={(e) => setMonthly(e.target.value)} className="input-line display max-w-[10rem] !text-5xl" />
+          <span className="display pb-2 text-2xl text-muted">€ {fr ? "/ mois" : "/ month"}</span>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {PRESETS.map((p) => (
@@ -129,41 +85,38 @@ export default function NewProjectForm({
             </button>
           ))}
         </div>
-        <p className="mt-4 text-sm text-muted">{t.monthlyHint}</p>
+        <p className="mt-4 text-sm text-muted">
+          {fr ? "Vous pourrez le modifier plus tard. Chaque membre indique son propre montant." : "You can change it later. Each member sets their own amount."}
+        </p>
       </div>
 
-      {/* 4 — Premières envies (facultatif) */}
-      {kind && (
+      {/* 3 — La sélection venue du planificateur */}
+      {count > 0 && (
         <div>
-          <Step n="04" title="Vos premières envies" note="Facultatif · vous pourrez coller vos propres liens ensuite" />
-          <ul className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
-            {starters.map((s) => {
-              const on = picked.includes(s.id);
-              return (
-                <li key={s.id}>
+          <Step n="03" title={fr ? "Votre sélection" : "Your selection"} note={`${count} · ${eur(total)}`} />
+          <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
+            {products.map((p) => (
+              <li key={p.id}>
+                <div className="relative aspect-square bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.image_url} alt="" referrerPolicy="no-referrer" className="h-full w-full object-contain p-3 mix-blend-multiply" />
                   <button
                     type="button"
-                    aria-pressed={on}
-                    onClick={() => setPicked((p) => (on ? p.filter((x) => x !== s.id) : [...p, s.id]))}
-                    className="group block w-full text-left"
+                    onClick={() => setProducts((x) => x.filter((y) => y.id !== p.id))}
+                    aria-label={fr ? "Retirer" : "Remove"}
+                    className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center bg-paper/95 text-sm hover:bg-ink hover:text-white"
                   >
-                    <div className={`relative aspect-square overflow-hidden ${s.packshot ? "bg-white" : "bg-night"}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={s.img}
-                        alt=""
-                        referrerPolicy="no-referrer"
-                        className={`h-full w-full transition duration-500 ${s.packshot ? "object-contain p-3 mix-blend-multiply" : "object-cover"} ${on ? "" : "opacity-55"}`}
-                      />
-                      <span className={`pointer-events-none absolute inset-0 border-2 transition ${on ? "border-ink" : "border-transparent"}`} />
-                    </div>
-                    <p className="mt-2 truncate text-xs">{s.short}</p>
-                    <p className="text-xs text-muted">{eur(starterTotal(s))}</p>
+                    ×
                   </button>
-                  {on && <input type="hidden" name="starter" value={s.id} />}
-                </li>
-              );
-            })}
+                </div>
+                <p className="mt-2 line-clamp-2 text-xs leading-snug">{p.title}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {p.shop} · {eur(p.price * p.qty)}
+                  {p.qty > 1 ? ` (×${p.qty})` : ""}
+                </p>
+                <input type="hidden" name="product" value={`${p.id}:${p.qty}`} />
+              </li>
+            ))}
           </ul>
           {extras.length > 0 && (
             <ul className="mt-6 divide-y divide-line border-y border-line">
@@ -172,10 +125,10 @@ export default function NewProjectForm({
                 if (!x) return null;
                 return (
                   <li key={v + i} className="flex items-center gap-4 py-3 text-sm">
-                    <span className="caps text-muted">Votre envie</span>
+                    <span className="caps text-muted">{fr ? "Votre objet" : "Your item"}</span>
                     <span className="flex-1 truncate">{x.title}</span>
                     <span className="text-muted">{eur(x.price)}</span>
-                    <button type="button" onClick={() => setExtras((e) => e.filter((_, j) => j !== i))} className="text-muted hover:text-ink" aria-label="Retirer">
+                    <button type="button" onClick={() => setExtras((e) => e.filter((_, j) => j !== i))} className="text-muted hover:text-ink" aria-label="×">
                       ×
                     </button>
                     <input type="hidden" name="extra" value={v} />
@@ -184,16 +137,10 @@ export default function NewProjectForm({
               })}
             </ul>
           )}
-          {chosen.length + extras.length > 0 && (
-            <p className="mt-4 text-sm text-muted">
-              {chosen.length + extras.length} envie{chosen.length + extras.length > 1 ? "s" : ""} ·{" "}
-              {eur(chosen.reduce((a, s) => a + starterTotal(s), 0) + extras.reduce((a, v) => a + (parseExtra(v)?.price ?? 0), 0))}
-            </p>
-          )}
         </div>
       )}
 
-      <Submit disabled={!ready} label={t.create} />
+      <Submit label={fr ? "Créer la cagnotte" : "Create the pot"} pendingLabel={fr ? "Création…" : "Creating…"} />
     </form>
   );
 }
@@ -203,16 +150,16 @@ function Step({ n, title, note }: { n: string; title: string; note?: string }) {
     <div className="flex items-baseline gap-4 border-b border-line pb-3">
       <span className="caps text-brass">{n}</span>
       <span className="text-lg">{title}</span>
-      {note && <span className="ml-auto hidden text-xs text-muted sm:inline">{note}</span>}
+      {note && <span className="ml-auto text-xs text-muted">{note}</span>}
     </div>
   );
 }
 
-function Submit({ disabled, label }: { disabled: boolean; label: string }) {
+function Submit({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
   return (
-    <button disabled={disabled || pending} className="btn-primary w-full !py-5 text-[12px] uppercase tracking-label">
-      {pending ? "Création…" : label}
+    <button disabled={pending} className="btn-primary w-full !py-5 text-[12px] uppercase tracking-label">
+      {pending ? pendingLabel : label}
     </button>
   );
 }
