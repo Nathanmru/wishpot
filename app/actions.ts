@@ -31,8 +31,8 @@ export async function setLang(lang: "fr" | "en") {
 /* ---------- Cagnottes ---------- */
 export async function createProject(formData: FormData) {
   const { supabase } = await requireUser();
-  const kind = formData.get("kind") === "travel" ? "travel" : "home";
-  const name = String(formData.get("name") || "").trim().slice(0, 80) || (kind === "travel" ? "Voyage" : "Maison");
+  const kind = "home";
+  const name = String(formData.get("name") || "").trim().slice(0, 80) || "Maison";
   const monthly = num(formData.get("monthly"));
   const { data, error } = await supabase.rpc("create_project", { p_name: name, p_kind: kind, p_monthly: monthly });
   if (error || !data) throw new Error(error?.message || "create failed");
@@ -45,10 +45,36 @@ export async function createProject(formData: FormData) {
     .map((v) => parseExtra(String(v)))
     .filter((x): x is NonNullable<typeof x> => !!x)
     .slice(0, 12);
-  if (starters.length || extras.length) {
+  // Pièces du catalogue choisies dans le planificateur ("id:quantité")
+  const wanted = formData
+    .getAll("product")
+    .map((v) => {
+      const [id, q] = String(v).split(":");
+      return { id: Number(id), qty: Math.min(Math.max(Number(q) || 1, 1), 12) };
+    })
+    .filter((x) => Number.isInteger(x.id) && x.id > 0)
+    .slice(0, 20);
+  const { data: catalog } = wanted.length
+    ? await supabase.from("products").select("id, title, price, url, image_url, room").in("id", wanted.map((w) => w.id))
+    : { data: [] as { id: number; title: string; price: number; url: string; image_url: string; room: string }[] };
+  if (starters.length || extras.length || catalog?.length) {
     const { data: auth } = await supabase.auth.getUser();
     const by = auth.user?.id ?? null;
     await supabase.from("items").insert([
+      ...wanted
+        .map((w) => ({ w, p: catalog?.find((c) => c.id === w.id) }))
+        .filter((x) => !!x.p)
+        .map(({ w, p }) => ({
+          project_id: data,
+          added_by: by,
+          title: p!.title,
+          price: p!.price,
+          quantity: w.qty,
+          url: p!.url,
+          image_url: p!.image_url,
+          room: p!.room,
+          product_id: p!.id,
+        })),
       ...starters.map((x) => ({
         project_id: data,
         added_by: by,
