@@ -112,14 +112,14 @@ export default async function Home() {
 
   const faq = fr
     ? [
-        ["À quoi sert Maison Piécette ?", "À transformer une envie de déco en projet concret : vous choisissez les pièces, Maison Piécette calcule le budget et ce qu'il faut épargner chaque mois pour y arriver, seul ou à plusieurs."],
+        ["À quoi sert Atelier Nama ?", "À transformer une envie de déco en projet concret : vous choisissez les pièces, Atelier Nama calcule le budget et ce qu'il faut épargner chaque mois pour y arriver, seul ou à plusieurs."],
         ["L'argent passe-t-il par le site ?", "Non. Chacun garde son argent : le site sert à se fixer un objectif et à suivre ce que vous avez mis de côté."],
         ["D'où viennent les produits ?", `De ${shops.length} maisons : grandes enseignes, éditeurs de design, petites marques et brocanteurs en ligne. Les prix sont relevés à date ; le lien mène toujours à la fiche de la boutique.`],
         ["Je peux ajouter un objet qui n'est pas dans le catalogue ?", "Oui : collez le lien de n'importe quelle boutique, ou créez votre propre objet avec un nom et un prix. Une pièce chinée, un artisan, tout y va."],
         ["C'est vraiment gratuit ?", "Oui. Certains liens vers les boutiques sont affiliés : un achat peut nous rémunérer, sans rien vous coûter de plus."],
       ]
     : [
-        ["What is Maison Piécette for?", "Turning a decor wish into a real plan: you pick the pieces, Maison Piécette works out the budget and what to save each month, alone or together."],
+        ["What is Atelier Nama for?", "Turning a decor wish into a real plan: you pick the pieces, Atelier Nama works out the budget and what to save each month, alone or together."],
         ["Does money go through the site?", "No. Everyone keeps their own money: the site sets the goal and tracks what you've saved."],
         ["Where do products come from?", `From ${shops.length} brands: big retailers, design editors, small makers and online vintage dealers. Prices are collected at a date; links go to the shop's page.`],
         ["Can I add something that isn't in the catalogue?", "Yes: paste a link from any shop, or create your own item with a name and price."],
@@ -387,12 +387,12 @@ export default async function Home() {
             {(fr
               ? [
                   ["Gratuit", "Créer, inviter, partager : rien n'est payant."],
-                  ["Votre argent reste chez vous", "Rien ne transite par Maison Piécette."],
+                  ["Votre argent reste chez vous", "Rien ne transite par Atelier Nama."],
                   ["Privé", "Seul votre cercle voit votre cagnotte."],
                 ]
               : [
                   ["Free", "Creating, inviting, sharing: nothing to pay."],
-                  ["Your money stays with you", "Nothing goes through Maison Piécette."],
+                  ["Your money stays with you", "Nothing goes through Atelier Nama."],
                   ["Private", "Only your circle sees your pot."],
                 ]
             ).map(([t, d]) => (
