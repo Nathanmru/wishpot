@@ -52,15 +52,15 @@ export function InstallCard({ lang = "fr" }: { lang?: "fr" | "en" }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/icon-192.png" alt="" className="h-12 w-12 shrink-0" />
       <div className="min-w-0 flex-1">
-        <p className="font-semibold">{fr ? "Wishpot sur ton téléphone" : "Wishpot on your phone"}</p>
+        <p className="font-semibold">{fr ? "Maison Piécette sur ton téléphone" : "Maison Piécette on your phone"}</p>
         <p className="mt-0.5 text-sm text-bone/70">
           {ios
             ? fr
               ? "Dans Safari : touche Partager ⬆︎ puis « Sur l'écran d'accueil »."
               : "In Safari: tap Share ⬆︎ then “Add to Home Screen”."
             : fr
-              ? "Installe l'appli : depuis une boutique, « Partager → Wishpot » ajoute l'objet à ta liste."
-              : "Install the app: from any shop, “Share → Wishpot” adds the item to your list."}
+              ? "Installe l'appli : depuis une boutique, « Partager → Maison Piécette » ajoute l'objet à ta liste."
+              : "Install the app: from any shop, “Share → Maison Piécette” adds the item to your list."}
         </p>
       </div>
       {evt && (
