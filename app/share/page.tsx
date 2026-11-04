@@ -61,7 +61,7 @@ export default async function SharePage({ searchParams }: { searchParams: Promis
       {!link ? (
         <div className="mt-6 rounded-xl3 border border-line bg-white p-8">
           <p className="display text-3xl">Aucun lien reçu</p>
-          <p className="mt-3 text-muted">Partage une page produit depuis ton navigateur ou l&apos;appli d&apos;une boutique, puis choisis Maison Piécette.</p>
+          <p className="mt-3 text-muted">Partage une page produit depuis ton navigateur ou l&apos;appli d&apos;une boutique, puis choisis Atelier Nama.</p>
           <Link href="/dashboard" className="btn-primary mt-6">Mes cagnottes</Link>
         </div>
       ) : projects.length === 0 ? (
