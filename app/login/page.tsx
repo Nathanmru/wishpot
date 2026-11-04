@@ -1,10 +1,8 @@
 import { redirect } from "next/navigation";
-import { APP_NAME } from "@/lib/config";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
-import { cover } from "@/lib/covers";
+import { PHOTOS, photo } from "@/lib/covers";
 import GoogleButton from "@/components/GoogleButton";
-import Logo from "@/components/Logo";
 
 export const metadata = { title: "Connexion" };
 
@@ -15,35 +13,48 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   if (user) redirect(safeNext);
   const { t, lang } = await getDict();
   const fr = lang === "fr";
+  const creating = safeNext.startsWith("/new");
 
   return (
-    <div className="mx-auto grid max-w-5xl overflow-hidden rounded-xl3 border border-line bg-white shadow-lift md:grid-cols-2">
-      <div className="relative hidden min-h-[560px] md:block">
+    <div className="-mt-24 grid min-h-[100dvh] sm:-mt-28 md:mx-[calc(50%-50vw)] md:grid-cols-2">
+      <div className="relative -mx-4 h-[42vh] overflow-hidden bg-night sm:-mx-6 md:mx-0 md:h-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={cover("travel", 1000)} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-dusk/80 via-dusk/10 to-transparent" />
-        <p className="display absolute bottom-8 left-8 right-8 text-4xl leading-tight text-white">
+        <img src={photo(PHOTOS.parisSalon, 1600)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30" />
+        <p className="display absolute bottom-8 left-6 right-6 text-3xl leading-tight text-white sm:left-12 sm:text-5xl">
           {fr ? "Ce que vous mettez de côté, ensemble, au même endroit." : "What you save, together, in one place."}
         </p>
       </div>
-      <div className="flex flex-col justify-center p-8 sm:p-14">
-        <Logo name={APP_NAME} />
-        <h1 className="display mt-10 text-5xl">{t.loginTitle}</h1>
-        <p className="mt-3 max-w-sm leading-relaxed text-muted">{t.loginText}</p>
+
+      <div className="flex flex-col justify-center py-14 md:px-16 lg:px-24">
+        <p className="caps text-muted">{creating ? (fr ? "Dernière étape" : "Last step") : fr ? "Connexion" : "Log in"}</p>
+        <h1 className="display mt-4 text-5xl leading-[0.95] sm:text-6xl">
+          {creating ? (fr ? "Gardez votre projet." : "Keep your project.") : fr ? "Bon retour." : "Welcome back."}
+        </h1>
+        <p className="mt-5 max-w-sm leading-relaxed text-muted">
+          {creating
+            ? fr
+              ? "Un compte Google suffit pour enregistrer votre cagnotte et la retrouver sur tous vos appareils."
+              : "A Google account is all you need to save your pot and find it on every device."
+            : t.loginText}
+        </p>
         {error && (
-          <p className="mt-5 rounded-xl bg-apricot-soft p-3 text-sm text-walnut-dark">
-            {fr ? "La connexion a échoué. Réessaie avec ton compte Google." : "Sign-in failed. Try again with your Google account."}
+          <p className="mt-6 border-l-2 border-walnut pl-3 text-sm text-walnut-dark">
+            {fr ? "La connexion a échoué. Réessayez avec votre compte Google." : "Sign-in failed. Try again with your Google account."}
           </p>
         )}
-        <div className="mt-8">
+        <div className="mt-10 max-w-sm">
           <GoogleButton next={safeNext} label={t.continueGoogle} />
         </div>
-        <p className="mt-6 text-xs leading-relaxed text-muted">
-          {fr
-            ? "Nous utilisons seulement ton nom, ton email et ta photo pour créer ton compte."
-            : "We only use your name, email and photo to create your account."}{" "}
-          <a href="/confidentialite" className="underline">{t.privacy}</a>
-        </p>
+        <ul className="mt-10 max-w-sm space-y-2 border-t border-line pt-6 text-sm text-muted">
+          <li>{fr ? "Gratuit, sans carte bancaire." : "Free, no card needed."}</li>
+          <li>{fr ? "Nous utilisons seulement votre nom, votre e-mail et votre photo." : "We only use your name, email and photo."}</li>
+          <li>
+            <a href="/confidentialite" className="underline underline-offset-4">
+              {t.privacy}
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   );
