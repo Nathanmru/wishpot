@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { getDict } from "@/lib/i18n";
 import NewProjectForm from "@/components/NewProjectForm";
-import { STARTERS } from "@/lib/starters";
+import { STARTERS, parseExtra, encodeExtra } from "@/lib/starters";
 
 export const metadata = { title: "Nouvelle cagnotte" };
 
-type Search = { kind?: string; name?: string; monthly?: string; starter?: string };
+type Search = { kind?: string; name?: string; monthly?: string; starter?: string; extra?: string | string[] };
 
 export default async function NewPage({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams;
@@ -16,7 +16,13 @@ export default async function NewPage({ searchParams }: { searchParams: Promise<
   const starters = (sp.starter || "")
     .split(",")
     .filter((id) => STARTERS.some((s) => s.id === id && s.kind === kind));
-  const fromDemo = starters.length > 0;
+  const extras = ([] as string[])
+    .concat(sp.extra ?? [])
+    .map(parseExtra)
+    .filter((x): x is NonNullable<typeof x> => !!x)
+    .slice(0, 12)
+    .map(encodeExtra);
+  const fromDemo = starters.length > 0 || extras.length > 0;
 
   return (
     <div className="mx-auto max-w-3xl pt-6">
@@ -41,6 +47,7 @@ export default async function NewPage({ searchParams }: { searchParams: Promise<
         initialName={(sp.name || "").slice(0, 80)}
         initialMonthly={Number.isFinite(monthly) && monthly > 0 ? monthly : undefined}
         initialStarters={starters}
+        initialExtras={extras}
         t={{
           step1: t.step1,
           step2: t.step2,
