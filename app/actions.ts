@@ -230,3 +230,28 @@ export async function clearReservation(projectId: string, itemId: string) {
   await supabase.from("items").update({ reserved_by: null, reserved_at: null }).eq("id", itemId).eq("project_id", projectId);
   revalidatePath(`/p/${projectId}`);
 }
+
+/* ---------- Catalogue ---------- */
+export async function addProduct(projectId: string, productId: number) {
+  const { supabase, user } = await requireUser();
+  const { data: p } = await supabase
+    .from("products")
+    .select("id, title, price, url, image_url, room")
+    .eq("id", productId)
+    .maybeSingle();
+  if (!p) throw new Error("product not found");
+  const { error } = await supabase.from("items").insert({
+    project_id: projectId,
+    added_by: user.id,
+    title: p.title,
+    price: p.price,
+    quantity: 1,
+    url: p.url,
+    image_url: p.image_url,
+    room: p.room,
+    product_id: p.id,
+  });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/p/${projectId}`);
+  return { ok: true };
+}
