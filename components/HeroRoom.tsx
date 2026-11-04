@@ -198,7 +198,7 @@ export default function HeroRoom({ name, fr }: { name: string; fr: boolean }) {
               {letters.map((c, i) => (
                 <span key={i} className="inline-block overflow-hidden align-bottom">
                   <span className="wp-line inline-block" style={{ animationDelay: `${0.15 + i * 0.045}s` }}>
-                    {c === " " ? " " : c}
+                    {c === " " ? "\u00a0" : c}
                   </span>
                 </span>
               ))}
