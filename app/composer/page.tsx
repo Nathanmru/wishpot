@@ -3,7 +3,7 @@ import RoomPlanner from "@/components/RoomPlanner";
 
 export const metadata = {
   title: "Composer une pièce",
-  description: "Choisissez une pièce et un budget : Maison Piécette compose une sélection complète de vraies pièces déco, à ajuster d'un geste.",
+  description: "Choisissez une pièce et un budget : Atelier Nama compose une sélection complète de vraies pièces déco, à ajuster d'un geste.",
 };
 
 export default async function ComposerPage() {
