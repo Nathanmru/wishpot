@@ -333,6 +333,20 @@ export default function Composer({ lang = "fr" }: { lang?: "fr" | "en" }) {
               </div>
             </div>
           </div>
+
+          {/* Sur mobile : le résultat reste visible pendant qu'on choisit */}
+          <div className="sticky bottom-3 z-10 flex items-center gap-4 bg-night px-5 py-4 text-bone shadow-[0_20px_40px_-20px_rgba(0,0,0,0.6)] lg:hidden">
+            <div className="min-w-0 flex-1">
+              <p className="display truncate text-xl">{eur(tTotal)}</p>
+              <p className="truncate text-xs capitalize text-bone/60">{total > 0 ? etaLabel : fr ? "Choisissez une envie" : "Pick a wish"}</p>
+            </div>
+            <Link
+              href={total > 0 ? createHref : "#essai"}
+              className={`caps shrink-0 bg-bone px-4 py-3 text-ink ${total === 0 ? "pointer-events-none opacity-40" : ""}`}
+            >
+              {fr ? "Créer" : "Create"} →
+            </Link>
+          </div>
         </div>
 
         {/* Le résultat : un aperçu de la future cagnotte */}
