@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 export type Lang = "fr" | "en";
 
 const fr = {
-  tagline: "La cagnotte à plusieurs pour vos projets",
+  tagline: "La cagnotte déco à plusieurs",
   heroTitle: "Économisez ensemble pour ce qui compte.",
   heroText:
     "Un premier appartement, un salon à refaire : listez ce que vous voulez acheter, fixez combien chacun met de côté chaque mois, et voyez quand vous y serez.",
@@ -96,10 +96,10 @@ const fr = {
 export type Dict = typeof fr;
 
 const en: Dict = {
-  tagline: "The shared savings pot for your plans",
+  tagline: "The shared pot for your home",
   heroTitle: "Save together for what matters.",
   heroText:
-    "A trip to Japan, a flat to furnish: list what you want to buy, set how much each of you saves every month, and see when you'll get there.",
+    "A first flat, a living room to redo: list what you want to buy, set how much each of you saves every month, and see when you'll get there.",
   start: "Create my pot",
   myPots: "My pots",
   login: "Log in",
