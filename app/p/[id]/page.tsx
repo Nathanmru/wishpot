@@ -4,21 +4,18 @@ import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import { computeStats, money, monthYear } from "@/lib/format";
 import { siteUrl, type Deposit, type Item, type Member, type Project } from "@/lib/config";
-import { cover, KIND_STYLE } from "@/lib/covers";
+import { cover } from "@/lib/covers";
 import { IDEAS, SHOPS } from "@/lib/suggestions";
-import { addDeposit, deleteDeposit, deleteProject, leaveProject, regenerateInvite, setMonthly } from "@/app/actions";
+import { ROOMS, roomLabel } from "@/lib/rooms";
+import { illustrationFor } from "@/lib/itemImage";
+import { addDeposit, deleteDeposit, deleteProject, leaveProject, regenerateInvite, setMonthly, setShare } from "@/app/actions";
 import AddItemForm from "@/components/AddItemForm";
-import ItemRow from "@/components/ItemRow";
+import ItemCard, { type ItemComment, type ItemLikes } from "@/components/ItemCard";
 import IdeaChips from "@/components/IdeaChips";
 import InviteBox from "@/components/InviteBox";
 import ConfirmButton from "@/components/ConfirmButton";
-import Jar from "@/components/Jar";
 import ProjectInspiration from "@/components/ProjectInspiration";
 import { CopyLink, Milestones, Simulator } from "@/components/Motivation";
-import type { ItemComment, ItemLikes } from "@/components/ItemRow";
-import { ROOMS, roomLabel } from "@/lib/rooms";
-import { illustrationFor } from "@/lib/itemImage";
-import { setShare, addDeposit as addDepositAction } from "@/app/actions";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,12 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: data?.name ?? "—" };
 }
 
+type Tab = "liste" | "epargne" | "cercle";
+
 export default async function ProjectPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ room?: string; view?: string }>;
+  searchParams: Promise<{ room?: string; view?: string; tab?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -62,7 +61,6 @@ export default async function ProjectPage({
   const list = (items ?? []) as Item[];
   const mems = (members ?? []) as unknown as Member[];
   const deps = (deposits ?? []) as Deposit[];
-  const st = KIND_STYLE[p.kind];
 
   const me = mems.find((m) => m.user_id === user.id);
   const isOwner = me?.role === "owner";
@@ -71,13 +69,13 @@ export default async function ProjectPage({
     const m = mems.find((x) => x.user_id === uid);
     return m?.profiles?.display_name?.split(" ")[0] ?? "?";
   };
+  const firstNames = mems.map((m) => m.profiles?.display_name?.split(" ")[0] || "?");
 
   const s = computeStats(list, deps, mems.map((m) => m.monthly_amount));
   const cur = p.currency;
   const inviteUrl = `${siteUrl()}/invite/${p.invite_token}`;
+  const shareUrl = p.share_token ? `${siteUrl()}/l/${p.share_token}` : null;
   const savedBy = (uid: string) => deps.filter((d) => d.user_id === uid).reduce((a, d) => a + Number(d.amount), 0);
-  const toBuy = list.filter((i) => !i.purchased);
-  const bought = list.filter((i) => i.purchased);
 
   // ----- Cœurs et commentaires
   const ids = list.map((i) => i.id);
@@ -96,396 +94,511 @@ export default async function ProjectPage({
       .filter((c) => c.item_id === iid)
       .map((c) => ({ id: c.id, name: nameOf(c.user_id), body: c.body, mine: c.user_id === user.id, at: c.created_at }));
 
-  // ----- Pièces : filtre + budget par pièce
+  // ----- Navigation : onglet, pièce, vue
+  const tab: Tab = sp.tab === "epargne" || sp.tab === "cercle" ? sp.tab : "liste";
   const roomList = ROOMS[p.kind];
   const activeRoom = sp.room && (sp.room === "none" || roomList.some((r) => r.id === sp.room)) ? sp.room : null;
-  const view = sp.view === "board" ? "board" : "list";
+  const view = sp.view === "board" ? "board" : "grid";
+  const href = (patch: { tab?: Tab; room?: string | null; view?: string | null }) => {
+    const q = new URLSearchParams();
+    const tb = patch.tab ?? tab;
+    const room = patch.room === undefined ? activeRoom : patch.room;
+    const v = patch.view === undefined ? view : patch.view;
+    if (tb !== "liste") q.set("tab", tb);
+    if (tb === "liste" && room) q.set("room", room);
+    if (tb === "liste" && v === "board") q.set("view", "board");
+    const str = q.toString();
+    return `/p/${p.id}${str ? `?${str}` : ""}#onglets`;
+  };
+
+  const inRoom = (i: Item) =>
+    !activeRoom ? true : activeRoom === "none" ? !i.room || !roomList.some((r) => r.id === i.room) : i.room === activeRoom;
+  const toBuy = list
+    .filter((i) => !i.purchased)
+    .sort((a, b) => likesOf(b.id).count - likesOf(a.id).count)
+    .filter(inRoom);
+  const bought = list.filter((i) => i.purchased).filter(inRoom);
   const roomTotals = roomList
     .map((r) => {
       const its = list.filter((i) => i.room === r.id);
       return { ...r, count: its.length, total: its.reduce((a, i) => a + Number(i.price) * i.quantity, 0) };
     })
     .filter((r) => r.count > 0);
-  const unsorted = list.filter((i) => !i.room || !roomList.some((r) => r.id === i.room));
-  const shown = [...toBuy.sort((a, b) => likesOf(b.id).count - likesOf(a.id).count), ...bought].filter((i) =>
-    !activeRoom ? true : activeRoom === "none" ? unsorted.includes(i) : i.room === activeRoom
-  );
-  const qs = (patch: { room?: string | null; view?: string | null }) => {
-    const q = new URLSearchParams();
-    const room = patch.room === undefined ? activeRoom : patch.room;
-    const v = patch.view === undefined ? view : patch.view;
-    if (room) q.set("room", room);
-    if (v === "board") q.set("view", "board");
-    const str = q.toString();
-    return `/p/${p.id}${str ? `?${str}` : ""}#liste`;
-  };
+  const unsortedCount = list.filter((i) => !i.room || !roomList.some((r) => r.id === i.room)).length;
 
-  // ----- Rappel du mois : ai-je déjà mis ma part de côté ?
+  // ----- Rappel du mois
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const paidThisMonth = deps.some((d) => d.user_id === user.id && d.deposited_on.startsWith(monthKey));
-  const shareUrl = p.share_token ? `${siteUrl()}/l/${p.share_token}` : null;
+  const monthName = now.toLocaleDateString(fr ? "fr-FR" : "en-GB", { month: "long" });
+
+  const kindLabel = p.kind === "travel" ? (fr ? "Cagnotte voyage" : "Travel pot") : fr ? "Cagnotte maison" : "Home pot";
+  const card = (it: Item, compact = false) => (
+    <ItemCard
+      key={it.id}
+      item={it}
+      projectId={p.id}
+      currency={cur}
+      lang={lang}
+      addedBy={nameOf(it.added_by)}
+      kind={p.kind}
+      likes={likesOf(it.id)}
+      comments={commentsOf(it.id)}
+      compact={compact}
+    />
+  );
 
   return (
-    <div>
-      {/* ---------- Bandeau ---------- */}
-      <section className="relative -mx-4 -mt-8 h-64 overflow-hidden sm:-mx-6 sm:h-80 lg:mx-0 lg:mt-0 lg:rounded-xl3">
+    <div className="-mt-24 sm:-mt-28">
+      {/* ================= Ouverture ================= */}
+      <section className="relative mx-[calc(50%-50vw)] flex h-[56vh] min-h-[420px] items-end overflow-hidden bg-night sm:h-[68vh]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={cover(p.kind, 1800)} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
-        <Link href="/dashboard" className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-sm font-medium backdrop-blur hover:bg-white">
-          ← {t.myPots}
-        </Link>
-        <div className="absolute bottom-6 left-5 right-5 flex flex-wrap items-end justify-between gap-4 sm:bottom-8 sm:left-8 sm:right-8">
-          <div className="text-white">
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${st.chip}`}>
-              {st.emoji} {p.kind === "travel" ? t.travel : t.home}
-            </span>
-            <h1 className="display mt-3 text-5xl leading-none sm:text-7xl">{p.name}</h1>
-          </div>
-          <div className="flex -space-x-2">
-            {mems.map((m) => (
-              <Avatar key={m.user_id} name={m.profiles?.display_name ?? "?"} url={m.profiles?.avatar_url ?? null} ring />
-            ))}
+        <img src={cover(p.kind, 2200)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/35" />
+        <div className="relative mx-auto w-full max-w-6xl px-5 pb-12 text-white sm:px-6 sm:pb-16">
+          <Link href="/dashboard" className="caps text-white/70 transition hover:text-white">
+            ← {t.myPots}
+          </Link>
+          <p className="caps mt-10 text-white/75">
+            {kindLabel} · {mems.length} {fr ? (mems.length > 1 ? "membres" : "membre") : mems.length > 1 ? "members" : "member"}
+          </p>
+          <h1 className="display mt-4 max-w-4xl text-5xl leading-[0.95] sm:text-7xl lg:text-8xl">{p.name}</h1>
+          <div className="mt-7 flex items-center gap-4">
+            <div className="flex -space-x-2">
+              {mems.map((m) => (
+                <Avatar key={m.user_id} name={m.profiles?.display_name ?? "?"} url={m.profiles?.avatar_url ?? null} ring />
+              ))}
+            </div>
+            <p className="text-sm text-white/80">{firstNames.join(fr ? " & " : " & ")}</p>
           </div>
         </div>
       </section>
 
-      {/* ---------- Rappel du mois ---------- */}
-      {me && Number(me.monthly_amount) > 0 && !paidThisMonth && s.remaining > 0 && (
-        <form
-          action={addDepositAction.bind(null, p.id)}
-          className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl3 border border-apricot bg-apricot-soft px-5 py-4"
-        >
-          <p className="text-sm text-walnut-dark">
-            <b>{fr ? "C'est le moment du mois !" : "It's that time of the month!"}</b>{" "}
-            {fr
-              ? `Tu n'as pas encore mis ta part de côté en ${now.toLocaleDateString("fr-FR", { month: "long" })}.`
-              : `You haven't put your share aside for ${now.toLocaleDateString("en-GB", { month: "long" })} yet.`}
-          </p>
-          <input type="hidden" name="amount" value={me.monthly_amount} />
-          <button className="btn-primary whitespace-nowrap !py-2">
-            {fr ? "J'ai mis" : "I saved"} {money(Number(me.monthly_amount), cur, lang)}
-          </button>
-        </form>
-      )}
+      {/* ================= Où on en est ================= */}
+      <section className="py-14 sm:py-20">
+        {me && Number(me.monthly_amount) > 0 && !paidThisMonth && s.remaining > 0 && (
+          <form
+            action={addDeposit.bind(null, p.id)}
+            className="mb-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-y border-line py-4"
+          >
+            <p className="text-sm">
+              <span className="caps mr-3 text-brass">{monthName}</span>
+              {fr ? "Ta part n'est pas encore mise de côté ce mois-ci." : "Your share isn't set aside yet this month."}
+            </p>
+            <input type="hidden" name="amount" value={me.monthly_amount} />
+            <button className="link-caps">
+              {fr ? "C'est fait" : "Done"} · {money(Number(me.monthly_amount), cur, lang)}
+            </button>
+          </form>
+        )}
 
-      {/* ---------- Jauge ---------- */}
-      <section className="mt-8 grid gap-6 rounded-xl3 border border-line bg-white p-6 shadow-soft sm:grid-cols-[auto_1fr] sm:p-8">
-        <Jar progress={s.progress} kind={p.kind} className="mx-auto h-48 w-28 sm:h-56 sm:w-32" />
-        <div className="flex flex-col justify-center">
-          <p className="text-muted">{t.saved}</p>
-          <p className="display text-6xl leading-none sm:text-7xl">{money(s.saved, cur, lang)}</p>
-          <p className="mt-2 text-muted">
-            {fr ? "sur" : "of"} <span className="font-semibold text-ink">{money(s.goal, cur, lang)}</span>
-            {s.goal > 0 && <> ({Math.round(s.progress * 100)} %)</>}
-          </p>
-
-          <div className="mt-6 grid grid-cols-3 gap-3 border-t border-line pt-5 text-sm">
-            <Stat label={t.remaining} value={money(s.remaining, cur, lang)} />
-            <Stat label={fr ? "Par mois" : "Per month"} value={money(s.monthly, cur, lang)} />
-            <Stat label={t.bought} value={money(s.bought, cur, lang)} />
+        <div className="grid items-end gap-10 md:grid-cols-[1.5fr_1fr]">
+          <div>
+            <p className="caps text-muted">{fr ? "Épargné ensemble" : "Saved together"}</p>
+            <p className="display mt-3 text-[4.2rem] leading-none sm:text-8xl lg:text-9xl">{money(s.saved, cur, lang)}</p>
+            <p className="mt-4 text-muted">
+              {fr ? "sur" : "of"} {money(s.goal, cur, lang)}
+              {s.goal > 0 && <> · {Math.round(s.progress * 100)} %</>}
+            </p>
           </div>
-
-          <p className="mt-5 text-sm">
+          <div className="md:text-right">
+            <p className="caps text-muted">{fr ? "Arrivée prévue" : "Expected"}</p>
             {s.goal > 0 && s.remaining === 0 ? (
-              <span className="rounded-full bg-moss-soft px-3 py-1.5 font-semibold text-moss">{t.reached}</span>
+              <p className="display mt-3 text-4xl sm:text-5xl">{fr ? "C'est prêt." : "You're there."}</p>
             ) : s.months !== null && s.eta ? (
-              <span className="rounded-full bg-apricot-soft px-3 py-1.5 font-semibold text-walnut-dark">
-                {fr ? "Prêt en" : "Ready by"} {monthYear(s.eta, lang)}, {fr ? "dans" : "in"} {s.months} {s.months > 1 ? t.months : t.month}
-              </span>
+              <>
+                <p className="display mt-3 text-4xl capitalize sm:text-5xl">{monthYear(s.eta, lang)}</p>
+                <p className="mt-2 text-muted">
+                  {fr ? "dans" : "in"} {s.months} {s.months > 1 ? t.months : t.month}
+                </p>
+              </>
             ) : (
-              <span className="text-muted">{t.setMonthly}</span>
+              <>
+                <p className="display mt-3 text-3xl text-muted">—</p>
+                <Link href={href({ tab: "epargne" })} className="link-caps mt-3">
+                  {fr ? "Fixer ma part du mois" : "Set my monthly share"}
+                </Link>
+              </>
             )}
-          </p>
-          {s.goal > 0 && <Milestones progress={s.progress} projectId={p.id} lang={lang} />}
-          <Simulator remaining={s.remaining} monthly={s.monthly} currency={cur} lang={lang} />
+          </div>
         </div>
+
+        {s.goal > 0 && <Milestones progress={s.progress} projectId={p.id} lang={lang} />}
+
+        <dl className="mt-14 grid grid-cols-3 gap-4 border-t border-line pt-6">
+          <Figure label={t.remaining} value={money(s.remaining, cur, lang)} />
+          <Figure label={fr ? "Chaque mois" : "Each month"} value={money(s.monthly, cur, lang)} />
+          <Figure label={fr ? "Déjà acheté" : "Bought"} value={money(s.bought, cur, lang)} />
+        </dl>
       </section>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
-        {/* ---------- Colonne principale ---------- */}
-        <div className="min-w-0 space-y-10">
+      {/* ================= Onglets ================= */}
+      <nav id="onglets" className="sticky top-16 z-30 mx-[calc(50%-50vw)] scroll-mt-16 border-y border-line bg-paper/95 backdrop-blur sm:top-20 sm:scroll-mt-20">
+        <div className="mx-auto flex max-w-6xl gap-8 overflow-x-auto px-5 sm:gap-12 sm:px-6">
+          {(
+            [
+              ["liste", fr ? `La liste · ${list.length}` : `The list · ${list.length}`],
+              ["epargne", fr ? "Épargne" : "Savings"],
+              ["cercle", fr ? "Le cercle" : "The circle"],
+            ] as [Tab, string][]
+          ).map(([k, label]) => (
+            <Link
+              key={k}
+              href={href({ tab: k, room: null, view: null })}
+              className={`caps -mb-px shrink-0 border-b-2 py-4 transition ${tab === k ? "border-ink text-ink" : "border-transparent text-muted hover:text-ink"}`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+
+      {/* ================= La liste ================= */}
+      {tab === "liste" && (
+        <div className="py-12 sm:py-16">
           <AddItemForm
             projectId={p.id}
             currency={cur}
             t={{
-              addTitle: t.addTitle, pasteLink: t.pasteLink, fetch: t.fetch, fetching: t.fetching, orManual: t.orManual,
-              title: t.title, price: t.price, qty: t.qty, add: t.add, cancel: t.cancel,
-              priceNotFound: t.priceNotFound, fetchError: t.fetchError,
+              addTitle: fr ? "Ajouter une envie" : "Add a wish",
+              pasteLink: fr ? "Collez le lien d'un produit, d'un hôtel…" : "Paste a product or hotel link…",
+              fetch: fr ? "Ajouter" : "Add",
+              fetching: fr ? "Lecture…" : "Reading…",
+              orManual: fr ? "Saisir à la main" : "Enter manually",
+              title: t.title,
+              price: t.price,
+              qty: t.qty,
+              add: fr ? "Ajouter à la liste" : "Add to list",
+              cancel: t.cancel,
+              priceNotFound: t.priceNotFound,
+              fetchError: t.fetchError,
             }}
           />
 
-          <section id="liste" className="scroll-mt-24">
-            <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <h2 className="display text-4xl">{t.list}</h2>
-              <span className="text-sm text-muted">
-                {toBuy.length} {fr ? "à acheter" : "to buy"}
-                {bought.length > 0 && `, ${bought.length} ${fr ? "acheté" : "bought"}${bought.length > 1 && fr ? "s" : ""}`}
-              </span>
+          {list.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="display mx-auto max-w-xl text-4xl leading-tight sm:text-5xl">
+                {fr ? "Votre liste commence ici." : "Your list starts here."}
+              </p>
+              <p className="mx-auto mt-4 max-w-md text-muted">
+                {fr ? "Collez un lien ci-dessus, ou partez d'une idée :" : "Paste a link above, or start from an idea:"}
+              </p>
+              <div className="mx-auto mt-4 flex max-w-3xl justify-center">
+                <IdeaChips projectId={p.id} ideas={IDEAS[p.kind]} lang={lang} currency={cur} />
+              </div>
             </div>
-
-            {list.length > 0 && (
-              <div className="mt-5 flex flex-wrap items-center gap-2">
-                <div className="-mx-1 flex flex-1 gap-2 overflow-x-auto px-1 pb-1">
-                  <Link
-                    href={qs({ room: null })}
-                    scroll={false}
-                    className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition ${!activeRoom ? "border-ink bg-ink text-white" : "border-line bg-white hover:border-ink/40"}`}
-                  >
-                    {fr ? "Tout" : "All"} <span className="opacity-60">· {money(s.goal, cur, lang)}</span>
-                  </Link>
+          ) : (
+            <>
+              <div className="mt-12 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+                <div className="-mx-1 flex max-w-full gap-6 overflow-x-auto px-1 pb-1">
+                  <FilterLink href={href({ room: null })} active={!activeRoom} label={fr ? "Tout" : "All"} meta={money(s.goal, cur, lang)} />
                   {roomTotals.map((r) => (
-                    <Link
-                      key={r.id}
-                      href={qs({ room: r.id })}
-                      scroll={false}
-                      className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition ${activeRoom === r.id ? "border-ink bg-ink text-white" : "border-line bg-white hover:border-ink/40"}`}
-                    >
-                      {r[lang]} <span className="opacity-60">· {money(r.total, cur, lang)}</span>
-                    </Link>
+                    <FilterLink key={r.id} href={href({ room: r.id })} active={activeRoom === r.id} label={r[lang]} meta={money(r.total, cur, lang)} />
                   ))}
-                  {unsorted.length > 0 && roomTotals.length > 0 && (
-                    <Link
-                      href={qs({ room: "none" })}
-                      scroll={false}
-                      className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition ${activeRoom === "none" ? "border-ink bg-ink text-white" : "border-line bg-white hover:border-ink/40"}`}
-                    >
-                      {fr ? "Sans pièce" : "Unsorted"} <span className="opacity-60">· {unsorted.length}</span>
-                    </Link>
+                  {unsortedCount > 0 && roomTotals.length > 0 && (
+                    <FilterLink href={href({ room: "none" })} active={activeRoom === "none"} label={fr ? "Sans pièce" : "Unsorted"} meta={String(unsortedCount)} />
                   )}
                 </div>
-                <div className="flex shrink-0 overflow-hidden rounded-full border border-line bg-white text-sm">
-                  <Link href={qs({ view: null })} scroll={false} className={`px-3.5 py-1.5 ${view === "list" ? "bg-ink text-white" : "hover:bg-paper"}`}>
-                    {fr ? "Liste" : "List"}
-                  </Link>
-                  <Link href={qs({ view: "board" })} scroll={false} className={`px-3.5 py-1.5 ${view === "board" ? "bg-ink text-white" : "hover:bg-paper"}`}>
-                    Moodboard
-                  </Link>
+                <div className="flex gap-5">
+                  <FilterLink href={href({ view: null })} active={view === "grid"} label={fr ? "Grille" : "Grid"} />
+                  <FilterLink href={href({ view: "board" })} active={view === "board"} label="Moodboard" />
                 </div>
               </div>
-            )}
 
-            {list.length === 0 ? (
-              <div className={`mt-5 rounded-xl3 border-2 border-dashed border-line p-10 text-center ${p.kind === "travel" ? "bg-dusk-soft/40" : "bg-walnut-soft/40"}`}>
-                <p className="display text-3xl">{fr ? "La liste est vide" : "The list is empty"}</p>
-                <p className="mx-auto mt-2 max-w-sm text-muted">{t.empty}</p>
-              </div>
-            ) : view === "board" ? (
-              <div className="mt-5 columns-2 gap-3 sm:columns-3">
-                {shown.map((it, i) => {
-                  const lk = likesOf(it.id);
-                  return (
-                    <figure key={it.id} className="group relative mb-3 break-inside-avoid overflow-hidden rounded-xl2 bg-paper">
+              {view === "board" ? (
+                <div className="mt-10 columns-2 gap-3 sm:columns-3 lg:columns-4">
+                  {[...toBuy, ...bought].map((it, i) => (
+                    <figure key={it.id} className="group relative mb-3 break-inside-avoid overflow-hidden bg-white">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={it.image_url || illustrationFor(it.title, p.kind)}
                         alt={it.title}
                         referrerPolicy="no-referrer"
                         loading="lazy"
-                        className={`w-full object-cover transition duration-700 group-hover:scale-[1.04] ${["aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-[4/3]"][i % 4]} ${it.purchased ? "opacity-50" : ""}`}
+                        className={`w-full object-cover transition duration-[1200ms] group-hover:scale-[1.04] ${
+                          ["aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-[4/3]"][i % 4]
+                        } ${it.purchased ? "grayscale-[60%]" : ""}`}
                       />
-                      <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-10 text-white">
-                        <p className="line-clamp-1 text-sm font-medium">{it.title}</p>
-                        <p className="text-xs text-white/80">
+                      <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-12 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
+                        <p className="line-clamp-1 text-sm">{it.title}</p>
+                        <p className="caps mt-1 text-white/75">
                           {money(Number(it.price) * it.quantity, cur, lang)}
                           {it.room && ` · ${roomLabel(p.kind, it.room, lang)}`}
                         </p>
                       </figcaption>
-                      {lk.count > 0 && (
-                        <span className="absolute right-2 top-2 rounded-full bg-walnut px-2 py-0.5 text-xs font-semibold text-white">♥ {lk.count}</span>
-                      )}
                     </figure>
-                  );
-                })}
-              </div>
-            ) : (
-              <ul className="mt-5 grid gap-4 sm:grid-cols-2">
-                {shown.map((it) => (
-                  <ItemRow
-                    key={it.id}
-                    item={it}
-                    projectId={p.id}
-                    currency={cur}
-                    lang={lang}
-                    addedBy={nameOf(it.added_by)}
-                    kind={p.kind}
-                    likes={likesOf(it.id)}
-                    comments={commentsOf(it.id)}
-                    t={{ buy: t.buy, markBought: t.markBought, bought: t.bought, remove: t.remove, addedBy: t.addedBy, price: t.price, qty: t.qty, save: t.save }}
-                  />
-                ))}
-              </ul>
-            )}
-            {list.length > 0 && shown.length === 0 && <p className="mt-6 text-muted">{fr ? "Rien dans cette pièce pour l'instant." : "Nothing in this room yet."}</p>}
-          </section>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  {toBuy.length > 0 ? (
+                    <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-3">{toBuy.map((it) => card(it))}</ul>
+                  ) : (
+                    <p className="mt-10 text-muted">{fr ? "Rien à acheter ici pour l'instant." : "Nothing to buy here yet."}</p>
+                  )}
+                  {bought.length > 0 && (
+                    <div className="mt-20">
+                      <p className="caps border-b border-line pb-3 text-muted">
+                        {fr ? "Déjà acheté" : "Already bought"} · {bought.length}
+                      </p>
+                      <ul className="mt-8 grid grid-cols-3 gap-x-4 gap-y-8 opacity-80 sm:grid-cols-4 lg:grid-cols-6">
+                        {bought.map((it) => card(it, true))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
 
-          <ProjectInspiration projectId={p.id} kind={p.kind} existingUrls={list.map((i) => i.url ?? "").filter(Boolean)} />
+          <div className="mt-24">
+            <ProjectInspiration projectId={p.id} kind={p.kind} existingUrls={list.map((i) => i.url ?? "").filter(Boolean)} />
+          </div>
 
-          <section>
-            <h2 className="display text-4xl">{t.ideas}</h2>
-            <p className="mt-2 text-muted">{t.ideasHint}</p>
-            <IdeaChips projectId={p.id} ideas={IDEAS[p.kind]} lang={lang} currency={cur} />
+          {list.length > 0 && (
+            <section className="mt-20">
+              <p className="caps text-muted">{fr ? "Idées rapides" : "Quick ideas"}</p>
+              <h2 className="display mt-2 text-4xl">{fr ? "Il manque peut-être…" : "You might be missing…"}</h2>
+              <IdeaChips projectId={p.id} ideas={IDEAS[p.kind]} lang={lang} currency={cur} />
+            </section>
+          )}
 
-            <h3 className="mt-10 text-lg font-semibold">{t.shops}</h3>
-            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <section className="mt-20">
+            <p className="caps text-muted">{fr ? "Où chercher" : "Where to look"}</p>
+            <h2 className="display mt-2 text-4xl">{fr ? "Les bonnes adresses" : "Good addresses"}</h2>
+            <ul className="mt-8 divide-y divide-line border-y border-line">
               {SHOPS[p.kind].map((shop) => (
                 <li key={shop.name}>
                   <a
                     href={`/go?u=${encodeURIComponent(shop.url)}`}
                     target="_blank"
                     rel="noopener sponsored"
-                    className="group flex h-full flex-col rounded-xl2 border border-line bg-white p-4 transition hover:border-ink/30 hover:shadow-soft"
+                    className="group grid grid-cols-[1fr_auto] items-baseline gap-4 py-5 sm:grid-cols-[1fr_1.4fr_auto] sm:px-2"
                   >
-                    <span className="font-semibold">{shop.name}</span>
-                    <span className="mt-0.5 text-xs text-muted">{shop.note[lang]}</span>
-                    <span className="mt-3 text-xs font-semibold text-dusk opacity-0 transition group-hover:opacity-100">
-                      {fr ? "Ouvrir le site" : "Open site"} ↗
-                    </span>
+                    <span className="display text-2xl">{shop.name}</span>
+                    <span className="hidden text-muted sm:block">{shop.note[lang]}</span>
+                    <span className="caps transition group-hover:translate-x-1">↗</span>
                   </a>
                 </li>
               ))}
             </ul>
           </section>
         </div>
+      )}
 
-        {/* ---------- Colonne latérale ---------- */}
-        <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <section className="card">
-            <h2 className="text-lg font-semibold">{t.members}</h2>
-            <ul className="mt-4 space-y-4">
+      {/* ================= Épargne ================= */}
+      {tab === "epargne" && (
+        <div className="grid gap-14 py-12 sm:py-16 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+          <div className="space-y-10">
+            {me && (
+              <form action={setMonthly.bind(null, p.id)}>
+                <p className="caps text-muted">{t.myMonthly}</p>
+                <div className="mt-4 flex items-end gap-4">
+                  <input
+                    name="monthly"
+                    inputMode="decimal"
+                    defaultValue={me.monthly_amount}
+                    aria-label={t.myMonthly}
+                    className="input-line display !text-5xl"
+                  />
+                  <span className="display pb-2 text-3xl text-muted">{cur === "EUR" ? "€" : cur}</span>
+                  <button className="link-caps mb-3 shrink-0">{t.save}</button>
+                </div>
+              </form>
+            )}
+
+            <form action={addDeposit.bind(null, p.id)}>
+              <p className="caps text-muted">{fr ? "J'ai mis de côté" : "I've saved"}</p>
+              <div className="mt-4 flex items-end gap-4">
+                <input
+                  name="amount"
+                  inputMode="decimal"
+                  defaultValue={me?.monthly_amount || ""}
+                  placeholder="100"
+                  aria-label={t.addDeposit}
+                  className="input-line display !text-5xl"
+                />
+                <span className="display pb-2 text-3xl text-muted">{cur === "EUR" ? "€" : cur}</span>
+                <button className="link-caps mb-3 shrink-0">{fr ? "Ajouter" : "Add"}</button>
+              </div>
+            </form>
+
+            <Simulator remaining={s.remaining} monthly={s.monthly} currency={cur} lang={lang} />
+          </div>
+
+          <div className="space-y-12">
+            <div>
+              <p className="caps text-muted">{fr ? "Qui a mis quoi" : "Who saved what"}</p>
+              <ul className="mt-5 space-y-5">
+                {mems.map((m) => {
+                  const saved = savedBy(m.user_id);
+                  const share = s.saved > 0 ? saved / s.saved : 0;
+                  return (
+                    <li key={m.user_id}>
+                      <div className="flex items-baseline justify-between gap-4">
+                        <span>{m.user_id === user.id ? t.you : m.profiles?.display_name?.split(" ")[0] ?? "?"}</span>
+                        <span className="display text-2xl">{money(saved, cur, lang)}</span>
+                      </div>
+                      <div className="mt-2 h-px bg-line">
+                        <div className="h-[2px] -translate-y-[0.5px] bg-ink" style={{ width: `${share * 100}%` }} />
+                      </div>
+                      <p className="mt-1.5 text-xs text-muted">
+                        {money(m.monthly_amount, cur, lang)} {t.perMonth}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div>
+              <p className="caps text-muted">{t.deposits}</p>
+              {deps.length === 0 ? (
+                <p className="mt-4 text-muted">{t.noDeposits}</p>
+              ) : (
+                <ul className="mt-4 divide-y divide-line border-y border-line">
+                  {deps.map((d) => (
+                    <li key={d.id} className="grid grid-cols-[88px_1fr_auto_24px] items-baseline gap-3 py-4">
+                      <span className="caps text-muted">
+                        {new Date(d.deposited_on).toLocaleDateString(fr ? "fr-FR" : "en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                      <span>{nameOf(d.user_id)}</span>
+                      <span className="display text-xl">+ {money(d.amount, cur, lang)}</span>
+                      {d.user_id === user.id ? (
+                        <form action={deleteDeposit.bind(null, p.id, d.id)}>
+                          <button className="text-lg text-muted hover:text-walnut" aria-label={t.remove}>
+                            ×
+                          </button>
+                        </form>
+                      ) : (
+                        <span />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= Le cercle ================= */}
+      {tab === "cercle" && (
+        <div className="grid gap-14 py-12 sm:py-16 lg:grid-cols-2 lg:gap-20">
+          <div>
+            <p className="caps text-muted">{t.members}</p>
+            <ul className="mt-5 divide-y divide-line border-y border-line">
               {mems.map((m) => (
-                <li key={m.user_id} className="flex items-center gap-3">
+                <li key={m.user_id} className="flex items-center gap-4 py-5">
                   <Avatar name={m.profiles?.display_name ?? "?"} url={m.profiles?.avatar_url ?? null} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">
+                    <p className="display truncate text-2xl">
                       {m.profiles?.display_name ?? "?"}
-                      {m.user_id === user.id && <span className="font-normal text-muted"> ({t.you})</span>}
+                      {m.user_id === user.id && <span className="text-base text-muted"> ({t.you})</span>}
                     </p>
-                    <p className="text-xs text-muted">
-                      {money(m.monthly_amount, cur, lang)} {t.perMonth}, {t.saved.toLowerCase()} {money(savedBy(m.user_id), cur, lang)}
+                    <p className="caps mt-1 text-muted">
+                      {m.role === "owner" ? (fr ? "Créateur" : "Owner") : fr ? "Membre" : "Member"} · {money(m.monthly_amount, cur, lang)}{" "}
+                      {t.perMonth}
                     </p>
                   </div>
                 </li>
               ))}
             </ul>
-            {me && (
-              <form action={setMonthly.bind(null, p.id)} className="mt-5 border-t border-line pt-5">
-                <label className="label" htmlFor="monthly">{t.myMonthly}</label>
-                <div className="flex gap-2">
-                  <input id="monthly" name="monthly" inputMode="decimal" defaultValue={me.monthly_amount} className="input" />
-                  <button className="btn-ghost">{t.save}</button>
-                </div>
-              </form>
-            )}
-          </section>
 
-          <section className="card">
-            <h2 className="text-lg font-semibold">{t.deposits}</h2>
-            <form action={addDeposit.bind(null, p.id)} className="mt-4 flex gap-2">
-              <input
-                name="amount"
-                inputMode="decimal"
-                defaultValue={me?.monthly_amount || ""}
-                placeholder="100"
-                className="input"
-                aria-label={t.addDeposit}
+            <div className="mt-10">
+              <InviteBox
+                url={inviteUrl}
+                projectName={p.name}
+                canRegenerate={isOwner}
+                regenerate={regenerateInvite.bind(null, p.id)}
+                t={{ invite: t.invite, inviteText: t.inviteText, copy: t.copy, copied: t.copied, share: t.share, newLink: t.newLink }}
               />
-              <button className="btn-primary whitespace-nowrap">{t.addDeposit}</button>
-            </form>
-            {deps.length === 0 ? (
-              <p className="mt-4 text-sm text-muted">{t.noDeposits}</p>
-            ) : (
-              <ul className="mt-4 max-h-72 divide-y divide-line overflow-auto text-sm">
-                {deps.map((d) => (
-                  <li key={d.id} className="flex items-center justify-between gap-2 py-2.5">
-                    <span>
-                      <span className="font-semibold">+ {money(d.amount, cur, lang)}</span>
-                      <span className="block text-xs text-muted">
-                        {nameOf(d.user_id)}, {new Date(d.deposited_on).toLocaleDateString(fr ? "fr-FR" : "en-GB", { day: "numeric", month: "short" })}
-                      </span>
-                    </span>
-                    {d.user_id === user.id && (
-                      <form action={deleteDeposit.bind(null, p.id, d.id)}>
-                        <button className="rounded-full px-2 text-lg text-muted hover:bg-paper hover:text-ink" aria-label={t.remove}>×</button>
-                      </form>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <InviteBox
-            url={inviteUrl}
-            projectName={p.name}
-            canRegenerate={isOwner}
-            regenerate={regenerateInvite.bind(null, p.id)}
-            t={{ invite: t.invite, inviteText: t.inviteText, copy: t.copy, copied: t.copied, share: t.share, newLink: t.newLink }}
-          />
-
-
-          {/* ---------- Liste à partager avec les proches ---------- */}
-          <section className="card">
-            <h2 className="text-lg font-semibold">🎁 {fr ? "Liste pour les proches" : "Wish list for loved ones"}</h2>
-            <p className="mt-2 text-sm text-muted">
-              {fr
-                ? "Un lien à envoyer à la famille et aux amis : ils voient la liste (sans vos montants) et cliquent « Je l'offre » pour réserver un objet. Parfait pour une crémaillère ou un anniversaire."
-                : "A link for family and friends: they see the list (not your savings) and tap “I'll gift it” to reserve an item."}
-            </p>
-            {shareUrl ? (
-              <>
-                <p className="mt-4 truncate rounded-xl bg-paper px-3 py-2 text-xs text-muted">{shareUrl}</p>
-                <div className="mt-3 space-y-2">
-                  <CopyLink url={shareUrl} label={fr ? "Envoyer le lien" : "Send the link"} done={fr ? "Lien copié ✓" : "Link copied ✓"} />
-                  <a href={shareUrl} target="_blank" className="btn-ghost w-full">
-                    {fr ? "Voir la page" : "Preview"} ↗
-                  </a>
-                </div>
-                {isOwner && (
-                  <form action={setShare.bind(null, p.id, false)} className="mt-3 text-center">
-                    <button className="text-xs text-muted underline-offset-2 hover:text-walnut hover:underline">{fr ? "Désactiver le lien" : "Turn off the link"}</button>
-                  </form>
-                )}
-              </>
-            ) : isOwner ? (
-              <form action={setShare.bind(null, p.id, true)} className="mt-4">
-                <button className="btn-primary w-full">{fr ? "Créer le lien de partage" : "Create the share link"}</button>
-              </form>
-            ) : (
-              <p className="mt-3 text-xs text-muted">{fr ? "Le propriétaire de la cagnotte peut l'activer." : "The pot owner can turn it on."}</p>
-            )}
-          </section>
-          <div className="px-1 text-sm">
-            {isOwner ? (
-              <ConfirmButton action={deleteProject.bind(null, p.id)} confirmText={t.confirmDelete} label={t.deleteProject} />
-            ) : (
-              <ConfirmButton action={leaveProject.bind(null, p.id)} confirmText={`${t.leave} ?`} label={t.leave} />
-            )}
+            </div>
           </div>
-        </aside>
-      </div>
+
+          <div className="space-y-10">
+            <section className="border border-line bg-white p-6 sm:p-8">
+              <p className="caps text-muted">{fr ? "Liste pour les proches" : "Wish list for loved ones"}</p>
+              <p className="display mt-3 text-3xl leading-tight">
+                {fr ? "Pour une crémaillère, un anniversaire, un mariage." : "For a housewarming, a birthday, a wedding."}
+              </p>
+              <p className="mt-3 leading-relaxed text-muted">
+                {fr
+                  ? "Vos proches voient la liste, sans vos montants, et réservent un objet avec « Je l'offre ». Personne n'offre deux fois la même chose."
+                  : "Loved ones see the list (not your savings) and reserve an item with “I'll gift it”. No duplicates."}
+              </p>
+              {shareUrl ? (
+                <>
+                  <p className="mt-5 truncate border-b border-line pb-2 text-sm text-muted">{shareUrl}</p>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <CopyLink url={shareUrl} label={fr ? "Envoyer le lien" : "Send the link"} done={fr ? "Lien copié ✓" : "Link copied ✓"} />
+                    <a href={shareUrl} target="_blank" className="btn-ghost w-full !py-3 text-[12px] uppercase tracking-label">
+                      {fr ? "Voir la page" : "Preview"} ↗
+                    </a>
+                  </div>
+                  {isOwner && (
+                    <form action={setShare.bind(null, p.id, false)} className="mt-4">
+                      <button className="text-xs text-muted underline-offset-4 hover:text-walnut hover:underline">
+                        {fr ? "Désactiver le lien" : "Turn off the link"}
+                      </button>
+                    </form>
+                  )}
+                </>
+              ) : isOwner ? (
+                <form action={setShare.bind(null, p.id, true)} className="mt-6">
+                  <button className="btn-primary w-full !py-3.5 text-[12px] uppercase tracking-label">
+                    {fr ? "Créer le lien de partage" : "Create the share link"}
+                  </button>
+                </form>
+              ) : (
+                <p className="mt-5 text-sm text-muted">{fr ? "Le créateur de la cagnotte peut l'activer." : "The pot owner can turn it on."}</p>
+              )}
+            </section>
+
+            <div className="border-t border-line pt-6 text-sm">
+              {isOwner ? (
+                <ConfirmButton action={deleteProject.bind(null, p.id)} confirmText={t.confirmDelete} label={t.deleteProject} />
+              ) : (
+                <ConfirmButton action={leaveProject.bind(null, p.id)} confirmText={`${t.leave} ?`} label={t.leave} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Figure({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-0.5 text-base font-semibold">{value}</p>
+      <dt className="caps text-muted">{label}</dt>
+      <dd className="display mt-2 text-2xl sm:text-4xl">{value}</dd>
     </div>
+  );
+}
+
+function FilterLink({ href, active, label, meta }: { href: string; active: boolean; label: string; meta?: string }) {
+  return (
+    <Link
+      href={href}
+      scroll={false}
+      className={`caps shrink-0 border-b pb-1 transition ${active ? "border-ink text-ink" : "border-transparent text-muted hover:text-ink"}`}
+    >
+      {label}
+      {meta && <span className="ml-1.5 normal-case tracking-normal opacity-60">{meta}</span>}
+    </Link>
   );
 }
 
 function Avatar({ name, url, ring }: { name: string; url: string | null; ring?: boolean }) {
-  const base = `h-10 w-10 shrink-0 rounded-full ${ring ? "border-2 border-white" : ""}`;
+  const base = `h-10 w-10 shrink-0 rounded-full ${ring ? "border-2 border-night" : ""}`;
   if (url) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={url} alt={name} title={name} referrerPolicy="no-referrer" className={`${base} object-cover`} />;
   }
   return (
-    <span title={name} className={`${base} flex items-center justify-center bg-apricot-soft text-sm font-bold text-walnut`}>
+    <span title={name} className={`${base} flex items-center justify-center bg-bone text-sm font-medium text-ink`}>
       {name.slice(0, 1).toUpperCase()}
     </span>
   );
