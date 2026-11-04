@@ -91,6 +91,7 @@ export default function HeroArch({
       const r = sr.width / 2;
       L.style.clipPath = `inset(${lerp(top, 0, e)}px ${lerp(right, 0, e)}px ${lerp(bottom, 0, e)}px ${lerp(left, 0, e)}px round ${lerp(r, 0, e)}px ${lerp(r, 0, e)}px 0 0)`;
       L.style.setProperty("--zoom", String(1.12 - e * 0.12));
+      L.style.setProperty("--ty", `${lerp(top + sr.height / 2 - H / 2, 0, e)}px`);
 
       if (copy.current) {
         const f = clamp(1 - p * 3.2);
@@ -169,7 +170,7 @@ export default function HeroArch({
               src={scenes[k].img}
               alt=""
               className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-out"
-              style={{ opacity: kind === k ? 1 : 0, transform: "scale(var(--zoom, 1.12))" }}
+              style={{ opacity: kind === k ? 1 : 0, transform: "translateY(var(--ty, 0px)) scale(var(--zoom, 1.12))" }}
             />
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
