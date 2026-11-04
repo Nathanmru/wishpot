@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       <section>
         <h2 className="text-xl font-semibold">Qui sommes-nous</h2>
         <p>
-          {APP_NAME} est un site qui permet de créer des cagnottes à plusieurs pour un voyage ou pour meubler un
+          {APP_NAME} est un site qui permet de créer des cagnottes à plusieurs pour meubler et décorer un
           logement. Pour toute question : <a className="underline" href={`mailto:${CONTACT}`}>{CONTACT}</a>.
         </p>
       </section>
