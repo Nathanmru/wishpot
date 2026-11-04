@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Wishpot — la cagnotte à plusieurs",
     short_name: "Wishpot",
-    description: "Une cagnotte à plusieurs pour meubler un appartement ou partir en voyage.",
+    description: "La cagnotte à plusieurs pour meubler et décorer votre appartement ou votre maison.",
     start_url: "/dashboard",
     scope: "/",
     display: "standalone",
