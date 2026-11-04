@@ -72,6 +72,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <a href="mailto:nath.prank@gmail.com" className="hover:opacity-60">Contact</a>
             </div>
           </div>
+          <div aria-hidden className="overflow-hidden px-4 sm:px-8">
+            <p className="select-none whitespace-nowrap text-center font-display text-[19vw] uppercase leading-[0.8] tracking-[0.06em] text-bone/[0.07]">
+              {APP_NAME}
+            </p>
+          </div>
           <div className="mx-auto max-w-[1400px] border-t border-bone/10 px-6 py-6 text-xs leading-relaxed text-bone/45 sm:px-12">
             {t.affiliateNote} © {new Date().getFullYear()} {APP_NAME}
           </div>

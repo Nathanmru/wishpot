@@ -84,3 +84,39 @@ body {
     transform: translateY(0);
   }
 }
+
+/* ---------- Rideau d'ouverture (une fois par visite) ---------- */
+.wp-intro {
+  animation: wp-curtain 1s cubic-bezier(0.76, 0, 0.24, 1) 1.15s forwards;
+}
+.wp-intro-word {
+  opacity: 0;
+  animation: wp-word 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s forwards;
+}
+@keyframes wp-curtain {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+@keyframes wp-word {
+  0% {
+    opacity: 0;
+    letter-spacing: 0.7em;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.32em;
+  }
+}
+html[data-intro="seen"] .wp-intro {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-intro {
+    display: none;
+  }
+}

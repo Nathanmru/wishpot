@@ -3,120 +3,120 @@ import { redirect } from "next/navigation";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import { PHOTOS, photo } from "@/lib/covers";
-import Jar from "@/components/Jar";
 import InspirationDoors from "@/components/InspirationDoors";
-import { Coverflow, HeroDoors, Reveal, StackedPanels } from "@/components/Motion";
+import Composer from "@/components/Composer";
+import IntroCurtain from "@/components/IntroCurtain";
+import { HeroDoors, Reveal, StackedPanels } from "@/components/Motion";
+import { ScrollWords, StorySlider, type Story } from "@/components/Luxe";
+
+const ROAD = "https://images.unsplash.com/photo-1468818438311-4bab781ab9b8?auto=format&fit=crop&w=1000&q=75";
+
+const newHref = (kind: "home" | "travel", name: string) => `/new?${new URLSearchParams({ kind, name }).toString()}`;
 
 const COPY = {
   fr: {
-    doorL: { label: "Collection maison", title: "Maison", cta: "Meubler notre intérieur" },
-    doorR: { label: "Collection voyage", title: "Voyage", cta: "Préparer un départ" },
-    hint: "Faites défiler pour ouvrir",
-    headline: "Ce que vous rêvez d'avoir, mis de côté ensemble.",
-    sub: "Une cagnotte à plusieurs pour meubler un appartement ou partir loin, avec un budget mensuel et une date d'arrivée.",
-    cta1: "Créer une cagnotte",
-    cta2: "Se connecter",
+    doorL: { label: "Maison", title: "Maison", cta: "Meubler un intérieur" },
+    doorR: { label: "Voyage", title: "Voyage", cta: "Préparer un départ" },
+    hint: "Faites défiler",
+    headline: "Le beau se prépare à plusieurs.",
+    sub: "Une liste d'envies, un budget par mois, une date d'arrivée. Pour meubler votre intérieur ou partir loin, à deux ou entre amis.",
+    cta1: "Essayer sans compte",
+    cta2: "Créer ma cagnotte",
+    manifestoKicker: "Le principe",
+    manifesto:
+      "Un canapé repéré un dimanche, une villa au bord de l'eau, un premier appartement. Vous choisissez ce qui vous fait envie, chacun décide ce qu'il met de côté, et la date d'arrivée se rapproche à chaque versement.",
+    howKicker: "Comment ça marche",
+    howTitle: "Trois gestes, pas un de plus.",
     panels: [
       {
         title: "Rêvez grand. Visez juste.",
-        text: "Une terrasse sur la côte amalfitaine, un premier appartement à vous. Nommez le rêve, choisissez la date : Wishpot calcule ce que chacun met de côté chaque mois.",
-        caption: "Votre objectif, découpé en mensualités",
+        text: "Nommez le projet, fixez ce que chacun met de côté chaque mois. Wishpot calcule la date à laquelle vous y serez.",
+        caption: "L'objectif",
       },
       {
         title: "Repérez. Collez. C'est noté.",
-        text: "Le fauteuil vu chez AM.PM, la villa dénichée sur Booking. Collez le lien : photo, nom et prix apparaissent seuls, et votre liste prend des airs de moodboard.",
-        caption: "Compatible avec presque toutes les boutiques",
+        text: "Collez le lien d'un fauteuil ou d'un hôtel : la photo, le nom et le prix s'ajoutent, et la liste prend des airs de moodboard.",
+        caption: "La liste",
       },
       {
         title: "Arrivez-y ensemble.",
-        text: "Votre moitié, vos colocs, la bande d'amis : un lien suffit pour les inviter. Chaque versement fait monter la jauge, et vous savez exactement quand vous y serez.",
-        caption: "Invitation par lien · gratuit",
+        text: "Un lien suffit pour inviter votre moitié ou vos amis. Chaque versement fait avancer la jauge, pour tout le monde.",
+        caption: "Le cercle",
       },
     ],
-    listTitle: "Une liste, deux envies.",
-    listSub: "Exemple de cagnotte partagée : ce qui est repéré, où, et pour combien.",
-    tagHome: "Maison",
-    tagTravel: "Voyage",
-    products: [
-      ["Canapé trois places, cuir cognac", "1 290 €", "Maisons du Monde", "cognac", "home"],
-      ["Lampe à poser en laiton", "189 €", "La Redoute Intérieurs", "lamp", "home"],
-      ["Chambre face à la mer, 3 nuits", "540 €", "Booking.com", "seaWindow", "travel"],
-      ["Banquette sous fenêtre", "420 €", "Westwing", "nook", "home"],
-      ["Riad à Marrakech, 4 nuits", "520 €", "Airbnb", "palms", "travel"],
-      ["Fauteuil club, cuir bleu nuit", "890 €", "Made in Design", "blueSofa", "home"],
-      ["Coucher de soleil en voilier", "2 × 85 €", "GetYourGuide", "seaSunset", "travel"],
+    storiesKicker: "Pensé pour",
+    storiesTitle: "Chaque projet a sa cagnotte.",
+    storiesCta: "Commencer",
+    stories: [
+      { tag: "Maison", title: "Premier appartement", text: "Le lit, le canapé, la vaisselle : tout ce qu'il faut pour le jour J, réparti mois par mois.", img: photo(PHOTOS.loft, 1000), href: newHref("home", "Premier appartement") },
+      { tag: "Voyage", title: "Voyage de noces", text: "La côte amalfitaine ou le Japon, financés à deux sans y penser chaque jour.", img: photo(PHOTOS.positano, 1000), href: newHref("travel", "Voyage de noces") },
+      { tag: "Maison", title: "Liste de crémaillère", text: "Partagez la liste : vos proches choisissent ce qu'ils offrent, sans doublon.", img: photo(PHOTOS.nook, 1000), href: newHref("home", "Crémaillère") },
+      { tag: "Voyage", title: "Vacances entre amis", text: "Six amis, une maison, chacun sa part. Fini les tableurs et les relances.", img: photo(PHOTOS.terrace, 1000), href: newHref("travel", "Vacances entre amis") },
+      { tag: "Maison", title: "Refaire le salon", text: "Un tapis, une lampe, un fauteuil chiné : on avance pièce par pièce.", img: photo(PHOTOS.parisSalon, 1000), href: newHref("home", "Le salon") },
+      { tag: "Voyage", title: "Road trip", text: "La voiture, les nuits, l'essence : un budget clair avant de prendre la route.", img: ROAD, href: newHref("travel", "Road trip") },
+    ] as Story[],
+    trust: [
+      ["Gratuit", "Créer une cagnotte, inviter, partager : rien n'est payant."],
+      ["Votre argent reste chez vous", "Rien ne transite par Wishpot. Chacun épargne où il veut, le site suit vos progrès."],
+      ["Vos données restent privées", "Seul votre cercle voit votre cagnotte. Nous ne revendons rien."],
     ],
-    jarTitle: "La fenêtre se remplit.",
-    jarText: "Chaque cagnotte a sa jauge : une fenêtre qui se remplit à chaque versement. À côté, ce qu'il reste à épargner et la date estimée.",
-    jarStats: [
-      ["2 480 €", "épargnés"],
-      ["1 520 €", "restants"],
-      ["Juillet 2027", "arrivée estimée"],
-    ],
-    faqTitle: "Questions",
+    faqTitle: "Questions fréquentes",
     faq: [
       ["L'argent passe-t-il par le site ?", "Non. Chacun garde son argent : le site sert à se fixer un objectif et à suivre ce que vous avez mis de côté."],
-      ["C'est gratuit ?", "Oui. Certains liens vers les boutiques sont affiliés, ce qui nous rémunère sans rien vous coûter de plus."],
+      ["C'est vraiment gratuit ?", "Oui. Certains liens vers les boutiques sont affiliés : un achat peut nous rémunérer, sans rien vous coûter de plus."],
       ["Combien de personnes par cagnotte ?", "Autant que vous voulez : un couple, des colocataires, des amis qui partent ensemble."],
-      ["Et si le prix n'est pas trouvé ?", "Vous le saisissez à la main. Certains sites bloquent la lecture automatique."],
+      ["Et si le prix d'un objet n'est pas trouvé ?", "Vous le saisissez à la main. Certaines boutiques ne laissent pas lire leurs prix automatiquement."],
+      ["Mes proches peuvent-ils participer ?", "Oui : activez la liste à partager et envoyez le lien. Ils réservent un objet avec « Je l'offre », sans créer de compte."],
     ],
-    finalTitle: "Commencez par un seul objet.",
-    finalCta: "Créer une cagnotte",
+    finalTitle: "Commencez par une seule envie.",
+    finalCta: "Créer ma cagnotte",
+    finalAlt: "ou essayer sans compte",
   },
   en: {
-    doorL: { label: "Home collection", title: "Home", cta: "Furnish our place" },
-    doorR: { label: "Travel collection", title: "Travel", cta: "Plan a trip" },
-    hint: "Scroll to open",
-    headline: "What you dream of having, saved up together.",
-    sub: "A shared pot to furnish a flat or travel far, with a monthly budget and an arrival date.",
-    cta1: "Create a pot",
-    cta2: "Log in",
+    doorL: { label: "Home", title: "Home", cta: "Furnish a home" },
+    doorR: { label: "Travel", title: "Travel", cta: "Plan a trip" },
+    hint: "Scroll",
+    headline: "Beautiful things, saved for together.",
+    sub: "A wish list, a monthly budget, an arrival date. To furnish your home or travel far, as a couple or with friends.",
+    cta1: "Try without an account",
+    cta2: "Create my pot",
+    manifestoKicker: "The idea",
+    manifesto:
+      "A sofa spotted on a Sunday, a villa by the water, a first flat. You choose what you love, each of you decides what to set aside, and the arrival date gets closer with every deposit.",
+    howKicker: "How it works",
+    howTitle: "Three steps, no more.",
     panels: [
-      {
-        title: "Dream big. Aim true.",
-        text: "A terrace on the Amalfi coast, a first place of your own. Name the dream, pick the date: Wishpot works out what each of you puts aside every month.",
-        caption: "Your goal, split into monthly steps",
-      },
-      {
-        title: "Spot it. Paste it. Done.",
-        text: "The armchair you saw at AM.PM, the villa you found on Booking. Paste the link: photo, name and price appear on their own, and your list starts to look like a moodboard.",
-        caption: "Works with almost any shop",
-      },
-      {
-        title: "Get there together.",
-        text: "Your partner, your flatmates, the whole crew: one link invites them. Every deposit lifts the gauge, and you know exactly when you'll be there.",
-        caption: "Invite by link · free",
-      },
+      { title: "Dream big. Aim true.", text: "Name the plan and set what each of you saves per month. Wishpot works out when you'll get there.", caption: "The goal" },
+      { title: "Spot it. Paste it. Done.", text: "Paste the link to an armchair or a hotel: photo, name and price appear, and the list looks like a moodboard.", caption: "The list" },
+      { title: "Get there together.", text: "One link invites your partner or friends. Every deposit moves the gauge, for everyone.", caption: "The circle" },
     ],
-    listTitle: "One list, two wishes.",
-    listSub: "An example shared pot: what was spotted, where, and for how much.",
-    tagHome: "Home",
-    tagTravel: "Travel",
-    products: [
-      ["Three-seat sofa, cognac leather", "€1,290", "Maisons du Monde", "cognac", "home"],
-      ["Brass table lamp", "€189", "La Redoute Intérieurs", "lamp", "home"],
-      ["Sea-view room, 3 nights", "€540", "Booking.com", "seaWindow", "travel"],
-      ["Window bench", "€420", "Westwing", "nook", "home"],
-      ["Riad in Marrakech, 4 nights", "€520", "Airbnb", "palms", "travel"],
-      ["Club armchair, midnight leather", "€890", "Made in Design", "blueSofa", "home"],
-      ["Sunset sailing trip", "2 × €85", "GetYourGuide", "seaSunset", "travel"],
-    ],
-    jarTitle: "The window fills up.",
-    jarText: "Every pot has its gauge: a window that fills with each deposit. Beside it, what's left to save and the estimated date.",
-    jarStats: [
-      ["€2,480", "saved"],
-      ["€1,520", "left"],
-      ["July 2027", "estimated"],
+    storiesKicker: "Made for",
+    storiesTitle: "Every project has its pot.",
+    storiesCta: "Start",
+    stories: [
+      { tag: "Home", title: "First flat", text: "Bed, sofa, tableware: everything for moving day, spread month by month.", img: photo(PHOTOS.loft, 1000), href: newHref("home", "First flat") },
+      { tag: "Travel", title: "Honeymoon", text: "The Amalfi coast or Japan, funded together without thinking about it.", img: photo(PHOTOS.positano, 1000), href: newHref("travel", "Honeymoon") },
+      { tag: "Home", title: "Housewarming list", text: "Share the list: loved ones pick what they give, no duplicates.", img: photo(PHOTOS.nook, 1000), href: newHref("home", "Housewarming") },
+      { tag: "Travel", title: "Holidays with friends", text: "Six friends, one house, everyone's share. No more spreadsheets.", img: photo(PHOTOS.terrace, 1000), href: newHref("travel", "Holidays with friends") },
+      { tag: "Home", title: "Redo the living room", text: "A rug, a lamp, a vintage armchair: one piece at a time.", img: photo(PHOTOS.parisSalon, 1000), href: newHref("home", "Living room") },
+      { tag: "Travel", title: "Road trip", text: "Car, nights, fuel: a clear budget before hitting the road.", img: ROAD, href: newHref("travel", "Road trip") },
+    ] as Story[],
+    trust: [
+      ["Free", "Creating a pot, inviting, sharing: nothing to pay."],
+      ["Your money stays with you", "Nothing goes through Wishpot. Save wherever you like; the site tracks your progress."],
+      ["Your data stays private", "Only your circle sees your pot. We sell nothing."],
     ],
     faqTitle: "Questions",
     faq: [
       ["Does money go through the site?", "No. Everyone keeps their own money: the site is for setting a goal and tracking what you've saved."],
-      ["Is it free?", "Yes. Some shop links are affiliate links, which pays us at no extra cost to you."],
+      ["Is it really free?", "Yes. Some shop links are affiliate links, which may pay us at no extra cost to you."],
       ["How many people per pot?", "As many as you like: a couple, flatmates, friends travelling together."],
-      ["What if no price is found?", "Type it in. Some sites block automatic reading."],
+      ["What if no price is found?", "Type it in. Some shops don't let their prices be read automatically."],
+      ["Can family join in?", "Yes: turn on the shared list and send the link. They reserve an item with “I'll gift it”, no account needed."],
     ],
-    finalTitle: "Start with a single item.",
-    finalCta: "Create a pot",
+    finalTitle: "Start with a single wish.",
+    finalCta: "Create my pot",
+    finalAlt: "or try without an account",
   },
 };
 
@@ -130,86 +130,104 @@ export default async function Home() {
 
   return (
     <div className="-mt-24 sm:-mt-28">
+      <IntroCurtain />
+
       <HeroDoors
-        left={{ href: "/new?kind=home", img: photo(PHOTOS.leather, 1400), ...c.doorL }}
-        right={{ href: "/new?kind=travel", img: photo(PHOTOS.palmWindow, 1400), ...c.doorR }}
+        left={{ href: "/inspiration/maison", img: photo(PHOTOS.leather, 1400), ...c.doorL }}
+        right={{ href: "/inspiration/voyage", img: photo(PHOTOS.palmWindow, 1400), ...c.doorR }}
         headline={c.headline}
         sub={c.sub}
-        ctaPrimary={{ href: "/new", label: c.cta1 }}
-        ctaSecondary={{ href: "/login", label: c.cta2 }}
+        ctaPrimary={{ href: "#essai", label: c.cta1 }}
+        ctaSecondary={{ href: "/new", label: c.cta2 }}
         hint={c.hint}
       />
 
+      {/* ---------- Le principe ---------- */}
+      <section className="mx-auto max-w-5xl py-28 sm:py-44">
+        <p className="caps text-muted">{c.manifestoKicker}</p>
+        <ScrollWords text={c.manifesto} className="display mt-8 text-[2rem] leading-[1.15] sm:text-5xl sm:leading-[1.12] lg:text-6xl" />
+      </section>
+
+      {/* ---------- Essai interactif ---------- */}
+      <div className="border-t border-line">
+        <Composer lang={lang} />
+      </div>
+
+      {/* ---------- Comment ça marche ---------- */}
+      <section className="mx-[calc(50%-50vw)] bg-night px-6 pb-4 pt-24 text-bone sm:px-12 sm:pt-32">
+        <Reveal className="mx-auto max-w-6xl">
+          <p className="caps text-bone/60">{c.howKicker}</p>
+          <h2 className="display mt-4 text-5xl leading-[0.95] sm:text-7xl">{c.howTitle}</h2>
+        </Reveal>
+      </section>
       <StackedPanels
         panels={c.panels.map((p, i) => ({ ...p, img: photo(panelImgs[i], 2000), align: i === 1 ? "right" : "left" }))}
       />
 
-      <Coverflow
-        title={c.listTitle}
-        sub={c.listSub}
-        items={c.products.map(([name, price, shop, key, kind]) => ({
-          name,
-          price,
-          shop,
-          img: photo(PHOTOS[key as keyof typeof PHOTOS], 900),
-          tag: kind === "home" ? c.tagHome : c.tagTravel,
-        }))}
-      />
+      {/* ---------- Pensé pour ---------- */}
+      <section className="py-24 sm:py-36">
+        <Reveal className="grid gap-6 md:grid-cols-2 md:items-end">
+          <div>
+            <p className="caps text-muted">{c.storiesKicker}</p>
+            <h2 className="display mt-4 text-5xl leading-[0.95] sm:text-7xl">{c.storiesTitle}</h2>
+          </div>
+        </Reveal>
+        <div className="mt-14">
+          <StorySlider stories={c.stories} cta={c.storiesCta} />
+        </div>
+      </section>
 
-      <InspirationDoors lang={lang} />
+      {/* ---------- Inspiration ---------- */}
+      <div className="border-t border-line">
+        <InspirationDoors lang={lang} />
+      </div>
 
-      {/* ---------- La jauge ---------- */}
-      <section className="mx-[calc(50%-50vw)] bg-night px-6 py-28 text-bone sm:px-12 sm:py-40">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-16 md:grid-cols-[1fr_1.1fr]">
-          <Reveal className="flex justify-center">
-            <div className="relative">
-              <div aria-hidden className="absolute -inset-16 rounded-full bg-[radial-gradient(circle,rgba(217,144,94,0.35),transparent_65%)] blur-2xl" />
-              <Jar progress={0.62} kind="travel" className="relative h-[380px] w-[228px] sm:h-[460px] sm:w-[276px]" />
+      {/* ---------- Confiance ---------- */}
+      <section className="mx-[calc(50%-50vw)] border-y border-line bg-white">
+        <div className="mx-auto grid max-w-6xl divide-y divide-line px-6 sm:grid-cols-3 sm:divide-x sm:divide-y-0 sm:px-6">
+          {c.trust.map(([title, text], i) => (
+            <div key={title} className="py-10 sm:px-8 sm:py-14 first:sm:pl-0 last:sm:pr-0">
+              <p className="caps text-muted">{String(i + 1).padStart(2, "0")}</p>
+              <p className="display mt-4 text-3xl leading-tight">{title}</p>
+              <p className="mt-3 text-sm leading-relaxed text-muted">{text}</p>
             </div>
-          </Reveal>
-          <Reveal>
-            <h2 className="display text-5xl leading-[0.95] sm:text-7xl">{c.jarTitle}</h2>
-            <p className="mt-6 max-w-md text-lg leading-relaxed text-bone/70">{c.jarText}</p>
-            <dl className="mt-12 grid grid-cols-3 gap-6 border-t border-bone/15 pt-8">
-              {c.jarStats.map(([v, l]) => (
-                <div key={l}>
-                  <dt className="display text-2xl sm:text-4xl">{v}</dt>
-                  <dd className="mt-1 text-[11px] uppercase tracking-label text-bone/50">{l}</dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
+          ))}
         </div>
       </section>
 
       {/* ---------- FAQ ---------- */}
-      <section className="mx-auto grid max-w-[1200px] gap-12 px-1 py-28 sm:py-36 lg:grid-cols-[1fr_1.6fr]">
+      <section className="grid gap-12 py-24 sm:py-36 lg:grid-cols-[1fr_1.6fr]">
         <Reveal>
-          <h2 className="display text-5xl sm:text-7xl">{c.faqTitle}</h2>
+          <h2 className="display text-5xl leading-[0.95] sm:text-6xl">{c.faqTitle}</h2>
         </Reveal>
-        <Reveal className="divide-y divide-line border-y border-line">
+        <div className="divide-y divide-line border-y border-line">
           {c.faq.map(([q, a]) => (
             <details key={q} className="group py-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[13px] uppercase tracking-[0.12em]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg [&::-webkit-details-marker]:hidden">
                 {q}
-                <span className="text-xl font-light transition duration-300 group-open:rotate-45">+</span>
+                <span className="text-2xl font-light transition duration-300 group-open:rotate-45">+</span>
               </summary>
               <p className="mt-4 max-w-xl leading-relaxed text-muted">{a}</p>
             </details>
           ))}
-        </Reveal>
+        </div>
       </section>
 
       {/* ---------- Final ---------- */}
-      <section className="relative mx-[calc(50%-50vw)] -mb-20 flex h-[90vh] items-end overflow-hidden">
+      <section className="relative mx-[calc(50%-50vw)] -mb-20 flex h-[86vh] min-h-[520px] items-end overflow-hidden bg-night">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={photo(PHOTOS.curtain, 2000)} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+        <img src={photo(PHOTOS.curtain, 2000)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
         <Reveal className="relative w-full px-6 pb-20 text-center text-white sm:pb-28">
           <h2 className="display mx-auto max-w-4xl text-5xl leading-[0.95] sm:text-8xl">{c.finalTitle}</h2>
-          <Link href="/new" className="btn mt-10 bg-bone !px-9 !py-4 text-[12px] uppercase tracking-label text-ink hover:bg-white">
-            {c.finalCta}
-          </Link>
+          <div className="mt-10 flex flex-col items-center gap-5">
+            <Link href="/new" className="btn bg-bone !px-10 !py-4 text-[12px] uppercase tracking-label text-ink hover:bg-white">
+              {c.finalCta}
+            </Link>
+            <a href="#essai" className="caps border-b border-white/50 pb-0.5 text-white/80 hover:text-white">
+              {c.finalAlt}
+            </a>
+          </div>
         </Reveal>
       </section>
     </div>

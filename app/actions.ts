@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { isSafeUrl } from "@/lib/extract";
 import { guessRoom, ROOMS } from "@/lib/rooms";
+import { STARTERS } from "@/lib/starters";
 import type { Kind } from "@/lib/config";
 
 function num(v: FormDataEntryValue | null, fallback = 0) {
@@ -34,6 +35,25 @@ export async function createProject(formData: FormData) {
   const monthly = num(formData.get("monthly"));
   const { data, error } = await supabase.rpc("create_project", { p_name: name, p_kind: kind, p_monthly: monthly });
   if (error || !data) throw new Error(error?.message || "create failed");
+
+  // Envies choisies sur l'accueil ou à la création
+  const ids = formData.getAll("starter").map(String);
+  const starters = STARTERS.filter((x) => x.kind === kind && ids.includes(x.id));
+  if (starters.length) {
+    const { data: auth } = await supabase.auth.getUser();
+    await supabase.from("items").insert(
+      starters.map((x) => ({
+        project_id: data,
+        added_by: auth.user?.id ?? null,
+        title: x.title,
+        price: x.price,
+        quantity: x.quantity ?? 1,
+        url: x.url ?? null,
+        image_url: x.img,
+        room: guessRoom(x.title, kind),
+      }))
+    );
+  }
   redirect(`/p/${data}`);
 }
 
