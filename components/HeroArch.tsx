@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-type Kind = "home" | "travel";
-type Scene = { img: string; word: string; caption: string; href: string };
+type Kind = string;
+type Scene = { id: string; img: string; word: string; caption: string; href: string };
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-/** Choix Maison / Voyage partagé avec la démo plus bas. */
+/** La pièce choisie dans l'en-tête est transmise au planificateur plus bas. */
 export function announceKind(kind: Kind) {
-  window.dispatchEvent(new CustomEvent("wp-kind", { detail: kind }));
+  window.dispatchEvent(new CustomEvent("wp-room", { detail: kind }));
 }
 
 export function goToDemo(kind?: Kind) {
@@ -40,12 +40,12 @@ export default function HeroArch({
   sub: string;
   cta1: string;
   cta2: string;
-  scenes: Record<Kind, Scene>;
+  scenes: [Scene, Scene];
   openTitle: string;
   openText: string;
   openLink: string;
 }) {
-  const [kind, setKind] = useState<Kind>("home");
+  const [kind, setKind] = useState<Kind>(scenes[0].id);
   const [auto, setAuto] = useState(true);
   const wrap = useRef<HTMLElement>(null);
   const slot = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export default function HeroArch({
   // Alterne seul tant qu'on n'a rien touché
   useEffect(() => {
     if (!auto) return;
-    const t = setInterval(() => setKind((k) => (k === "home" ? "travel" : "home")), 4200);
+    const t = setInterval(() => setKind((k) => (k === scenes[0].id ? scenes[1].id : scenes[0].id)), 4200);
     return () => clearInterval(t);
   }, [auto]);
 
@@ -122,7 +122,7 @@ export default function HeroArch({
     };
   }, []);
 
-  const scene = scenes[kind];
+  const scene = scenes.find((x) => x.id === kind) ?? scenes[0];
 
   return (
     <section ref={wrap} className="relative mx-[calc(50%-50vw)] h-[210vh] bg-paper">
@@ -148,29 +148,29 @@ export default function HeroArch({
             <button type="button" onClick={() => goToDemo(kind)} className="btn-primary !px-8 !py-4 text-[12px] uppercase tracking-label">
               {cta1}
             </button>
-            <Link href={`/new?kind=${kind}`} className="btn border border-ink/25 !px-8 !py-4 text-[12px] uppercase tracking-label hover:border-ink">
+            <Link href="/new" className="btn border border-ink/25 !px-8 !py-4 text-[12px] uppercase tracking-label hover:border-ink">
               {cta2}
             </Link>
           </div>
 
           {/* L'arche, encadrée par les deux mots */}
           <div className="mt-8 flex w-full max-w-5xl flex-1 items-stretch justify-center gap-4 pb-6 sm:mt-10 sm:gap-10 sm:pb-8">
-            <SceneWord active={kind === "home"} onClick={() => pick("home")} label={scenes.home.word} align="right" />
+            <SceneWord active={kind === scenes[0].id} onClick={() => pick(scenes[0].id)} label={scenes[0].word} align="right" />
             <div ref={slot} className="relative w-[46vw] min-h-[150px] max-w-[340px] sm:w-[30vw]" />
-            <SceneWord active={kind === "travel"} onClick={() => pick("travel")} label={scenes.travel.word} align="left" />
+            <SceneWord active={kind === scenes[1].id} onClick={() => pick(scenes[1].id)} label={scenes[1].word} align="left" />
           </div>
         </div>
 
         {/* L'image, découpée en arche puis plein écran */}
         <div ref={layer} className="wp-layer-in absolute inset-0 z-10 bg-night">
-          {(Object.keys(scenes) as Kind[]).map((k) => (
+          {scenes.map((sc) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              key={k}
-              src={scenes[k].img}
+              key={sc.id}
+              src={sc.img}
               alt=""
               className="absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-out"
-              style={{ opacity: kind === k ? 1 : 0, transform: "translateY(var(--ty, 0px)) scale(var(--zoom, 1.12))" }}
+              style={{ opacity: kind === sc.id ? 1 : 0, transform: "translateY(var(--ty, 0px)) scale(var(--zoom, 1.12))" }}
             />
           ))}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20" />
