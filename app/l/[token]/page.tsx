@@ -129,7 +129,7 @@ export default async function PublicListPage({
         <div className="mt-20 rounded-xl3 bg-night px-6 py-12 text-center text-bone">
           <p className="display text-3xl sm:text-4xl">Vous aussi, préparez un projet à plusieurs.</p>
           <Link href="/" className="btn mt-6 bg-bone !px-7 !py-3 text-[12px] uppercase tracking-label text-ink hover:bg-white">
-            Découvrir Wishpot
+            Découvrir Maison Piécette
           </Link>
         </div>
       </div>
