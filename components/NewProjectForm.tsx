@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createProject } from "@/app/actions";
-import { startersFor, starterTotal } from "@/lib/starters";
+import { parseExtra, startersFor, starterTotal } from "@/lib/starters";
 
 type Kind = "travel" | "home";
 type T = Record<
@@ -24,18 +24,21 @@ export default function NewProjectForm({
   initialName = "",
   initialMonthly,
   initialStarters = [],
+  initialExtras = [],
   t,
 }: {
   initialKind: Kind | null;
   initialName?: string;
   initialMonthly?: number;
   initialStarters?: string[];
+  initialExtras?: string[];
   t: T;
 }) {
   const [kind, setKind] = useState<Kind | null>(initialKind);
   const [name, setName] = useState(initialName);
   const [monthly, setMonthly] = useState(String(initialMonthly ?? 100));
   const [picked, setPicked] = useState<string[]>(initialStarters);
+  const [extras, setExtras] = useState<string[]>(initialExtras);
   const ready = !!kind;
   const starters = kind ? startersFor(kind) : [];
   const chosen = starters.filter((s) => picked.includes(s.id));
@@ -60,7 +63,10 @@ export default function NewProjectForm({
                 type="button"
                 onClick={() => {
                   setKind(k);
-                  if (k !== kind) setPicked([]);
+                  if (k !== kind) {
+                    setPicked([]);
+                    setExtras([]);
+                  }
                 }}
                 aria-pressed={active}
                 className="group relative block h-56 overflow-hidden bg-night text-left sm:h-64"
@@ -130,7 +136,7 @@ export default function NewProjectForm({
       {kind && (
         <div>
           <Step n="04" title="Vos premières envies" note="Facultatif · vous pourrez coller vos propres liens ensuite" />
-          <ul className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-6">
+          <ul className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-5">
             {starters.map((s) => {
               const on = picked.includes(s.id);
               return (
@@ -159,9 +165,29 @@ export default function NewProjectForm({
               );
             })}
           </ul>
-          {chosen.length > 0 && (
+          {extras.length > 0 && (
+            <ul className="mt-6 divide-y divide-line border-y border-line">
+              {extras.map((v, i) => {
+                const x = parseExtra(v);
+                if (!x) return null;
+                return (
+                  <li key={v + i} className="flex items-center gap-4 py-3 text-sm">
+                    <span className="caps text-muted">Votre envie</span>
+                    <span className="flex-1 truncate">{x.title}</span>
+                    <span className="text-muted">{eur(x.price)}</span>
+                    <button type="button" onClick={() => setExtras((e) => e.filter((_, j) => j !== i))} className="text-muted hover:text-ink" aria-label="Retirer">
+                      ×
+                    </button>
+                    <input type="hidden" name="extra" value={v} />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+          {chosen.length + extras.length > 0 && (
             <p className="mt-4 text-sm text-muted">
-              {chosen.length} envie{chosen.length > 1 ? "s" : ""} · {eur(chosen.reduce((a, s) => a + starterTotal(s), 0))}
+              {chosen.length + extras.length} envie{chosen.length + extras.length > 1 ? "s" : ""} ·{" "}
+              {eur(chosen.reduce((a, s) => a + starterTotal(s), 0) + extras.reduce((a, v) => a + (parseExtra(v)?.price ?? 0), 0))}
             </p>
           )}
         </div>
