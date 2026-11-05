@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Bodoni_Moda, Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
-import { APP_NAME, siteUrl } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL, siteUrl } from "@/lib/config";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import SiteHeader from "@/components/SiteHeader";
@@ -103,8 +103,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               ))}
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
+              <Link href="/a-propos" className="hover:opacity-60">{fr ? "À propos" : "About"}</Link>
+              <Link href="/mentions-legales" className="hover:opacity-60">{fr ? "Mentions légales" : "Legal notice"}</Link>
               <Link href="/confidentialite" className="hover:opacity-60">{t.privacy}</Link>
-              <a href="mailto:nath.prank@gmail.com" className="hover:opacity-60">Contact</a>
+              <a href={`mailto:${CONTACT_EMAIL}`} className="hover:opacity-60">Contact</a>
             </div>
           </div>
           <div aria-hidden className="overflow-hidden px-4 sm:px-8">
