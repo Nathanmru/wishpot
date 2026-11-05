@@ -33,7 +33,29 @@ function awinMerchants(): Record<string, string> {
   return out;
 }
 
-export function affiliateUrl(original: string): { url: string; affiliated: boolean } {
+/**
+ * Programmes activés depuis Supabase (table affiliate_programs), sans redéploiement :
+ *   domain   = "selency.fr"
+ *   template = lien de la plateforme, avec {url} (lien marchand encodé) ou {raw} (non encodé)
+ *              ex. Awin : https://www.awin1.com/cread.php?awinmid=123&awinaffid=456&ued={url}
+ *   active   = true quand la boutique t'a accepté
+ */
+type Program = { domain: string; template: string };
+let cache: { at: number; list: Program[] } | null = null;
+
+async function dbPrograms(): Promise<Program[]> {
+  if (cache && Date.now() - cache.at < 5 * 60_000) return cache.list;
+  try {
+    const { publicClient } = await import("@/lib/supabase/public");
+    const { data } = await publicClient().from("affiliate_programs").select("domain, template").eq("active", true);
+    cache = { at: Date.now(), list: (data ?? []) as Program[] };
+  } catch {
+    cache = { at: Date.now(), list: [] };
+  }
+  return cache.list;
+}
+
+export async function affiliateUrl(original: string): Promise<{ url: string; affiliated: boolean }> {
   let u: URL;
   try {
     u = new URL(original);
@@ -41,6 +63,12 @@ export function affiliateUrl(original: string): { url: string; affiliated: boole
     return { url: original, affiliated: false };
   }
   const host = u.hostname.toLowerCase().replace(/^www\./, "");
+
+  const program = (await dbPrograms()).find((p) => matches(host, p.domain.replace(/^www\./, "")));
+  if (program?.template) {
+    const link = program.template.replaceAll("{url}", encodeURIComponent(u.toString())).replaceAll("{raw}", u.toString());
+    return { url: link, affiliated: true };
+  }
 
   const amazonTag = process.env.AMAZON_TAG;
   if (amazonTag && /^amazon\.(fr|com|de|es|it|co\.uk|nl|be|ca)$/.test(host)) {
