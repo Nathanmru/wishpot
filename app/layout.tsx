@@ -34,7 +34,6 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: { card: "summary_large_image", title: APP_NAME, description },
     robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
     verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
-    icons: { icon: "/favicon-32.png", apple: "/apple-touch-icon.png" },
     appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "black-translucent" },
   };
 }
