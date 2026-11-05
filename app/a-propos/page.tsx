@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { APP_NAME, CONTACT_EMAIL, siteUrl } from "@/lib/config";
+import NamaShatter from "@/components/NamaShatter";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -10,7 +11,12 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <article className="mx-auto max-w-3xl pt-4">
+    <>
+    <div className="relative -mx-4 h-[46vh] min-h-[280px] overflow-hidden bg-night sm:mx-0">
+      <NamaShatter />
+      <p className="caps absolute left-0 right-0 top-[18%] text-center text-[11px] tracking-[0.5em] text-bone/50">Atelier</p>
+    </div>
+    <article className="mx-auto max-w-3xl pt-12">
       <p className="caps text-muted">{APP_NAME} · À propos</p>
       <h1 className="display mt-4 text-5xl leading-[0.95] sm:text-7xl">Des pièces qui ont du caractère, et le temps de les choisir.</h1>
 
@@ -76,5 +82,6 @@ export default function AboutPage() {
         </p>
       </section>
     </article>
+    </>
   );
 }
