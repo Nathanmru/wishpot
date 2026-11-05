@@ -1,5 +1,6 @@
 "use client";
 
+import { out } from "@/lib/out";
 import { CompareToggle, SaveButton, type Mini } from "./ShopState";
 
 const eur = (v: number) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: v % 1 ? 2 : 0 }).format(v);
@@ -11,7 +12,7 @@ export default function ProductStrip({ items, fr }: { items: (Mini & { niche?: b
       {items.map((p) => (
         <li key={p.id} className="group w-[62vw] shrink-0 snap-start sm:w-[260px]">
           <div className="relative aspect-[4/5] overflow-hidden bg-white">
-            <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="block h-full w-full">
+            <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="block h-full w-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={p.image_url} alt={p.title} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-contain p-6 mix-blend-multiply transition duration-700 group-hover:scale-105" />
             </a>
@@ -20,7 +21,7 @@ export default function ProductStrip({ items, fr }: { items: (Mini & { niche?: b
               {p.shop === "Selency" ? (fr ? "Seconde main" : "Pre-loved") : p.shop}
             </span>
           </div>
-          <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="mt-3 line-clamp-2 text-sm leading-snug hover:underline">
+          <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="mt-3 line-clamp-2 text-sm leading-snug hover:underline">
             {p.title}
           </a>
           <div className="mt-1 flex items-center justify-between">
