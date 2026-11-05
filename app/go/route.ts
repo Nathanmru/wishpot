@@ -3,21 +3,29 @@ import { affiliateUrl, hostOf } from "@/lib/affiliate";
 import { allowedShopHosts } from "@/lib/suggestions";
 import { inspirationHosts } from "@/lib/inspiration";
 import { createClient } from "@/lib/supabase/server";
+import { publicClient } from "@/lib/supabase/public";
 
 /**
- * Redirection sortante avec affiliation.
+ * Redirection sortante avec affiliation et comptage des clics.
+ *   /go?p=<id>      → une pièce du catalogue
  *   /go?item=<id>   → lien d'un objet de la liste (l'utilisateur doit être membre)
  *   /go?u=<url>     → lien d'une boutique suggérée (liste blanche uniquement)
  */
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
+  const productId = req.nextUrl.searchParams.get("p");
   const itemId = req.nextUrl.searchParams.get("item");
   const raw = req.nextUrl.searchParams.get("u");
 
   let target: string | null = null;
+  let shop: string | null = null;
 
-  if (itemId) {
+  if (productId && /^\d+$/.test(productId)) {
+    const { data } = await publicClient().from("products").select("url, shop").eq("id", Number(productId)).maybeSingle();
+    target = data?.url ?? null;
+    shop = data?.shop ?? null;
+  } else if (itemId) {
     const { data } = await supabase.from("items").select("id, url").eq("id", itemId).maybeSingle();
     target = data?.url ?? null;
   } else if (raw) {
@@ -27,11 +35,32 @@ export async function GET(req: NextRequest) {
 
   if (!target) return NextResponse.redirect(new URL("/", req.url));
 
-  const { url, affiliated } = affiliateUrl(target);
+  const { url, affiliated } = await affiliateUrl(target);
+
+  // Page d'où vient le clic (chemin seulement)
+  let source: string | null = null;
+  try {
+    const ref = req.headers.get("referer");
+    if (ref && new URL(ref).host === req.nextUrl.host) source = new URL(ref).pathname.slice(0, 200);
+  } catch {}
+
   await supabase
     .from("clicks")
-    .insert({ item_id: itemId, user_id: auth.user?.id ?? null, host: hostOf(target), affiliated })
-    .then(() => null, () => null);
+    .insert({
+      item_id: itemId,
+      product_id: productId ? Number(productId) : null,
+      shop,
+      source,
+      user_id: auth.user?.id ?? null,
+      host: hostOf(target),
+      affiliated,
+    })
+    .then(
+      () => null,
+      () => null,
+    );
 
-  return NextResponse.redirect(url, { status: 302 });
+  const res = NextResponse.redirect(url, { status: 302 });
+  res.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return res;
 }
