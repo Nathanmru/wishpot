@@ -7,7 +7,11 @@ import { CATALOG_ROOMS, STYLES } from "@/lib/catalog";
 import { EXAMPLE_POTS, exampleIds } from "@/lib/examples";
 import ProductStrip from "@/components/ProductStrip";
 import HeroRoom from "@/components/HeroRoom";
-import { APP_NAME } from "@/lib/config";
+import { APP_NAME, siteUrl } from "@/lib/config";
+import JsonLd from "@/components/JsonLd";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 import HowItWorks from "@/components/HowItWorks";
 import RoomPlanner from "@/components/RoomPlanner";
 import ExamplePots, { type Board } from "@/components/ExamplePots";
@@ -130,6 +134,31 @@ export default async function Home() {
 
   return (
     <div className="-mt-24 sm:-mt-28">
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: APP_NAME,
+            url: siteUrl(),
+            logo: `${siteUrl()}/icon-512.png`,
+            description: "Déco vintage, pièces chinées et design de petites maisons, et une cagnotte pour épargner pour son intérieur.",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: APP_NAME,
+            url: siteUrl(),
+            inLanguage: "fr-FR",
+            potentialAction: { "@type": "SearchAction", target: `${siteUrl()}/catalogue?q={search_term_string}`, "query-input": "required name=search_term_string" },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+          },
+        ]}
+      />
       <HeroRoom name={APP_NAME} fr={fr} />
 
       {/* ---------- Deux façons de s'en servir ---------- */}
