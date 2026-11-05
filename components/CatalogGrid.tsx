@@ -1,5 +1,6 @@
 "use client";
 
+import { out } from "@/lib/out";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -63,7 +64,7 @@ export default function CatalogGrid({
           return (
             <li key={p.id} className="group relative">
               <div className="relative aspect-square overflow-hidden bg-white">
-                <a href={p.url} target="_blank" rel="noopener nofollow sponsored" aria-label={`${p.title} · ${p.shop}`} className="block h-full w-full">
+                <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" aria-label={`${p.title} · ${p.shop}`} className="block h-full w-full">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={p.image_url}
@@ -111,13 +112,13 @@ export default function CatalogGrid({
                     <span className="border border-brass/50 px-1.5 py-0.5 text-[9px] text-brass">{fr ? "Pépite" : "Gem"}</span>
                   ) : null}
                 </p>
-                <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="mt-1 line-clamp-2 text-sm leading-snug hover:underline">
+                <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="mt-1 line-clamp-2 text-sm leading-snug hover:underline">
                   {p.title}
                 </a>
                 <p className="display mt-1 text-xl">{eur(Number(p.price))}</p>
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <CompareToggle p={mini(p)} fr={fr} />
-                  <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="caps border-b border-ink pb-0.5 text-[10px]">
+                  <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="caps border-b border-ink pb-0.5 text-[10px]">
                     {fr ? "Voir" : "View"} ↗
                   </a>
                 </div>
