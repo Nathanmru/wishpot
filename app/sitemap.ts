@@ -29,6 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/idees", 0.9),
     page("/aide-deco", 0.8, "monthly"),
     page("/composer", 0.6, "monthly"),
+    page("/a-propos", 0.4, "yearly"),
     page("/inspiration/maison", 0.5, "monthly"),
     ...LANDINGS.map((l) => page(`/idees/${l.slug}`, l.group === "projets" ? 0.7 : 0.8)),
     ...CATALOG_ROOMS.map((r) => page(`/catalogue?piece=${r.id}`, 0.7, "daily")),
