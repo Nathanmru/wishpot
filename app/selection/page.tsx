@@ -1,5 +1,6 @@
 "use client";
 
+import { out } from "@/lib/out";
 import Link from "next/link";
 import { useShop } from "@/components/ShopState";
 
@@ -86,7 +87,7 @@ export default function SelectionPage() {
                 <ul className="divide-y divide-line">
                   {list.map((p) => (
                     <li key={p.id} className="flex items-center gap-4 py-4">
-                      <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="h-20 w-20 shrink-0 bg-white sm:h-24 sm:w-24">
+                      <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="h-20 w-20 shrink-0 bg-white sm:h-24 sm:w-24">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={p.image_url} alt="" referrerPolicy="no-referrer" className="h-full w-full object-contain p-2 mix-blend-multiply" />
                       </a>
@@ -97,7 +98,7 @@ export default function SelectionPage() {
                           {fr ? "Retirer" : "Remove"}
                         </button>
                       </div>
-                      <a href={p.url} target="_blank" rel="noopener nofollow sponsored" className="btn-primary shrink-0 !px-4 !py-3 text-[10px] uppercase tracking-label sm:!px-6 sm:text-[11px]">
+                      <a href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="btn-primary shrink-0 !px-4 !py-3 text-[10px] uppercase tracking-label sm:!px-6 sm:text-[11px]">
                         {fr ? "Acheter" : "Buy"} ↗
                       </a>
                     </li>
