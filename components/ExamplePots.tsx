@@ -1,5 +1,6 @@
 "use client";
 
+import { out } from "@/lib/out";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -136,7 +137,7 @@ function paletteToColor(slug: string) {
 
 function Tile({ item, fr, className = "", big = false }: { item: BoardItem; fr: boolean; className?: string; big?: boolean }) {
   return (
-    <a href={item.url} target="_blank" rel="noopener nofollow sponsored" className={`group relative block overflow-hidden bg-white ${className}`}>
+    <a href={out(item.id)} target="_blank" rel="noopener nofollow sponsored" className={`group relative block overflow-hidden bg-white ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.image_url}
