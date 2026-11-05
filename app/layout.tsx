@@ -16,12 +16,24 @@ const hero = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400"], st
 const sans = Jost({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getDict();
+  const { lang } = await getDict();
+  const fr = lang === "fr";
+  const description = fr
+    ? "Déco vintage, pièces chinées et design de petites maisons : trouvez la pièce qui manque à votre intérieur, comparez-la, ou épargnez pour elle avec une cagnotte déco à plusieurs."
+    : "Vintage decor, pre-loved finds and design from small makers: find the piece your home needs, compare it, or save for it with a shared decor pot.";
   return {
     metadataBase: new URL(siteUrl()),
-    title: { default: `${APP_NAME} — ${t.tagline}`, template: `%s · ${APP_NAME}` },
-    description: t.heroText,
-    openGraph: { title: APP_NAME, description: t.heroText, type: "website" },
+    title: {
+      default: fr ? `${APP_NAME} — Déco vintage, pièces chinées & cagnotte maison` : `${APP_NAME} — Vintage decor, finds & a savings pot for your home`,
+      template: `%s | ${APP_NAME}`,
+    },
+    description,
+    applicationName: APP_NAME,
+    keywords: ["déco vintage", "meubles chinés", "décoration intérieur", "canapé cuir vintage", "déco bohème", "pièces uniques", "cagnotte déco", "liste de crémaillère", "mobilier design", "seconde main"],
+    openGraph: { title: APP_NAME, description, type: "website", siteName: APP_NAME, locale: fr ? "fr_FR" : "en_GB", url: siteUrl() },
+    twitter: { card: "summary_large_image", title: APP_NAME, description },
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+    verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
     icons: { icon: "/favicon-32.png", apple: "/apple-touch-icon.png" },
     appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "black-translucent" },
   };
@@ -61,7 +73,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-20 pt-24 sm:px-6 sm:pt-28">{children}</main>
 
         <footer className="bg-night text-bone">
-          <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-16 sm:grid-cols-[2fr_1fr_1fr] sm:px-12">
+          <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-16 sm:grid-cols-[1.6fr_1fr_1fr_1fr] sm:px-12">
             <div>
               <p className="font-display text-3xl uppercase tracking-[0.22em]">{APP_NAME}</p>
               <p className="mt-4 max-w-sm text-sm text-bone/60">{t.tagline}</p>
@@ -71,7 +83,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/catalogue" className="hover:opacity-60">{fr ? "Dénicher une pièce" : "Find a piece"}</Link>
               <Link href="/selection" className="hover:opacity-60">{fr ? "Ma sélection" : "My picks"}</Link>
               <Link href="/aide-deco" className="hover:opacity-60">{fr ? "Aide déco" : "Decor guide"}</Link>
+              <Link href="/idees" className="hover:opacity-60">{fr ? "Idées déco" : "Decor ideas"}</Link>
               <Link href="/dashboard" className="hover:opacity-60">{t.myPots}</Link>
+            </div>
+            <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
+              {[
+                ["canape-cuir-vintage", "Canapé cuir vintage"],
+                ["deco-boheme", "Déco bohème"],
+                ["salon-vintage", "Salon vintage"],
+                ["tapis-berbere", "Tapis berbère"],
+                ["lampe-laiton", "Lampe laiton"],
+                ["deco-terracotta", "Déco terracotta"],
+                ["meubles-chines", "Meubles chinés"],
+                ["cagnotte-deco", "Cagnotte déco"],
+              ].map(([slug, label]) => (
+                <Link key={slug} href={`/idees/${slug}`} className="hover:opacity-60">
+                  {label}
+                </Link>
+              ))}
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
               <Link href="/confidentialite" className="hover:opacity-60">{t.privacy}</Link>
