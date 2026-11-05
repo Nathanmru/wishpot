@@ -2,7 +2,8 @@
 export const APP_NAME = "Atelier Nama";
 
 export function siteUrl() {
-  return (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null;
+  return (process.env.NEXT_PUBLIC_SITE_URL || prod || "http://localhost:3000").replace(/\/$/, "");
 }
 
 export type Kind = "travel" | "home";
