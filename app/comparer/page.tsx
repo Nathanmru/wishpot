@@ -1,3 +1,4 @@
+import { out } from "@/lib/out";
 import Link from "next/link";
 import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
@@ -194,7 +195,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
             <div className="grid gap-4 py-6" style={{ gridTemplateColumns: cols }}>
               <div />
               {items.map((p) => (
-                <a key={p.id} href={p.url} target="_blank" rel="noopener nofollow sponsored" className="btn-primary justify-center !py-3 text-[11px] uppercase tracking-label">
+                <a key={p.id} href={out(p.id)} target="_blank" rel="noopener nofollow sponsored" className="btn-primary justify-center !py-3 text-[11px] uppercase tracking-label">
                   {fr ? `Voir chez ${p.shop}` : `View at ${p.shop}`} ↗
                 </a>
               ))}
