@@ -42,6 +42,7 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
         <nav className="hidden flex-1 items-center gap-7 md:flex">
           <Link href="/catalogue" className={link}>{lang === "fr" ? "Dénicher" : "Find"}</Link>
           <Link href={signedIn ? "/dashboard" : "/#cagnotte"} className={link}>{lang === "fr" ? "Cagnotte" : "Savings pot"}</Link>
+          <Link href="/idees" className={link}>{lang === "fr" ? "Idées" : "Ideas"}</Link>
           <Link href="/aide-deco" className={link}>{lang === "fr" ? "Aide déco" : "Decor guide"}</Link>
         </nav>
 
