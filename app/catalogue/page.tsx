@@ -3,11 +3,44 @@ import { getDict } from "@/lib/i18n";
 import { getUser } from "@/lib/supabase/server";
 import { CATALOG_ROOMS, CATEGORIES, COLORS, ESSENTIALS, PRICE_STEPS, STYLES, searchTerms, type Product } from "@/lib/catalog";
 import CatalogGrid from "@/components/CatalogGrid";
+import type { Metadata } from "next";
+import { siteUrl } from "@/lib/config";
 
-export const metadata = {
-  title: "Le catalogue déco",
-  description: "Des milliers de pièces de déco et de mobilier, neuves ou chinées, à trier par pièce, style, couleur et marque, puis à ajouter à votre cagnotte.",
+const ROOM_FOR: Record<string, string> = {
+  salon: "pour le salon",
+  chambre: "pour la chambre",
+  "salle-a-manger": "pour la salle à manger",
+  cuisine: "pour la cuisine",
+  "salle-de-bain": "pour la salle de bain",
+  bureau: "pour le bureau",
+  entree: "pour l'entrée",
+  exterieur: "pour le balcon et le jardin",
 };
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Search> }): Promise<Metadata> {
+  const sp = await searchParams;
+  const room = CATALOG_ROOMS.find((r) => r.id === sp.piece);
+  const cat = sp.cat && CATEGORIES[sp.cat] ? CATEGORIES[sp.cat].fr : null;
+  const style = STYLES.find((x) => x.id === sp.style);
+  const color = COLORS.find((x) => x.id === sp.couleur);
+  const shop = sp.marque || null;
+  const parts = [cat ?? (style || color ? "Déco" : "Déco et mobilier"), style ? style.fr.toLowerCase() : null, color ? `couleur ${color.fr.toLowerCase()}` : null, room ? ROOM_FOR[room.id] : null, shop ? `de ${shop}` : null].filter(Boolean);
+  let title = parts.join(" ");
+  title = title ? title[0].toUpperCase() + title.slice(1) : "Le catalogue déco";
+  if (!sp.piece && !sp.cat && !sp.style && !sp.couleur && !shop) title = "Catalogue déco : meubles chinés, design et pièces uniques";
+  const description = `${title} : une sélection de pièces chinées et de design de petites maisons, à comparer, garder pour plus tard ou mettre en cagnotte.`;
+  // Une seule page indexable par combinaison simple ; les recherches libres et les tris ne le sont pas
+  const keep = new URLSearchParams();
+  for (const k of ["piece", "cat", "style", "couleur", "marque"] as const) if (sp[k]) keep.set(k, sp[k]!);
+  const noindex = !!(sp.q || sp.tri || sp.n || sp.pot || sp.max || sp.pepites) || keep.toString().split("&").length > 2;
+  const qs = keep.toString();
+  return {
+    title,
+    description,
+    alternates: { canonical: `${siteUrl()}/catalogue${qs ? `?${qs}` : ""}` },
+    robots: noindex ? { index: false, follow: true } : undefined,
+  };
+}
 
 type Search = { piece?: string; cat?: string; q?: string; max?: string; tri?: string; pot?: string; n?: string; style?: string; couleur?: string; marque?: string; pepites?: string };
 
