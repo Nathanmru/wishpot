@@ -1,6 +1,9 @@
 /** Le nom de la maison. */
 export const APP_NAME = "Atelier Nama";
 
+/** Adresse de contact affichée sur le site. */
+export const CONTACT_EMAIL = "contact.ateliernama@gmail.com";
+
 /** L'adresse officielle du site (celle que Google doit retenir). */
 export const CANONICAL_URL = "https://ateliernama.vercel.app";
 
