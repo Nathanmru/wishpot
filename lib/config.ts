@@ -1,7 +1,11 @@
 /** Le nom de la maison. */
 export const APP_NAME = "Atelier Nama";
 
+/** L'adresse officielle du site (celle que Google doit retenir). */
+export const CANONICAL_URL = "https://ateliernama.vercel.app";
+
 export function siteUrl() {
+  if (process.env.VERCEL_ENV === "production") return CANONICAL_URL;
   const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : null;
   return (process.env.NEXT_PUBLIC_SITE_URL || prod || "http://localhost:3000").replace(/\/$/, "");
 }
