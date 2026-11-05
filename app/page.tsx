@@ -16,6 +16,7 @@ import HowItWorks from "@/components/HowItWorks";
 import RoomPlanner from "@/components/RoomPlanner";
 import ExamplePots, { type Board } from "@/components/ExamplePots";
 import { Reveal } from "@/components/Motion";
+import IntroSplash from "@/components/IntroSplash";
 
 /** Photos d'ambiance : intérieurs vintage, cuir, bois patiné (Unsplash, licence gratuite). */
 const MOOD = {
@@ -134,6 +135,7 @@ export default async function Home() {
 
   return (
     <div className="-mt-24 sm:-mt-28">
+      <IntroSplash />
       <JsonLd
         data={[
           {
