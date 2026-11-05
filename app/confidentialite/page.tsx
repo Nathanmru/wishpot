@@ -1,8 +1,8 @@
-import { APP_NAME } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
 
 export const metadata = { title: "Confidentialité" };
 
-const CONTACT = "nath.prank@gmail.com";
+const CONTACT = CONTACT_EMAIL;
 
 export default function PrivacyPage() {
   return (
