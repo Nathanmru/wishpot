@@ -4,9 +4,11 @@ import { photo } from "@/lib/covers";
 import { STYLES } from "@/lib/catalog";
 import PaletteLab from "@/components/PaletteLab";
 import { Reveal } from "@/components/Motion";
+import JsonLd from "@/components/JsonLd";
 
 export const metadata = {
-  title: "Aide déco : avoir l'œil, associer les couleurs, dénicher la pièce unique",
+  title: "Aide déco : associer les couleurs, la règle 60-30-10 et nos conseils",
+  alternates: { canonical: "/aide-deco" },
   description:
     "Les règles simples des décorateurs : le 60-30-10, les associations de couleurs, mélanger l'ancien et le neuf, chiner, les bonnes proportions et la lumière en couches.",
 };
@@ -122,6 +124,18 @@ export default async function AideDeco() {
 
   return (
     <div className="-mt-24 sm:-mt-28">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: "Aide déco : avoir l'œil, associer les couleurs, dénicher la pièce unique",
+          description: "La règle du 60-30-10, les associations de couleurs, mélanger l'ancien et le neuf, chiner, les bonnes proportions et la lumière en couches.",
+          inLanguage: "fr-FR",
+          author: { "@type": "Organization", name: "Atelier Nama" },
+          publisher: { "@type": "Organization", name: "Atelier Nama" },
+          image: "https://images.unsplash.com/photo-1640276751820-7a295bee77aa?auto=format&fit=crop&w=1600&q=80",
+        }}
+      />
       {/* ---------- Ouverture ---------- */}
       <section className="relative mx-[calc(50%-50vw)] flex min-h-[92vh] items-end overflow-hidden bg-night">
         {/* eslint-disable-next-line @next/next/no-img-element */}
