@@ -19,12 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const { lang } = await getDict();
   const fr = lang === "fr";
   const description = fr
-    ? "Déco vintage, pièces chinées et design de petites maisons : trouvez la pièce qui manque à votre intérieur, comparez-la, ou épargnez pour elle avec une cagnotte déco à plusieurs."
+    ? "Venez dénicher vos pépites en déco et ameublement, vintage ou design, et créez une cagnotte pour financer vos projets les plus fous."
     : "Vintage decor, pre-loved finds and design from small makers: find the piece your home needs, compare it, or save for it with a shared decor pot.";
   return {
     metadataBase: new URL(siteUrl()),
     title: {
-      default: fr ? `${APP_NAME} — Déco vintage, pièces chinées & cagnotte maison` : `${APP_NAME} — Vintage decor, finds & a savings pot for your home`,
+      default: fr ? `${APP_NAME} — Pépites déco, vintage & cagnotte maison` : `${APP_NAME} — Vintage decor, finds & a savings pot for your home`,
       template: `%s | ${APP_NAME}`,
     },
     description,
@@ -49,6 +49,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={lang} className={`${display.variable} ${hero.variable} ${sans.variable}`}>
+      <head>
+        {/* Icône PNG pour Google (en plus de l'icône SVG) */}
+        <link rel="icon" href="/favicon.ico" sizes="48x48" type="image/png" />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <ShopStateProvider signedIn={!!user} fr={fr}>
         <RegisterSW />
