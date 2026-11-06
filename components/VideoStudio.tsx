@@ -56,11 +56,12 @@ function contain(cx: CanvasRenderingContext2D, img: HTMLImageElement, x: number,
   cx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih);
 }
 
-export default function VideoStudio({ slug, title, pieces }: { slug: string; title: string; pieces: Piece[] }) {
+export default function VideoStudio({ slug, title, pieces, initial, kicker = "IDÉE DÉCO" }: { slug: string; title: string; pieces: Piece[]; initial?: number[]; kicker?: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const imgs = useRef(new Map<number, HTMLImageElement>());
   const [ready, setReady] = useState<Record<number, "ok" | "ko">>({});
   const [picked, setPicked] = useState<number[]>(() => {
+    if (initial?.length) return initial.filter((id) => pieces.some((p) => p.id === id));
     // 5 pièces de catégories différentes pour commencer
     const seen = new Set<string>();
     const out: number[] = [];
@@ -116,7 +117,7 @@ export default function VideoStudio({ slug, title, pieces }: { slug: string; tit
       cx.fillStyle = MUTED;
       cx.font = `400 38px ${F.s}`;
       (cx as any).letterSpacing = "8px";
-      cx.fillText("IDÉE DÉCO", W / 2, 560 + (1 - k) * 40);
+      cx.fillText(kicker, W / 2, 560 + (1 - k) * 40);
       (cx as any).letterSpacing = "0px";
       cx.fillStyle = INK;
       cx.font = `500 128px ${F.d}`;
