@@ -5,6 +5,7 @@ import { fetchPieces, type Piece } from "@/lib/landingPieces";
 import { PACKS, pack } from "@/lib/packs";
 import { publicClient } from "@/lib/supabase/public";
 import VideoStudio from "@/components/VideoStudio";
+import BrandVideo from "@/components/BrandVideo";
 
 /** Page de travail (non référencée) : fabrique les vidéos TikTok / Reels « Le look complet pour X € ». */
 export const metadata: Metadata = { title: "Studio vidéo", robots: { index: false, follow: false } };
@@ -28,6 +29,10 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
   const allIds = PACKS.flatMap((x) => x.ids);
   const { data: live } = await publicClient().from("products").select("id, price").in("id", allIds).eq("active", true);
   const price = new Map((live ?? []).map((r) => [r.id as number, Number(r.price)]));
+
+  // Photos pour les vidéos de présentation : une pièce de chaque pack, puis les autres
+  const all = await packPieces(allIds);
+  const showcase = [...PACKS.map((x) => all.find((r) => x.ids.includes(r.id))).filter((r): r is Piece => !!r), ...all].filter((r, i, a) => a.findIndex((q) => q.id === r.id) === i).slice(0, 18);
 
   let pieces: Piece[];
   let title: string;
@@ -54,8 +59,15 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
         la télécharges. Ajoute ensuite une musique tendance directement dans TikTok ou Instagram.
       </p>
 
-      <section className="mt-10">
-        <p className="caps text-[11px] text-muted">Les packs</p>
+      <section className="mt-12 border-t border-line pt-10">
+        <h2 className="display text-3xl sm:text-4xl">Présenter Atelier Nama</h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted">Trois vidéos pour faire découvrir le site sur Instagram, TikTok et Pinterest. Choisis un script, crée la vidéo, télécharge-la.</p>
+        <BrandVideo pieces={showcase} />
+      </section>
+
+      <section className="mt-16 border-t border-line pt-10">
+        <h2 className="display text-3xl sm:text-4xl">Le look complet</h2>
+        <p className="caps mt-4 text-[11px] text-muted">Les packs</p>
         <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {PACKS.map((x) => {
             const ok = x.ids.filter((id) => price.has(id));
