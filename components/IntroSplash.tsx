@@ -31,7 +31,7 @@ export default function IntroSplash() {
       id="nama-intro"
       onClick={end}
       className={`fixed inset-0 z-[100] flex cursor-pointer flex-col items-center justify-center bg-paper transition-opacity duration-500 ${fade ? "pointer-events-none opacity-0" : ""}`}
-      style={{ animation: "nama-intro-out 0.5s ease 6.8s forwards" }}
+      style={{ animation: "nama-intro-out 0.5s ease 12s forwards" }}
     >
       <script
         dangerouslySetInnerHTML={{
