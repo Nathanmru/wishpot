@@ -19,7 +19,9 @@ export default function LegalPage() {
       <section>
         <h2 className="text-xl font-semibold">Éditeur du site</h2>
         <p className="mt-2 text-muted">
-          Le site {CANONICAL_URL.replace("https://", "")} ({APP_NAME}) est édité par Nathan Moreau, particulier.
+          Le site {CANONICAL_URL.replace("https://", "")} ({APP_NAME}) est édité par Nathan Moreau, entrepreneur individuel (micro-entreprise).
+          <br />
+          SIREN : 937 795 771 · SIRET : 937 795 771 00016 · TVA non applicable, art. 293 B du CGI.
           <br />
           Contact : <a className="underline" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           <br />
