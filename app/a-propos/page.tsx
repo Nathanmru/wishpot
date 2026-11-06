@@ -12,9 +12,8 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-    <div className="relative -mx-4 h-[46vh] min-h-[280px] overflow-hidden bg-night sm:mx-0">
+    <div className="relative -mx-4 h-[50vh] min-h-[300px] overflow-hidden bg-walnut-soft sm:mx-0">
       <NamaShatter />
-      <p className="caps absolute left-0 right-0 top-[18%] text-center text-[11px] tracking-[0.5em] text-bone/50">Atelier</p>
     </div>
     <article className="mx-auto max-w-3xl pt-12">
       <p className="caps text-muted">{APP_NAME} · À propos</p>
