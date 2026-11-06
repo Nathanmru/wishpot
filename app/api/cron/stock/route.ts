@@ -94,8 +94,8 @@ export async function GET(req: NextRequest) {
   if (!dry && (!secret || req.headers.get("authorization") !== `Bearer ${secret}`)) return NextResponse.json({ error: "forbidden" }, { status: 401 });
 
   const sb = publicClient();
-  const pick = async (filter: (q: any) => any, limit: number) => {
-    let q = sb.from("products").select("id, url, shop").eq("active", true);
+  const pick = async (filter: (q: any) => any, limit: number, active = true) => {
+    let q = sb.from("products").select("id, url, shop").eq("active", active);
     q = filter(q);
     const { data } = await q.order("checked_at", { ascending: true, nullsFirst: true }).limit(limit);
     return (data ?? []) as Row[];
@@ -104,7 +104,13 @@ export async function GET(req: NextRequest) {
   let rows: Row[];
   if (shop) rows = await pick((q) => q.eq("shop", shop), dry ? 20 : 400);
   else if (dry) rows = [...(await pick((q) => q.eq("shop", "Selency"), 10)), ...(await pick((q) => q.neq("shop", "Selency"), 10))];
-  else rows = [...(await pick((q) => q.eq("shop", "Selency"), 250)), ...(await pick((q) => q.neq("shop", "Selency"), 150))];
+  else
+    rows = [
+      ...(await pick((q) => q.eq("shop", "Selency"), 250)),
+      ...(await pick((q) => q.neq("shop", "Selency"), 150)),
+      // pièces épuisées chez les marques : revenues en stock ?
+      ...(await pick((q) => q.neq("shop", "Selency").not("gone_at", "is", null), 50, false)),
+    ];
 
   const started = Date.now();
   const results = await pool(rows, 10, async (r) => ({ ...r, ...(await check(r)) }));
