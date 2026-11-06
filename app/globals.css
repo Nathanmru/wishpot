@@ -214,3 +214,11 @@ html {
     transform-origin: bottom;
   }
 }
+
+/* Téléphone / tablette uniquement : une grille à une colonne ne doit jamais s'élargir au-delà de l'écran
+   (sinon les textes sont coupés à droite). Aucun effet sur ordinateur (≥ 1024 px). */
+@media (max-width: 1023px) {
+  .grid > * {
+    min-width: 0;
+  }
+}
