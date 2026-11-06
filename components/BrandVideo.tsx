@@ -187,7 +187,7 @@ export default function BrandVideo({ pieces }: { pieces: Piece[] }) {
       const cell = 300;
       const gap = 24;
       const gx = (W - 3 * cell - 2 * gap) / 2;
-      const step = Math.floor(lt / 0.45);
+      const step = Math.floor(lt / 0.3);
       for (let i = 0; i < 9; i++) {
         const x = gx + (i % 3) * (cell + gap);
         const y = 330 + Math.floor(i / 3) * (cell + gap);
@@ -195,7 +195,8 @@ export default function BrandVideo({ pieces }: { pieces: Piece[] }) {
         cx.globalAlpha = Math.min(ki, out);
         cx.fillStyle = "#FFFFFF";
         cx.fillRect(x, y + (1 - ki) * 40, cell, cell);
-        const im = list.length ? list[(i * 5 + step * (i % 2 ? 1 : 2)) % list.length] : null;
+        // une case change à la fois, en cascade, sans jamais montrer deux fois la même pièce
+        const im = list.length ? list[(i + Math.floor((step + 9 - i) / 9) * 9) % list.length] : null;
         if (im) cover(cx, im, x, y + (1 - ki) * 40, cell, cell);
       }
       cx.globalAlpha = Math.min(ease(cl((lt - 0.5) / 0.6)), out);
