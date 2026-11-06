@@ -213,14 +213,17 @@ export default function NamaShatter({ mode = "loop", onDone, className = "" }: P
       } catch {}
       if (!alive) return;
 
-      const S = sample(drawScene, W < 640 ? 6 : 5);
+      // Téléphone : NAMA plus grand, plus épais et plus dense pour rester lisible sur un petit écran
+      const phone = W < 640;
+      const S = sample(drawScene, phone ? 6 : 5);
       const T = sample((o) => {
         o.fillStyle = "#000";
         o.textAlign = "center";
         o.textBaseline = "middle";
-        o.font = `500 250px ${family}`;
+        o.font = `${phone ? 600 : 500} 250px ${family}`;
         o.fillText("NAMA", SW / 2, SH / 2 + 12);
-      }, 4);
+      }, phone ? 3 : 4);
+      const tb = phone ? 1.12 : 1;
       const N = Math.max(S.length, T.length);
       const P: P[] = [];
       for (let i = 0; i < N; i++) {
@@ -230,14 +233,14 @@ export default function NamaShatter({ mode = "loop", onDone, className = "" }: P
           sx: s[0],
           sy: s[1],
           sc: s[2],
-          tx: t[0],
-          ty: t[1],
+          tx: t[0] * tb,
+          ty: t[1] * tb,
           tc: Math.random() < 0.18 ? [176, 141, 94] : [34, 28, 23],
           rx: (Math.random() - 0.5) * 1400,
           ry: (Math.random() - 0.5) * 900,
           dz: (Math.random() - 0.5) * 600,
           del: Math.random() * 0.35,
-          sz: 2.4 + Math.random() * 1.4,
+          sz: (2.4 + Math.random() * 1.4) * (phone ? 1.2 : 1),
         });
       }
 
@@ -248,7 +251,7 @@ export default function NamaShatter({ mode = "loop", onDone, className = "" }: P
         let t = (now - t0) / 1000;
         if (mode === "intro") {
           if (reduce) t = 6;
-          if (t > 5.6) {
+          if (t > (phone ? 6.6 : 5.6)) {
             done.current?.();
             return;
           }
