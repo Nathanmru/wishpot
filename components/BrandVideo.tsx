@@ -292,7 +292,7 @@ export default function BrandVideo({ pieces }: { pieces: Piece[] }) {
       (cx as any).letterSpacing = "0px";
       cx.fillStyle = MUTED;
       cx.font = `400 36px ${F.s}`;
-      cx.fillText("ateliernama.vercel.app", W / 2, 1420);
+      cx.fillText("ateliernama.fr", W / 2, 1420);
     }
     cx.globalAlpha = 1;
   }
