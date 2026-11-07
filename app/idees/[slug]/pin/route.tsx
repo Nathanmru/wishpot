@@ -20,14 +20,27 @@ function font(family: string, weight: number) {
   return fonts[k];
 }
 
+async function asDataUri(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { headers: { accept: "image/jpeg,image/png;q=0.9", "user-agent": "Mozilla/5.0 AtelierNama/1.0" }, signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return null;
+    const buf = new Uint8Array(await res.arrayBuffer());
+    if (buf.byteLength > 4_000_000) return null;
+    const type = buf[0] === 0xff && buf[1] === 0xd8 ? "image/jpeg" : buf[0] === 0x89 && buf[1] === 0x50 ? "image/png" : null;
+    return type ? `data:${type};base64,${Buffer.from(buf).toString("base64")}` : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const l = landing(slug);
   if (!l) return new Response("Not found", { status: 404 });
 
   const pieces = await fetchPieces(l.filter);
-  // Satori ne lit pas le WebP : on garde les photos en JPEG / PNG
-  const pics = pieces.filter((p) => /\.(jpe?g|png)(\?|$)/i.test(p.image_url) || /format=(jpg|pjpg|png)/i.test(p.image_url)).slice(0, 4);
+  // Satori ne lit pas le WebP : on télécharge les photos nous-mêmes et on ne garde que le JPEG / PNG (vérifié sur les octets)
+  const pics = (await Promise.all(pieces.filter((p) => p.image_url).slice(0, 14).map((p) => asDataUri(p.image_url)))).filter((x): x is string => !!x).slice(0, 4).map((image_url) => ({ image_url }));
   const [bodoni, jost] = await Promise.all([font("Bodoni Moda", 500), font("Jost", 400)]);
   const title = l.h1.split(" : ")[0];
 
