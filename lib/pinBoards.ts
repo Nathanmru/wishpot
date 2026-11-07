@@ -1,17 +1,19 @@
-import { LANDINGS, type Landing } from "@/lib/landings";
+import { LANDINGS } from "@/lib/landings";
+import { pack } from "@/lib/packs";
 
 /**
  * Tableaux Pinterest d'Atelier Nama et les pages « idées » qui vont dans chacun.
  * Chaque tableau a son flux RSS (/flux/<slug>) que Pinterest lit tout seul pour publier les épingles.
+ * « look:xxx » = une page « Le look complet » (/looks/xxx), le reste = une page « idées » (/idees/xxx).
  */
 export const PIN_BOARDS: { slug: string; name: string; ideas: string[] }[] = [
-  { slug: "salon", name: "Salon : idées déco & meubles", ideas: ["salon-vintage", "salon-boheme", "canape-cuir-vintage", "canape-bouclette", "fauteuil-vintage", "table-basse-travertin-marbre", "table-basse-bois", "tapis-berbere", "lampadaire-design", "deco-japandi", "deco-scandinave"] },
-  { slug: "chambre", name: "Chambre cocooning", ideas: ["chambre-boheme", "chambre-cosy", "linge-de-lit-lin", "deco-beige-lin", "suspension-rotin-papier", "deco-vert-sauge"] },
-  { slug: "salle-a-manger", name: "Salle à manger & cuisine", ideas: ["salle-a-manger-chic", "chaise-cannage", "buffet-vintage", "vase-ceramique", "deco-terracotta"] },
-  { slug: "entree", name: "Entrée & couloir", ideas: ["deco-entree", "miroir-dore", "miroir-vintage", "tapis-jute"] },
-  { slug: "bureau", name: "Coin bureau à la maison", ideas: ["bureau-design", "lampe-laiton", "deco-industrielle", "deco-noir-laiton"] },
+  { slug: "salon", name: "Salon : idées déco & meubles", ideas: ["salon-vintage", "look:salon-japandi", "salon-boheme", "look:salon-cognac", "canape-cuir-vintage", "canape-bouclette", "fauteuil-vintage", "look:salon-boheme", "table-basse-travertin-marbre", "look:salon-ambre", "table-basse-bois", "tapis-berbere", "lampadaire-design", "deco-japandi", "deco-scandinave"] },
+  { slug: "chambre", name: "Chambre cocooning", ideas: ["chambre-boheme", "look:chambre-lin", "chambre-cosy", "linge-de-lit-lin", "deco-beige-lin", "suspension-rotin-papier", "deco-vert-sauge"] },
+  { slug: "salle-a-manger", name: "Salle à manger & cuisine", ideas: ["salle-a-manger-chic", "look:salle-a-manger", "chaise-cannage", "buffet-vintage", "vase-ceramique", "deco-terracotta"] },
+  { slug: "entree", name: "Entrée & couloir", ideas: ["deco-entree", "look:entree", "miroir-dore", "miroir-vintage", "tapis-jute"] },
+  { slug: "bureau", name: "Coin bureau à la maison", ideas: ["bureau-design", "look:coin-bureau", "lampe-laiton", "deco-industrielle", "deco-noir-laiton"] },
   { slug: "vintage", name: "Pépites vintage & seconde main", ideas: ["deco-vintage", "meubles-chines", "fauteuil-rotin", "deco-art-deco", "deco-parisienne", "deco-cognac-camel", "deco-boheme"] },
-  { slug: "premier-appartement", name: "Premier appartement : looks complets", ideas: ["premier-appartement", "cagnotte-deco", "liste-cremaillere", "deco-petit-budget"] },
+  { slug: "premier-appartement", name: "Premier appartement : looks complets", ideas: ["premier-appartement", "cagnotte-deco", "look:premier-appart", "liste-cremaillere", "deco-petit-budget"] },
 ];
 
 /** Pages déjà épinglées à la main (une par tableau) : on ne les remet pas dans les flux, pour éviter les doublons. */
@@ -35,14 +37,25 @@ function schedule(): Map<string, number> {
   return out;
 }
 
-/** Les pages « idées » d'un tableau déjà « publiées » (date passée), les plus récentes d'abord. */
-export function boardItems(board: string, now = Date.now()): { l: Landing; at: number }[] {
+export type FeedItem = { path: string; title: string; description: string; at: number };
+
+function item(key: string, at: number): FeedItem | null {
+  if (key.startsWith("look:")) {
+    const p = pack(key.slice(5));
+    return p ? { path: `/looks/${p.slug}`, title: `Le look complet : ${p.name}`, description: `${p.mood}. Toutes les pièces du look, avec le prix total, à shopper ou à mettre en cagnotte.`, at } : null;
+  }
+  const l = LANDINGS.find((x) => x.slug === key);
+  return l ? { path: `/idees/${l.slug}`, title: l.h1.split(" : ")[0], description: l.description, at } : null;
+}
+
+/** Les épingles d'un tableau déjà « publiées » (date passée), les plus récentes d'abord. */
+export function boardItems(board: string, now = Date.now()): FeedItem[] {
   const b = PIN_BOARDS.find((x) => x.slug === board);
   if (!b) return [];
   const when = schedule();
   return b.ideas
-    .filter((s) => when.has(s))
-    .map((s) => ({ l: LANDINGS.find((x) => x.slug === s), at: when.get(s)! }))
-    .filter((x): x is { l: Landing; at: number } => !!x.l && x.at <= now)
+    .filter((s) => when.has(s) && when.get(s)! <= now)
+    .map((s) => item(s, when.get(s)!))
+    .filter((x): x is FeedItem => !!x)
     .sort((a, b) => b.at - a.at);
 }
