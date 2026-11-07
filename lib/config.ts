@@ -5,7 +5,7 @@ export const APP_NAME = "Atelier Nama";
 export const CONTACT_EMAIL = "contact.ateliernama@gmail.com";
 
 /** L'adresse officielle du site (celle que Google doit retenir). */
-export const CANONICAL_URL = "https://ateliernama.vercel.app";
+export const CANONICAL_URL = "https://ateliernama.fr";
 
 export function siteUrl() {
   if (process.env.VERCEL_ENV === "production") return CANONICAL_URL;
