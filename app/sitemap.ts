@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/config";
 import { CATALOG_ROOMS, COLORS, STYLES } from "@/lib/catalog";
 import { LANDINGS } from "@/lib/landings";
+import { PACKS } from "@/lib/packs";
 import { publicClient } from "@/lib/supabase/public";
 
 export const revalidate = 86400;
@@ -32,6 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("/a-propos", 0.4, "monthly"),
     page("/inspiration/maison", 0.5, "monthly"),
     ...LANDINGS.map((l) => page(`/idees/${l.slug}`, l.group === "projets" ? 0.7 : 0.8)),
+    page("/looks", 0.8),
+    ...PACKS.map((p) => page(`/looks/${p.slug}`, 0.7)),
     ...CATALOG_ROOMS.map((r) => page(`/catalogue?piece=${r.id}`, 0.7, "daily")),
     ...STYLES.map((s) => page(`/catalogue?style=${s.id}`, 0.6, "daily")),
     ...COLORS.map((c) => page(`/catalogue?couleur=${c.id}`, 0.5, "daily")),
