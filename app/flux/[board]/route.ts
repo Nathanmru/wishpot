@@ -12,16 +12,15 @@ export async function GET(_req: Request, { params }: { params: Promise<{ board: 
   if (!b) return new Response("Not found", { status: 404 });
   const base = siteUrl();
   const items = boardItems(board)
-    .map(({ l, at }) => {
-      const link = `${base}/idees/${l.slug}`;
-      const img = `${base}/idees/${l.slug}/pin`;
-      const title = l.h1.split(" : ")[0];
+    .map(({ path, title, description, at }) => {
+      const link = `${base}${path}`;
+      const img = `${base}${path}/pin`;
       return `<item>
 <title>${esc(title)}</title>
 <link>${link}</link>
 <guid isPermaLink="true">${link}</guid>
 <pubDate>${new Date(at).toUTCString()}</pubDate>
-<description>${esc(`<img src="${img}" alt="${esc(title)}" /><p>${l.description}</p>`)}</description>
+<description>${esc(`<img src="${img}" alt="${esc(title)}" /><p>${description}</p>`)}</description>
 <media:content url="${img}" medium="image" type="image/png" width="1000" height="1500" />
 <enclosure url="${img}" type="image/png" length="0" />
 </item>`;
