@@ -9,7 +9,13 @@
  *      → lien Awin "cread.php", pour chaque marchand déclaré dans AWIN_MERCHANTS
  *        format : "maisonsdumonde.com:12345,laredoute.fr:6789"
  *        (l'identifiant marchand est visible dans ton espace Awin après acceptation)
+ *  - Skimlinks (filet de sécurité) : toutes les autres boutiques passent par le lien Skimlinks,
+ *    qui rémunère les clics chez les marchands avec lesquels Skimlinks a un accord.
+ *    Un programme direct (ci-dessus) passe toujours en priorité, car il rapporte plus.
  */
+
+/** Identifiant public Skimlinks d'Atelier Nama (pas un secret : il figure dans chaque lien). */
+const SKIMLINKS_ID = "312404X1800995";
 
 export function hostOf(url: string) {
   try {
@@ -98,6 +104,11 @@ export async function affiliateUrl(original: string): Promise<{ url: string; aff
         `&awinaffid=${encodeURIComponent(awinId)}&ued=${encodeURIComponent(u.toString())}`;
       return { url: link, affiliated: true };
     }
+  }
+
+  if (SKIMLINKS_ID) {
+    const link = `https://go.skimresources.com/?id=${SKIMLINKS_ID}&xs=1&url=${encodeURIComponent(u.toString())}`;
+    return { url: link, affiliated: false };
   }
 
   return { url: u.toString(), affiliated: false };
