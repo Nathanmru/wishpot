@@ -44,9 +44,10 @@ export async function GET(req: NextRequest) {
     if (ref && new URL(ref).host === req.nextUrl.host) source = new URL(ref).pathname.slice(0, 200);
   } catch {}
 
-  // Les robots (moteurs, aperçus de liens, outils) ne comptent pas comme des clics
+  // Les robots (moteurs, aperçus de liens, outils) ne comptent pas comme des clics.
+  // Un vrai clic vient toujours d'une page du site : sans page d'origine, on ne le compte pas.
   const ua = req.headers.get("user-agent") || "";
-  const bot = !ua || /bot|crawl|spider|slurp|preview|fetch|curl|wget|python|headless|lighthouse|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|monitor/i.test(ua);
+  const bot = !ua || !source || /bot|crawl|spider|slurp|preview|fetch|curl|wget|python|headless|lighthouse|facebookexternalhit|embedly|whatsapp|telegram|discord|slack|monitor/i.test(ua);
 
   if (!bot) await supabase
     .from("clicks")
