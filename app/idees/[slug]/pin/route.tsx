@@ -52,7 +52,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
           </div>
           <div style={{ display: "flex", marginTop: "auto", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ fontFamily: "Bodoni", fontSize: 40, letterSpacing: 6, color: "#1A1714" }}>ATELIER NAMA</div>
-            <div style={{ fontFamily: "Jost", fontSize: 26, color: "#8A7F72" }}>ateliernama.vercel.app</div>
+            <div style={{ fontFamily: "Jost", fontSize: 26, color: "#8A7F72" }}>ateliernama.fr</div>
           </div>
         </div>
       </div>
