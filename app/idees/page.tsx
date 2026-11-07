@@ -48,6 +48,19 @@ export default function IdeesPage() {
           </section>
         );
       })}
+
+      <section className="mt-16 grid gap-3 border-t border-line pt-10 sm:grid-cols-3">
+        {[
+          ["/looks", "Looks complets", "Des pièces qui vont ensemble, avec le prix total."],
+          ["/alternative", "Icônes du design, version abordable", "Arco, Camaleonda, Tulip : nos alternatives à prix doux."],
+          ["/marques", "Les maisons", "Selency, Westwing, Caravane, Ferm Living et les autres."],
+        ].map(([href, t, d]) => (
+          <Link key={href} href={href} className="group flex flex-col justify-end bg-white p-5 transition hover:bg-ink hover:text-white">
+            <span className="display text-2xl leading-tight">{t}</span>
+            <span className="mt-1 text-sm text-muted group-hover:text-white/80">{d}</span>
+          </Link>
+        ))}
+      </section>
     </div>
   );
 }
