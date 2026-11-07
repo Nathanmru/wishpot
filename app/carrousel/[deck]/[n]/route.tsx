@@ -143,6 +143,74 @@ async function render(s: Slide) {
       </div>
     );
   }
+  if (s.kind === "icon") {
+    const i = s.icon;
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: INK, padding: 80, color: BG }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "Jost", fontSize: 26, letterSpacing: 9, color: "#B8AC9C" }}>
+          <div>LUXE VS BONNE AFFAIRE</div>
+          <div>L&apos;ICÔNE</div>
+        </div>
+        <div style={{ fontFamily: "Bodoni", fontSize: i.name.length > 20 ? 104 : 124, lineHeight: 1.0, marginTop: 120 }}>{i.name}</div>
+        <div style={{ fontFamily: "Jost", fontSize: 34, color: "#B8AC9C", marginTop: 30, lineHeight: 1.35 }}>{i.credit}</div>
+        <div style={{ display: "flex", alignItems: "baseline", marginTop: 90 }}>
+          {i.from && <div style={{ fontFamily: "Jost", fontSize: 40, color: "#B8AC9C", marginRight: 18 }}>dès</div>}
+          <div style={{ fontFamily: "Bodoni", fontSize: 190, lineHeight: 1 }}>{eur(i.price)}</div>
+        </div>
+        <div style={{ fontFamily: "Jost", fontSize: 24, color: "#8A7F72", marginTop: 16 }}>{`Prix constaté chez ${i.source}, novembre 2026`}</div>
+        <div style={{ display: "flex", marginTop: "auto", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ fontFamily: "Bodoni", fontSize: 34, letterSpacing: 7 }}>ATELIER NAMA</div>
+          <div style={{ fontFamily: "Jost", fontSize: 30, letterSpacing: 3, color: BG }}>{`LA VERSION À ${eur(s.best)}  ›`}</div>
+        </div>
+      </div>
+    );
+  }
+  if (s.kind === "pair") {
+    const i = s.icon;
+    const src = await asDataUri(s.piece.image_url);
+    const pct = Math.round((1 - s.piece.price / i.price) * 100);
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: BG }}>
+        <div style={{ display: "flex", flexDirection: "column", background: INK, color: BG, padding: "48px 64px 40px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "Jost", fontSize: 24, letterSpacing: 8, color: "#B8AC9C" }}>
+            <div>L&apos;ICÔNE</div>
+            <div>{`${s.index} / ${s.count}`}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: 14 }}>
+            <div style={{ display: "flex", flexDirection: "column", width: 640 }}>
+              <div style={{ fontFamily: "Bodoni", fontSize: 54, lineHeight: 1.05 }}>{i.name}</div>
+              <div style={{ fontFamily: "Jost", fontSize: 24, color: "#B8AC9C", marginTop: 8 }}>{clip(i.credit, 52)}</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline" }}>
+              {i.from && <div style={{ fontFamily: "Jost", fontSize: 26, color: "#B8AC9C", marginRight: 10 }}>dès</div>}
+              <div style={{ fontFamily: "Bodoni", fontSize: 64, textDecoration: "line-through" }}>{eur(i.price)}</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", padding: "36px 64px 56px", flex: 1 }}>
+          <div style={{ fontFamily: "Jost", fontSize: 24, letterSpacing: 8, color: WALNUT }}>LA BONNE AFFAIRE · MÊME ESPRIT</div>
+          <div style={{ width: 952, height: 640, marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", background: "#FFFFFF", position: "relative" }}>
+            {src ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={src} alt="" width={860} height={580} style={{ objectFit: "contain" }} />
+            ) : (
+              <div style={{ width: 80, height: 80, background: MUTED, transform: "rotate(45deg)" }} />
+            )}
+            <div style={{ position: "absolute", top: 24, right: 24, display: "flex", background: WALNUT, color: BG, fontFamily: "Jost", fontSize: 34, padding: "10px 22px" }}>{`−${pct} %`}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: 28 }}>
+            <div style={{ display: "flex", flexDirection: "column", width: 640 }}>
+              <div style={{ fontFamily: "Jost", fontSize: 24, letterSpacing: 6, color: MUTED, textTransform: "uppercase" }}>
+                {s.piece.shop === "Selency" ? "Seconde main · Selency" : s.piece.shop}
+              </div>
+              <div style={{ fontFamily: "Bodoni", fontSize: 44, lineHeight: 1.08, color: INK, marginTop: 8 }}>{clip(s.piece.title, 56)}</div>
+            </div>
+            <div style={{ fontFamily: "Bodoni", fontSize: 84, color: WALNUT }}>{eur(s.piece.price)}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: BG, padding: 90 }}>
       <div style={{ fontFamily: "Jost", fontSize: 28, letterSpacing: 10, color: MUTED }}>ATELIER</div>
