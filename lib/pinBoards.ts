@@ -14,6 +14,9 @@ export const PIN_BOARDS: { slug: string; name: string; ideas: string[] }[] = [
   { slug: "premier-appartement", name: "Premier appartement : looks complets", ideas: ["premier-appartement", "cagnotte-deco", "liste-cremaillere", "deco-petit-budget"] },
 ];
 
+/** Pages déjà épinglées à la main (une par tableau) : on ne les remet pas dans les flux, pour éviter les doublons. */
+export const PINNED_BY_HAND = ["salon-vintage", "chambre-boheme", "salle-a-manger-chic", "deco-entree", "bureau-design", "deco-vintage", "cagnotte-deco"];
+
 /** Début de la diffusion (une épingle par tableau tout de suite) puis une toutes les 8 h, tous tableaux confondus : ~3 par jour. */
 const START = Date.UTC(2026, 10, 7, 9, 0);
 const EVERY = 8 * 3600 * 1000;
@@ -21,7 +24,7 @@ const EVERY = 8 * 3600 * 1000;
 /** Ordre de publication : on alterne les tableaux pour que le profil reste varié. */
 function schedule(): Map<string, number> {
   const out = new Map<string, number>();
-  const queues = PIN_BOARDS.map((b) => [...b.ideas]);
+  const queues = PIN_BOARDS.map((b) => b.ideas.filter((s) => !PINNED_BY_HAND.includes(s)));
   let k = 0;
   while (queues.some((q) => q.length)) {
     for (const q of queues) {
@@ -38,7 +41,8 @@ export function boardItems(board: string, now = Date.now()): { l: Landing; at: n
   if (!b) return [];
   const when = schedule();
   return b.ideas
-    .map((s) => ({ l: LANDINGS.find((x) => x.slug === s), at: when.get(s) ?? 0 }))
+    .filter((s) => when.has(s))
+    .map((s) => ({ l: LANDINGS.find((x) => x.slug === s), at: when.get(s)! }))
     .filter((x): x is { l: Landing; at: number } => !!x.l && x.at <= now)
     .sort((a, b) => b.at - a.at);
 }
