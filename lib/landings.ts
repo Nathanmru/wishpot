@@ -1,3 +1,4 @@
+import { MORE } from "@/lib/landings2";
 /**
  * Pages « idées » : une page par recherche que font les gens sur Google
  * (« canapé cuir vintage », « déco salon bohème »…), avec un vrai texte, de vraies pièces et une FAQ.
@@ -38,7 +39,7 @@ export const GROUPS: Record<Landing["group"], string> = {
 
 const L = (l: Landing) => l;
 
-export const LANDINGS: Landing[] = [
+const BASE: Landing[] = [
   /* ---------------- Styles ---------------- */
   L({
     slug: "deco-vintage",
@@ -754,5 +755,8 @@ export const LANDINGS: Landing[] = [
     related: ["liste-cremaillere", "vase-ceramique", "cagnotte-deco"],
   }),
 ];
+
+export const LANDINGS: Landing[] = [...BASE, ...MORE];
+
 
 export const landing = (slug: string) => LANDINGS.find((l) => l.slug === slug) ?? null;
