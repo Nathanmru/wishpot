@@ -37,7 +37,7 @@ function schedule(): Map<string, number> {
   return out;
 }
 
-export type FeedItem = { path: string; title: string; description: string; at: number };
+export type FeedItem = { path: string; pin?: string; title: string; description: string; at: number };
 
 function item(key: string, at: number): FeedItem | null {
   if (key.startsWith("look:")) {
