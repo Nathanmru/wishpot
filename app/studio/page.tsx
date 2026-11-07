@@ -6,6 +6,7 @@ import { PACKS, pack } from "@/lib/packs";
 import { publicClient } from "@/lib/supabase/public";
 import VideoStudio from "@/components/VideoStudio";
 import BrandVideo from "@/components/BrandVideo";
+import CarouselPanel from "@/components/CarouselPanel";
 
 /** Page de travail (non référencée) : fabrique les vidéos TikTok / Reels « Le look complet pour X € ». */
 export const metadata: Metadata = { title: "Studio vidéo", robots: { index: false, follow: false } };
@@ -20,7 +21,7 @@ async function packPieces(ids: number[]) {
   return ids.map((id) => rows.find((r) => r.id === id)).filter((r): r is Piece => !!r);
 }
 
-export default async function StudioPage({ searchParams }: { searchParams: Promise<{ p?: string; pack?: string }> }) {
+export default async function StudioPage({ searchParams }: { searchParams: Promise<{ p?: string; pack?: string; c?: string }> }) {
   const sp = await searchParams;
   const pk = pack(sp.pack || "") ?? (sp.p ? null : PACKS[0]);
   const l = pk ? null : (landing(sp.p || "") ?? landing("salon-vintage")!);
@@ -63,6 +64,15 @@ export default async function StudioPage({ searchParams }: { searchParams: Promi
         <h2 className="display text-3xl sm:text-4xl">Présenter Atelier Nama</h2>
         <p className="mt-2 max-w-2xl text-sm text-muted">Trois vidéos pour faire découvrir le site sur Instagram, TikTok et Pinterest. Choisis un script, crée la vidéo, télécharge-la.</p>
         <BrandVideo pieces={showcase} />
+      </section>
+
+      <section id="carrousels" className="mt-16 scroll-mt-24 border-t border-line pt-10">
+        <h2 className="display text-3xl sm:text-4xl">Carrousels Instagram</h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted">
+          Des posts photo à faire défiler. Choisis un carrousel, télécharge les slides, puis publie-les ensemble dans un seul post Instagram (jusqu&apos;à 20
+          photos) avec la légende.
+        </p>
+        <CarouselPanel id={sp.c || ""} />
       </section>
 
       <section className="mt-16 border-t border-line pt-10">
