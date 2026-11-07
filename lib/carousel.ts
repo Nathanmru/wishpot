@@ -2,6 +2,7 @@ import { publicClient } from "@/lib/supabase/public";
 import { PACKS, pack } from "@/lib/packs";
 import { packPieces } from "@/lib/packPieces";
 import type { Piece } from "@/lib/landingPieces";
+import { ICONS, icon, type Icon } from "@/lib/dupes";
 
 /**
  * Carrousels Instagram (1080×1350) fabriqués à partir du catalogue.
@@ -12,7 +13,9 @@ export type Slide =
   | { kind: "piece"; index: number; count: number; label: string; piece: Piece }
   | { kind: "total"; title: string; total: number; pieces: Piece[] }
   | { kind: "tip"; index: number; count: number; rule: string; why: string }
-  | { kind: "end"; title: string; sub: string };
+  | { kind: "end"; title: string; sub: string }
+  | { kind: "icon"; icon: Icon; best: number }
+  | { kind: "pair"; icon: Icon; piece: Piece; index: number; count: number };
 
 export type Deck = { id: string; title: string; caption: string; slides: Slide[] };
 
@@ -42,6 +45,8 @@ export const DECKS: { id: string; label: string; group: string }[] = [
   ...PACKS.map((p) => ({ id: `look-${p.slug}`, label: p.name, group: "Le look complet" })),
   ...Object.entries(ROOMS).map(([k, r]) => ({ id: `sous100-${k}`, label: `${r.label} sous 100 €`, group: "5 pièces sous 100 €" })),
   { id: "regles", label: "8 règles déco", group: "Conseils" },
+  { id: "luxe", label: "Les 8 icônes", group: "Luxe vs bonne affaire" },
+  ...ICONS.map((i) => ({ id: `luxe-${i.slug}`, label: i.name, group: "Luxe vs bonne affaire" })),
 ];
 
 const eur = (v: number) => `${Math.round(v).toLocaleString("fr-FR")} €`;
@@ -105,6 +110,38 @@ export async function getDeck(id: string): Promise<Deck | null> {
         { kind: "cover", kicker: "Petit budget, grand effet", title: `5 pièces sous 100 €`, sub: `pour ${r.pour}`, photos: pieces.slice(0, 4).map((x) => x.image_url) },
         ...pieces.map((piece, i) => ({ kind: "piece" as const, index: i + 1, count: pieces.length, label: "Sous 100 €", piece })),
         { kind: "end", title: "Tout est en lien en bio", sub: "Et des centaines d'autres pièces, chinées ou design, sur ateliernama.fr" },
+      ],
+    };
+  }
+  if (id === "luxe") {
+    const all = await packPieces(ICONS.flatMap((i) => i.dupes));
+    const pairs = ICONS.map((i) => ({ i, piece: all.find((p) => i.dupes.includes(p.id)) })).filter((x): x is { i: Icon; piece: Piece } => !!x.piece);
+    const maxPct = Math.max(...pairs.map((x) => Math.round((1 - x.piece.price / x.i.price) * 100)));
+    return {
+      id,
+      title: `${pairs.length} icônes du design et leur version abordable`,
+      caption: `${pairs.length} icônes du design… et leur version à prix doux ✦\n\nArco, Camaleonda, Pierre Jeanneret, Tulip : les pièces qu'on voit dans tous les intérieurs de rêve. On a trouvé des modèles dans le même esprit, pour une fraction du prix. Pas des copies : d'autres modèles, la même allure.\n\nVotre préférée ? Dites-nous le numéro en commentaire 👇\n\nToutes les pièces sont en lien en bio 🔗 Enregistrez ce post 📌\n\n${TAGS} #dupe #luxeabordable #designicon #petitbudget`,
+      slides: [
+        { kind: "cover", kicker: "Luxe vs bonne affaire", title: `${pairs.length} icônes du design, version abordable`, sub: `jusqu'à −${maxPct} % sur le prix`, photos: pairs.slice(0, 4).map((x) => x.piece.image_url) },
+        ...pairs.map((x, n) => ({ kind: "pair" as const, icon: x.i, piece: x.piece, index: n + 1, count: pairs.length })),
+        { kind: "end", title: "Tout est en lien en bio", sub: "Des pièces dans le même esprit que les grandes icônes du design, sans le prix qui va avec." },
+      ],
+    };
+  }
+  if (id.startsWith("luxe-")) {
+    const i = icon(id.slice(5));
+    if (!i) return null;
+    const pieces = await packPieces(i.dupes);
+    if (!pieces.length) return null;
+    const best = Math.min(...pieces.map((p) => p.price));
+    return {
+      id,
+      title: `${i.name} : ${eur(i.price)} ou ${eur(best)} ?`,
+      caption: `${i.name} : ${i.from ? "à partir de " : ""}${eur(i.price)} chez ${i.credit.split(" · ")[0]}… ou ${eur(best)} ✦\n\nL'icône signée ${i.credit.split(" · ")[1] ?? i.credit}, on l'adore. Mais pour avoir la même allure chez soi, on a trouvé ${pieces.length > 1 ? "des modèles" : "un modèle"} dans le même esprit, pour une fraction du prix. Pas une copie : un autre modèle, la même vibe.\n\nVous choisissez quoi : l'original ou la bonne affaire ? 👇\n\nEn lien en bio 🔗 Enregistrez ce post 📌\n\n${TAGS} #dupe #luxeabordable ${i.hashtag}`,
+      slides: [
+        { kind: "icon", icon: i, best },
+        ...pieces.map((piece, n) => ({ kind: "pair" as const, icon: i, piece, index: n + 1, count: pieces.length })),
+        { kind: "end", title: "La bonne affaire est en lien en bio", sub: "Et d'autres pièces dans le même esprit sur ateliernama.fr" },
       ],
     };
   }
