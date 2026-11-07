@@ -1,5 +1,6 @@
 import { siteUrl } from "@/lib/config";
 import { PIN_BOARDS, boardItems } from "@/lib/pinBoards";
+import { boardPieces } from "@/lib/pinPieces";
 
 /** Flux RSS d'un tableau Pinterest : Pinterest le lit chaque jour et crée une épingle par nouvel article. */
 export const revalidate = 3600;
@@ -11,10 +12,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ board: 
   const b = PIN_BOARDS.find((x) => x.slug === board);
   if (!b) return new Response("Not found", { status: 404 });
   const base = siteUrl();
-  const items = boardItems(board)
-    .map(({ path, title, description, at }) => {
+  const pieces = await boardPieces(board).catch(() => []);
+  const items = [...boardItems(board), ...pieces]
+    .sort((a, b) => b.at - a.at)
+    .slice(0, 40)
+    .map(({ path, pin, title, description, at }) => {
       const link = `${base}${path}`;
-      const img = `${base}${path}/pin`;
+      const img = `${base}${pin ?? `${path}/pin`}`;
       return `<item>
 <title>${esc(title)}</title>
 <link>${link}</link>
