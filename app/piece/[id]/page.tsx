@@ -50,10 +50,19 @@ export default async function PiecePage({ params }: { params: Promise<{ id: stri
             "@context": "https://schema.org",
             "@type": "Product",
             name: p.title,
+            description: `${p.title}${cat ? ` (${cat.toLowerCase()})` : ""}, ${p.shop === "Selency" ? "pièce de seconde main vendue" : "vendu"} par ${p.shop}. Sélectionné par ${APP_NAME}.`,
             image: p.image_url,
             brand: { "@type": "Brand", name: p.shop },
             url: `${base}${piecePath(p)}`,
-            offers: { "@type": "Offer", price: p.price, priceCurrency: "EUR", availability: "https://schema.org/InStock", url: `${base}${piecePath(p)}` },
+            offers: {
+              "@type": "Offer",
+              price: p.price,
+              priceCurrency: "EUR",
+              availability: "https://schema.org/InStock",
+              itemCondition: p.shop === "Selency" ? "https://schema.org/UsedCondition" : "https://schema.org/NewCondition",
+              seller: { "@type": "Organization", name: p.shop },
+              url: `${base}${piecePath(p)}`,
+            },
           }}
         />
       )}
