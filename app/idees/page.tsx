@@ -49,8 +49,9 @@ export default function IdeesPage() {
         );
       })}
 
-      <section className="mt-16 grid gap-3 border-t border-line pt-10 sm:grid-cols-3">
+      <section className="mt-16 grid gap-3 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
         {[
+          ["/guides", "Les guides", "Taille du tapis, choix du canapé, meubler un studio : nos conseils pratiques."],
           ["/looks", "Looks complets", "Des pièces qui vont ensemble, avec le prix total."],
           ["/alternative", "Icônes du design, version abordable", "Arco, Camaleonda, Tulip : nos alternatives à prix doux."],
           ["/marques", "Les maisons", "Selency, Westwing, Caravane, Ferm Living et les autres."],
