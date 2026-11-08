@@ -87,6 +87,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/selection" className="hover:opacity-60">{fr ? "Ma sélection" : "My picks"}</Link>
               <Link href="/aide-deco" className="hover:opacity-60">{fr ? "Aide déco" : "Decor guide"}</Link>
               <Link href="/idees" className="hover:opacity-60">{fr ? "Idées déco" : "Decor ideas"}</Link>
+              <Link href="/guides" className="hover:opacity-60">{fr ? "Guides" : "Guides"}</Link>
+              <Link href="/looks" className="hover:opacity-60">{fr ? "Looks complets" : "Complete looks"}</Link>
               <Link href="/dashboard" className="hover:opacity-60">{t.myPots}</Link>
             </div>
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
