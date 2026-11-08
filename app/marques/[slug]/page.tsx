@@ -34,6 +34,16 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
   const prices = pieces.map((p) => p.price);
   const base = siteUrl();
   const others = BRANDS.filter((x) => x.slug !== b.slug);
+  const lo = prices.length ? Math.round(Math.min(...prices)) : 0;
+  const hi = prices.length ? Math.round(Math.max(...prices)) : 0;
+  const faq: [string, string][] = [
+    [`Quel est le style de ${b.shop} ?`, `${b.intro} En un mot : ${b.style}.`],
+    ...(prices.length
+      ? ([[`${b.shop}, c'est cher ?`, `Dans notre sélection, les pièces ${b.shop} vont de ${lo} € à ${hi.toLocaleString("fr-FR")} €. Les prix sont relevés chez ${b.shop} et peuvent évoluer : le prix à jour est toujours celui affiché sur leur site.`]] as [string, string][])
+      : []),
+    [`Où acheter les pièces ${b.shop} ?`, `Directement chez ${b.shop} : chaque pièce de cette page renvoie vers sa fiche sur leur site. Atelier Nama vous aide à la trouver, à la comparer avec d'autres maisons et à la garder de côté.`],
+    [`Peut-on mettre une pièce ${b.shop} dans une cagnotte ?`, `Oui. Ajoutez la pièce à une cagnotte Atelier Nama pour épargner chaque mois ou la faire offrir à plusieurs, pour une crémaillère, un mariage ou un anniversaire.`],
+  ];
 
   return (
     <article className="pt-4">
@@ -44,6 +54,13 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
           name: `${b.shop} : notre sélection`,
           url: `${base}/marques/${b.slug}`,
           about: { "@type": "Brand", name: b.shop },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
         }}
       />
       <nav aria-label="Fil d'Ariane" className="caps flex flex-wrap gap-2 text-muted">
@@ -83,6 +100,25 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
           <ProductGrid items={pieces} fr />
         </section>
       )}
+
+      <section className="mt-20 border-t border-line pt-14">
+        <h2 className="display text-4xl leading-tight">{b.shop} : vos questions</h2>
+        <div className="mt-6 max-w-3xl divide-y divide-line border-y border-line">
+          {faq.map(([q, a]) => (
+            <details key={q} className="group py-5" open>
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 [&::-webkit-details-marker]:hidden">
+                <h3 className="text-lg">{q}</h3>
+                <span className="text-2xl font-light transition group-open:rotate-45">+</span>
+              </summary>
+              <p className="mt-3 leading-relaxed text-muted">{a}</p>
+            </details>
+          ))}
+        </div>
+        <p className="mt-8 text-sm text-muted">
+          Besoin d'aide pour choisir ? Lisez nos <Link href="/guides" className="underline hover:text-ink">guides</Link> ou piochez dans nos{" "}
+          <Link href="/looks" className="underline hover:text-ink">looks complets</Link>.
+        </p>
+      </section>
 
       <section className="mt-20 border-t border-line pt-14">
         <h2 className="caps text-muted">Les autres maisons</h2>
