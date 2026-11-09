@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getDeck, type Slide } from "@/lib/carousel";
+import { sized } from "@/lib/finds";
+import type { Piece } from "@/lib/landingPieces";
 
 /** Une slide de carrousel Instagram (1080×1350) : /carrousel/<deck>/<n>. Sert au studio (page non référencée). */
 export const revalidate = 3600;
@@ -50,7 +52,103 @@ function Brand() {
   );
 }
 
+/** Nom + description courte pour la fiche incrustée : « Pond Mirror - Small - Dark Chrome » → POND MIRROR / Small - Dark Chrome. */
+function split(title: string, category: string) {
+  const parts = title.split(/\s+[-–]\s+|,\s+/);
+  const name = (parts[0] || title).trim();
+  const desc = parts.slice(1).join(", ").trim() || category;
+  return { name: clip(name, 26).toUpperCase(), desc: clip(desc.charAt(0).toUpperCase() + desc.slice(1), 38) };
+}
+
+function Price({ v }: { v: number }) {
+  const int = Math.floor(v);
+  const cents = Math.round((v - int) * 100);
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", color: INK }}>
+      <div style={{ fontFamily: "JostB", fontSize: 52, lineHeight: 1 }}>{int.toLocaleString("fr-FR")}</div>
+      <div style={{ fontFamily: "JostB", fontSize: 22, marginTop: 4, marginLeft: 2 }}>{cents ? `,${String(cents).padStart(2, "0")}€` : "€"}</div>
+    </div>
+  );
+}
+
+const SPOTS = [
+  { left: 92, top: 150 },
+  { left: 640, top: 380 },
+  { left: 110, top: 560 },
+  { left: 610, top: 120 },
+  { left: 380, top: 700 },
+  { left: 90, top: 300 },
+];
+
+function Watermark() {
+  return (
+    <div style={{ position: "absolute", right: 46, bottom: 60, display: "flex", fontFamily: "Jost", fontSize: 38, color: "#FFFFFF", textShadow: "0 2px 10px rgba(0,0,0,0.55)" }}>
+      ateliernama.fr
+    </div>
+  );
+}
+
+function Card({ piece, img }: { piece: Piece; img: string | null }) {
+  const { name, desc } = split(piece.title, piece.category);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", width: 330, padding: 12, background: "#FFFFFF", borderRadius: 34, boxShadow: "0 18px 40px rgba(0,0,0,0.28)" }}>
+      <div style={{ display: "flex", flexDirection: "column", background: "#F3F2EF", borderRadius: 24, padding: "22px 22px 20px" }}>
+        <div style={{ display: "flex", width: 262, height: 250, alignItems: "center", justifyContent: "center" }}>
+          {img && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={img} alt="" width={250} height={240} style={{ objectFit: "contain" }} />
+          )}
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -6 }}>
+          <svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" fill="none" stroke="#1A1714" strokeWidth="1.6" /></svg>
+        </div>
+        <div style={{ fontFamily: "JostB", fontSize: 21, color: INK, letterSpacing: 0.5, marginTop: 4 }}>{name}</div>
+        <div style={{ fontFamily: "Jost", fontSize: 19, color: "#4A443D", marginTop: 4 }}>{desc}</div>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: 12 }}>
+          <Price v={piece.price} />
+          <div style={{ display: "flex", width: 46, height: 46, borderRadius: 23, background: WALNUT, alignItems: "center", justifyContent: "center", color: "#FFFFFF", fontFamily: "Jost", fontSize: 32, lineHeight: 1 }}>+</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 async function render(s: Slide) {
+  if (s.kind === "fcover") {
+    const bg = await asDataUri(sized(s.bg, 1400));
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "#2A2621" }}>
+        {bg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bg} alt="" width={1080} height={1350} style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1350, objectFit: "cover" }} />
+        )}
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1350, display: "flex", background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.22) 45%, rgba(0,0,0,0.08) 100%)" }} />
+        <div style={{ position: "absolute", left: 0, top: 380, width: 1080, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ fontFamily: "BodoniB", fontSize: s.name.length > 9 ? 150 : 200, lineHeight: 1, color: "#FFFFFF", letterSpacing: 2, textShadow: "0 4px 24px rgba(0,0,0,0.45)" }}>{s.name.toUpperCase()}</div>
+          <div style={{ display: "flex", width: 860, justifyContent: "flex-end", marginTop: 10 }}>
+            <div style={{ fontFamily: "Bodoni", fontSize: 170, lineHeight: 1, color: "#FFFFFF", textShadow: "0 4px 24px rgba(0,0,0,0.45)" }}>Finds</div>
+          </div>
+        </div>
+        <Watermark />
+      </div>
+    );
+  }
+  if (s.kind === "find") {
+    const [bg, img] = await Promise.all([asDataUri(sized(s.bg, 1400)), asDataUri(sized(s.piece.image_url, 600))]);
+    const spot = SPOTS[s.index % SPOTS.length];
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "#D9D4CC" }}>
+        {bg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bg} alt="" width={1080} height={1350} style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1350, objectFit: "cover" }} />
+        )}
+        <div style={{ position: "absolute", left: spot.left, top: spot.top, display: "flex" }}>
+          <Card piece={s.piece} img={img} />
+        </div>
+        <Watermark />
+      </div>
+    );
+  }
   if (s.kind === "cover") {
     const pics = (await Promise.all(s.photos.map(asDataUri))).filter((x): x is string => !!x).slice(0, 4);
     return (
@@ -228,13 +326,15 @@ export async function GET(_req: Request, { params }: { params: Promise<{ deck: s
   const d = await getDeck(deck);
   const s = d?.slides[Number(n)];
   if (!d || !s) return new Response("Not found", { status: 404 });
-  const [bodoni, jost] = await Promise.all([font("Bodoni Moda", 500), font("Jost", 400)]);
+  const [bodoni, jost, bodoniB, jostB] = await Promise.all([font("Bodoni Moda", 500), font("Jost", 400), font("Bodoni Moda", 700), font("Jost", 600)]);
   return new ImageResponse(await render(s), {
     width: 1080,
     height: 1350,
     fonts: [
       ...(bodoni ? [{ name: "Bodoni", data: bodoni, weight: 500 as const, style: "normal" as const }] : []),
       ...(jost ? [{ name: "Jost", data: jost, weight: 400 as const, style: "normal" as const }] : []),
+      ...(bodoniB ? [{ name: "BodoniB", data: bodoniB, weight: 700 as const, style: "normal" as const }] : []),
+      ...(jostB ? [{ name: "JostB", data: jostB, weight: 600 as const, style: "normal" as const }] : []),
     ],
     headers: { "Cache-Control": "public, max-age=600, s-maxage=3600" },
   });
