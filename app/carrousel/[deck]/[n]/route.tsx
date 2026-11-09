@@ -124,7 +124,7 @@ async function render(s: Slide) {
         )}
         <div style={{ position: "absolute", left: 0, top: 0, width: 1080, height: 1350, display: "flex", background: "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.22) 45%, rgba(0,0,0,0.08) 100%)" }} />
         <div style={{ position: "absolute", left: 0, top: 380, width: 1080, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ fontFamily: "BodoniB", fontSize: s.name.length > 9 ? 150 : 200, lineHeight: 1, color: "#FFFFFF", letterSpacing: 2, textShadow: "0 4px 24px rgba(0,0,0,0.45)" }}>{s.name.toUpperCase()}</div>
+          <div style={{ fontFamily: "BodoniB", fontSize: Math.min(210, Math.floor(1300 / Math.max(s.name.length, 4))), lineHeight: 1, color: "#FFFFFF", letterSpacing: 2, textShadow: "0 4px 24px rgba(0,0,0,0.45)" }}>{s.name.toUpperCase()}</div>
           <div style={{ display: "flex", width: 860, justifyContent: "flex-end", marginTop: 10 }}>
             <div style={{ fontFamily: "Bodoni", fontSize: 170, lineHeight: 1, color: "#FFFFFF", textShadow: "0 4px 24px rgba(0,0,0,0.45)" }}>Finds</div>
           </div>
