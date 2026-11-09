@@ -5,6 +5,7 @@
  * items = [id de la pièce dans le catalogue, photo d'ambiance, photo détourée]
  * La première photo d'ambiance sert de couverture (sauf si « cover » est donné).
  */
+ * Studio : ateliernama.fr/studio, rubrique « Finds par marque ».
 export type Find = { slug: string; shop: string; name: string; cover?: string; items: [number, string, string?][] };
 
 const S = "https://cdn.shopify.com/s/files/";
