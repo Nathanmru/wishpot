@@ -88,7 +88,12 @@ export async function getDeck(id: string): Promise<Deck | null> {
     const f = find(id.slice(6));
     if (!f) return null;
     const pieces = await packPieces(f.items.map(([pid]) => pid));
-    const items = f.items.map(([pid, bg]) => ({ piece: pieces.find((p) => p.id === pid), bg })).filter((x): x is { piece: Piece; bg: string } => !!x.piece);
+    const items = f.items
+      .map(([pid, bg, shot]) => {
+        const piece = pieces.find((p) => p.id === pid);
+        return piece ? { piece: shot ? { ...piece, image_url: shot } : piece, bg } : null;
+      })
+      .filter((x): x is { piece: Piece; bg: string } => !!x);
     if (!items.length) return null;
     const tag = "#" + f.name.toLowerCase().replace(/[^a-z0-9]/g, "");
     return {
@@ -96,8 +101,8 @@ export async function getDeck(id: string): Promise<Deck | null> {
       title: `${f.name} Finds`,
       caption: `${f.name} finds ✦ nos pièces préférées du moment chez ${f.shop}\n\n${items.map((x, i) => `${i + 1}. ${x.piece.title} · ${eur(x.piece.price)}`).join("\n")}\n\nLaquelle vous tente le plus ? 👇\n\nToutes les pièces sont sur ateliernama.fr, lien en bio 🔗 Enregistrez ce post pour plus tard 📌\n\nPrix relevés sur le site de la marque, ils peuvent évoluer.\n\n${TAGS} ${tag} #finds #trouvailles`,
       slides: [
-        { kind: "fcover", name: f.name, bg: items[0].bg },
-        ...items.map((x, i) => ({ kind: "find" as const, piece: x.piece, bg: x.bg, index: i })),
+        { kind: "fcover", name: f.name, bg: f.cover ?? items[0].bg },
+        ...items.slice(f.cover ? 0 : 1).map((x, i) => ({ kind: "find" as const, piece: x.piece, bg: x.bg, index: i })),
         { kind: "end", title: `Toutes les pièces ${f.name}`, sub: "à découvrir, comparer ou mettre en cagnotte sur ateliernama.fr" },
       ],
     };
