@@ -3,6 +3,7 @@ import { PACKS, pack } from "@/lib/packs";
 import { packPieces } from "@/lib/packPieces";
 import type { Piece } from "@/lib/landingPieces";
 import { ICONS, icon, type Icon } from "@/lib/dupes";
+import { FINDS, find } from "@/lib/finds";
 
 /**
  * Carrousels Instagram (1080×1350) fabriqués à partir du catalogue.
@@ -15,7 +16,9 @@ export type Slide =
   | { kind: "tip"; index: number; count: number; rule: string; why: string }
   | { kind: "end"; title: string; sub: string }
   | { kind: "icon"; icon: Icon; best: number }
-  | { kind: "pair"; icon: Icon; piece: Piece; index: number; count: number };
+  | { kind: "pair"; icon: Icon; piece: Piece; index: number; count: number }
+  | { kind: "fcover"; name: string; bg: string }
+  | { kind: "find"; piece: Piece; bg: string; index: number };
 
 export type Deck = { id: string; title: string; caption: string; slides: Slide[] };
 
@@ -47,6 +50,7 @@ export const DECKS: { id: string; label: string; group: string }[] = [
   { id: "regles", label: "8 règles déco", group: "Conseils" },
   { id: "luxe", label: "Les 8 icônes", group: "Luxe vs bonne affaire" },
   ...ICONS.map((i) => ({ id: `luxe-${i.slug}`, label: i.name, group: "Luxe vs bonne affaire" })),
+  ...FINDS.map((f) => ({ id: `finds-${f.slug}`, label: f.name, group: "Finds par marque" })),
 ];
 
 const eur = (v: number) => `${Math.round(v).toLocaleString("fr-FR")} €`;
@@ -80,6 +84,24 @@ async function under100(dbRooms: string[]): Promise<Piece[]> {
 }
 
 export async function getDeck(id: string): Promise<Deck | null> {
+  if (id.startsWith("finds-")) {
+    const f = find(id.slice(6));
+    if (!f) return null;
+    const pieces = await packPieces(f.items.map(([pid]) => pid));
+    const items = f.items.map(([pid, bg]) => ({ piece: pieces.find((p) => p.id === pid), bg })).filter((x): x is { piece: Piece; bg: string } => !!x.piece);
+    if (!items.length) return null;
+    const tag = "#" + f.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return {
+      id,
+      title: `${f.name} Finds`,
+      caption: `${f.name} finds ✦ nos pièces préférées du moment chez ${f.shop}\n\n${items.map((x, i) => `${i + 1}. ${x.piece.title} · ${eur(x.piece.price)}`).join("\n")}\n\nLaquelle vous tente le plus ? 👇\n\nToutes les pièces sont sur ateliernama.fr, lien en bio 🔗 Enregistrez ce post pour plus tard 📌\n\nPrix relevés sur le site de la marque, ils peuvent évoluer.\n\n${TAGS} ${tag} #finds #trouvailles`,
+      slides: [
+        { kind: "fcover", name: f.name, bg: items[0].bg },
+        ...items.map((x, i) => ({ kind: "find" as const, piece: x.piece, bg: x.bg, index: i })),
+        { kind: "end", title: `Toutes les pièces ${f.name}`, sub: "à découvrir, comparer ou mettre en cagnotte sur ateliernama.fr" },
+      ],
+    };
+  }
   if (id.startsWith("look-")) {
     const p = pack(id.slice(5));
     if (!p) return null;
