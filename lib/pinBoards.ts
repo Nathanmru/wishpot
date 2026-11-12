@@ -13,7 +13,7 @@ export const PIN_BOARDS: { slug: string; name: string; ideas: string[] }[] = [
   { slug: "salle-a-manger", name: "Salle à manger & cuisine", ideas: ["salle-a-manger-chic", "look:salle-a-manger", "chaise-cannage", "buffet-vintage", "vase-ceramique", "deco-terracotta"] },
   { slug: "entree", name: "Entrée & couloir", ideas: ["deco-entree", "look:entree", "miroir-dore", "miroir-vintage", "tapis-jute", "guide:choisir-taille-tapis-salon"] },
   { slug: "bureau", name: "Coin bureau à la maison", ideas: ["bureau-design", "look:coin-bureau", "lampe-laiton", "deco-industrielle", "deco-noir-laiton"] },
-  { slug: "vintage", name: "Pépites vintage & seconde main", ideas: ["deco-vintage", "meubles-chines", "fauteuil-rotin", "deco-art-deco", "deco-parisienne", "deco-cognac-camel", "deco-boheme", "guide:reconnaitre-un-meuble-vintage", "guide:acheter-meubles-vintage-en-ligne"] },
+  { slug: "vintage", name: "Pépites vintage & seconde main", ideas: ["deco-vintage", "meubles-chines", "fauteuil-rotin", "deco-art-deco", "deco-parisienne", "deco-cognac-camel", "deco-boheme", "guide:reconnaitre-un-meuble-vintage", "guide:acheter-meubles-vintage-en-ligne", "chaise-vintage", "lampe-vintage", "luminaire-vintage", "table-basse-vintage", "table-vintage", "bureau-vintage", "vase-vintage", "vaisselle-vintage", "meuble-scandinave-vintage", "rotin-vintage", "guide:selency-avis"] },
   { slug: "premier-appartement", name: "Premier appartement : looks complets", ideas: ["premier-appartement", "cagnotte-deco", "look:premier-appart", "liste-cremaillere", "deco-petit-budget", "guide:meubler-un-studio-petit-budget", "guide:cagnotte-pour-meubler-son-appartement", "guide:organiser-cremaillere"] },
 ];
 
