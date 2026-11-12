@@ -41,6 +41,7 @@ export default function SiteHeader({ appName, lang, signedIn, avatar, initial, l
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:h-20 sm:px-8">
         <nav className="hidden flex-1 items-center gap-7 md:flex">
           <Link href="/catalogue" className={link}>{lang === "fr" ? "Dénicher" : "Find"}</Link>
+          <Link href="/vintage" className={link}>Vintage</Link>
           <Link href={signedIn ? "/dashboard" : "/#cagnotte"} className={link}>{lang === "fr" ? "Cagnotte" : "Savings pot"}</Link>
           <Link href="/idees" className={link}>{lang === "fr" ? "Idées" : "Ideas"}</Link>
           <Link href="/aide-deco" className={link}>{lang === "fr" ? "Aide déco" : "Decor guide"}</Link>
