@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { affiliateUrl } from "@/lib/affiliate";
 import { cover } from "@/lib/covers";
 import { illustrationFor } from "@/lib/itemImage";
 import { roomLabel } from "@/lib/rooms";
@@ -60,6 +61,8 @@ export default async function PublicListPage({
   const fmt = (v: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: list.currency || "EUR", maximumFractionDigits: v % 1 ? 2 : 0 }).format(v);
   const free = list.items.filter((i) => !i.reserved);
+  // Liens boutique affiliés (Selency, etc.) pour les proches qui consultent la liste.
+  const links = new Map(await Promise.all(list.items.filter((i) => i.url).map(async (i) => [i.id, (await affiliateUrl(i.url!)).url] as const)));
   const action = reserve.bind(null, token);
 
   return (
@@ -116,7 +119,7 @@ export default async function PublicListPage({
                     </form>
                   )}
                   {it.url && (
-                    <a href={it.url} target="_blank" rel="noopener noreferrer" className="mt-3 text-xs text-muted underline-offset-2 hover:text-ink hover:underline">
+                    <a href={links.get(it.id) ?? it.url} target="_blank" rel="noopener sponsored" className="mt-3 text-xs text-muted underline-offset-2 hover:text-ink hover:underline">
                       Voir l&apos;objet sur le site ↗
                     </a>
                   )}
