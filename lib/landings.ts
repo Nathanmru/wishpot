@@ -1,4 +1,5 @@
 import { MORE } from "@/lib/landings2";
+import { VINTAGE } from "@/lib/landings3";
 /**
  * Pages « idées » : une page par recherche que font les gens sur Google
  * (« canapé cuir vintage », « déco salon bohème »…), avec un vrai texte, de vraies pièces et une FAQ.
@@ -62,7 +63,7 @@ const BASE: Landing[] = [
     ],
     filter: { style: "vintage" },
     catalogue: "/catalogue?style=vintage",
-    related: ["canape-cuir-vintage", "fauteuil-vintage", "buffet-vintage", "salon-vintage", "meubles-chines"],
+    related: ["canape-cuir-vintage", "fauteuil-vintage", "buffet-vintage", "salon-vintage", "meubles-chines", "chaise-vintage", "lampe-vintage", "meuble-scandinave-vintage"],
   }),
   L({
     slug: "deco-boheme",
@@ -212,7 +213,7 @@ const BASE: Landing[] = [
     faq: [["Comment aménager un salon vintage ?", "Partez d'une pièce forte (canapé en cuir, buffet), ajoutez du bois chaud, du laiton et des textiles naturels, et gardez des murs sobres."]],
     filter: { room: "salon", style: "vintage" },
     catalogue: "/catalogue?piece=salon&style=vintage",
-    related: ["canape-cuir-vintage", "fauteuil-vintage", "deco-cognac-camel", "lampe-laiton"],
+    related: ["canape-cuir-vintage", "fauteuil-vintage", "deco-cognac-camel", "lampe-laiton", "table-basse-vintage", "lampe-vintage"],
   }),
   L({
     slug: "salon-boheme",
@@ -427,7 +428,7 @@ const BASE: Landing[] = [
     faq: [["Comment choisir un fauteuil vintage ?", "Vérifiez la solidité de la structure et l'état de l'assise. Une tapisserie se refait, un bois fendu rarement."]],
     filter: { cats: ["assises"], style: "vintage", all: [["fauteuil", "armchair", "lounge", "chauffeuse", "bergere"]] },
     catalogue: "/catalogue?q=fauteuil&style=vintage",
-    related: ["canape-cuir-vintage", "fauteuil-rotin", "salon-vintage"],
+    related: ["canape-cuir-vintage", "fauteuil-rotin", "salon-vintage", "chaise-vintage", "rotin-vintage"],
   }),
   L({
     slug: "canape-bouclette",
@@ -587,7 +588,7 @@ const BASE: Landing[] = [
     faq: [["Comment dater un miroir ancien ?", "Le style du cadre, l'épaisseur et la teinte du verre, et le type de fixation au dos donnent de bons indices."]],
     filter: { cats: ["miroirs"], style: "vintage" },
     catalogue: "/catalogue?cat=miroirs&style=vintage",
-    related: ["miroir-dore", "deco-parisienne", "meubles-chines"],
+    related: ["miroir-dore", "deco-parisienne", "meubles-chines", "vase-vintage"],
   }),
   L({
     slug: "table-basse-travertin-marbre",
@@ -635,7 +636,7 @@ const BASE: Landing[] = [
     faq: [["Quelle différence entre buffet et enfilade ?", "L'enfilade est un buffet bas et long, typique du design scandinave des années 50-60."]],
     filter: { cats: ["rangement"], all: [["buffet", "enfilade", "sideboard", "commode", "confiturier"]] },
     catalogue: "/catalogue?q=buffet",
-    related: ["salle-a-manger-chic", "deco-vintage", "meubles-chines"],
+    related: ["salle-a-manger-chic", "deco-vintage", "meubles-chines", "meuble-scandinave-vintage"],
   }),
   L({
     slug: "vase-ceramique",
@@ -683,7 +684,7 @@ const BASE: Landing[] = [
     faq: [["Le mobilier de seconde main est-il fiable ?", "Chez les brocanteurs professionnels, les pièces sont décrites, photographiées et souvent restaurées."]],
     filter: { shop: "Selency" },
     catalogue: "/catalogue?marque=Selency",
-    related: ["deco-vintage", "buffet-vintage", "miroir-vintage", "fauteuil-vintage"],
+    related: ["deco-vintage", "buffet-vintage", "miroir-vintage", "fauteuil-vintage", "chaise-vintage", "table-basse-vintage", "luminaire-vintage"],
   }),
 
   /* ---------------- Projets ---------------- */
@@ -756,7 +757,7 @@ const BASE: Landing[] = [
   }),
 ];
 
-export const LANDINGS: Landing[] = [...BASE, ...MORE];
+export const LANDINGS: Landing[] = [...BASE, ...MORE, ...VINTAGE];
 
 
 export const landing = (slug: string) => LANDINGS.find((l) => l.slug === slug) ?? null;
