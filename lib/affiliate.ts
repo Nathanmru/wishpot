@@ -76,6 +76,14 @@ export async function affiliateUrl(original: string): Promise<{ url: string; aff
     return { url: link, affiliated: true };
   }
 
+  // Selency via Affilae (partenariat validé le 09/11/2026, 8 %, cookie 30 jours) : 148 = notre identifiant de suivi.
+  if (matches(host, "selency.fr") || matches(host, "selency.com")) {
+    u.searchParams.set("utm_source", "affilae");
+    u.searchParams.set("utm_medium", "148");
+    u.searchParams.set("ae", "148");
+    return { url: u.toString(), affiliated: true };
+  }
+
   const amazonTag = process.env.AMAZON_TAG;
   if (amazonTag && /^amazon\.(fr|com|de|es|it|co\.uk|nl|be|ca)$/.test(host)) {
     u.searchParams.set("tag", amazonTag);
