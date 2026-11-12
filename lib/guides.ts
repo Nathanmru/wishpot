@@ -395,6 +395,475 @@ export const GUIDES: Guide[] = [
       { href: "/idees/financer-meubles-sans-credit", label: "Financer ses meubles sans crédit" },
     ],
   },
+  {
+    slug: "entretenir-canape-cuir",
+    title: "Entretenir un canapé en cuir (vintage ou neuf) : la méthode simple",
+    h1: "Entretenir un canapé en cuir, vintage ou neuf",
+    description:
+      "Dépoussiérer, nettoyer, nourrir, rattraper une tache ou une craquelure : la méthode simple pour garder un canapé en cuir beau pendant des décennies, même chiné.",
+    kicker: "Entretien",
+    minutes: 6,
+    intro: [
+      "Un canapé en cuir bien entretenu vieillit mieux que n'importe quel autre canapé : il se patine, prend une couleur plus profonde et gagne en caractère. Mal entretenu, il sèche, se craquelle et se décolore. La différence tient à quelques gestes, quelques fois par an.",
+      "Avant toute chose, identifiez votre cuir. C'est lui qui décide de ce que vous pouvez faire, et surtout de ce qu'il ne faut pas faire.",
+    ],
+    sections: [
+      {
+        h: "1. Reconnaître son type de cuir",
+        p: [
+          "Faites le test de la goutte d'eau sur une zone cachée (sous un coussin, à l'arrière). Si la goutte perle et reste en surface, le cuir est protégé par une finition pigmentée ou semi-aniline : c'est le cas de la plupart des canapés. Si elle pénètre en quelques secondes en laissant une trace sombre, c'est un cuir aniline ou nubuck, beaucoup plus délicat.",
+        ],
+        list: [
+          "Cuir pigmenté (le plus courant) : couleur uniforme, résistant, se nettoie facilement.",
+          "Cuir semi-aniline : aspect naturel avec une fine protection, le bon compromis.",
+          "Cuir aniline et nubuck : très doux, très beau, mais il absorbe tout. Pas d'eau, pas de produit gras sans test préalable.",
+        ],
+      },
+      {
+        h: "2. Le geste de chaque semaine : dépoussiérer",
+        p: [
+          "La poussière est l'ennemi discret du cuir : elle s'incruste dans le grain et agit comme un abrasif à chaque fois qu'on s'assoit. Passez un chiffon microfibre sec, ou l'aspirateur avec la brosse à poils doux, en insistant sur les coutures et les plis du capitonnage d'un chesterfield.",
+        ],
+      },
+      {
+        h: "3. Nettoyer deux à quatre fois par an",
+        p: [
+          "Utilisez un lait ou un savon spécial cuir, jamais un produit ménager, du vinaigre ou des lingettes pour bébé, qui dessèchent le cuir et attaquent sa finition. Appliquez avec un chiffon doux légèrement humide, par petites zones, sans frotter fort, puis essuyez avec un chiffon sec.",
+        ],
+      },
+      {
+        h: "4. Nourrir une à deux fois par an",
+        p: [
+          "C'est le geste qui fait vieillir un cuir en beauté. Une crème ou un baume nourrissant redonne au cuir les matières grasses qu'il perd avec le temps, la chaleur et la lumière. Appliquez une fine couche, laissez pénétrer quelques heures, puis lustrez. Sur un cuir vintage très sec, deux applications espacées d'une semaine valent mieux qu'une couche épaisse.",
+        ],
+      },
+      {
+        h: "5. Bien le placer",
+        p: [
+          "Le meilleur entretien ne compensera pas un mauvais emplacement. Gardez le canapé à au moins 50 cm d'un radiateur et à l'abri du soleil direct, qui décolore et dessèche le cuir en quelques mois. Si votre salon est très lumineux, un voilage suffit à le protéger.",
+        ],
+      },
+      {
+        h: "6. Taches, griffures et craquelures",
+        p: [
+          "Épongez immédiatement un liquide en tamponnant, sans frotter. Une tache de gras s'estompe souvent d'elle-même en quelques jours en migrant dans le cuir. Les petites griffures superficielles disparaissent avec un baume nourrissant et un peu de chaleur de la main. Pour des craquelures profondes ou un cuir décoloré, un artisan rénovateur pourra recolorer et assouplir le cuir : sur un beau canapé vintage, c'est souvent un investissement rentable.",
+        ],
+      },
+      {
+        h: "7. Acheter un canapé en cuir d'occasion : ce qu'il faut vérifier",
+        p: [
+          "Sur un canapé chiné, un cuir patiné ou légèrement griffé n'est pas un défaut : c'est son charme. Ce qu'il faut surveiller, c'est la structure.",
+        ],
+        list: [
+          "Le cuir ne doit pas être cartonné ni fendu sur les zones d'appui (accoudoirs, assise).",
+          "Les coutures doivent tenir : une couture qui lâche se refait, mais c'est à négocier dans le prix.",
+          "L'assise ne doit pas s'affaisser : soulevez les coussins et appuyez sur les sangles ou les ressorts.",
+          "Demandez les dimensions exactes et mesurez vos portes et escaliers avant d'acheter.",
+        ],
+      },
+    ],
+    faq: [
+      ["Avec quoi nourrir un canapé en cuir ?", "Avec une crème ou un baume spécial cuir, une à deux fois par an. Évitez l'huile de cuisine, la vaseline ou les produits maison : ils tachent et rancissent."],
+      ["Peut-on nettoyer un canapé en cuir avec du savon de Marseille ?", "Sur un cuir pigmenté et en très petite quantité, c'est possible, mais un savon spécial cuir est plus sûr. Sur un cuir aniline ou nubuck, évitez toute eau savonneuse."],
+      ["Comment raviver un canapé en cuir décoloré ?", "Un baume nourrissant redonne de la profondeur à un cuir terni. Pour une vraie décoloration, une recoloration par un rénovateur de cuir donne les meilleurs résultats."],
+      ["Un canapé en cuir vintage est-il un bon achat ?", "Oui, s'il a une bonne structure : un cuir de qualité bien entretenu dure plusieurs décennies et se revend bien, contrairement à un canapé neuf d'entrée de gamme."],
+    ],
+    filter: { cats: ["assises"], all: [["canape", "sofa", "chesterfield", "fauteuil"], ["cuir", "leather"]] },
+    piecesTitle: "Des canapés et fauteuils en cuir",
+    related: [
+      { href: "/idees/canape-cuir-vintage", label: "Canapés en cuir vintage" },
+      { href: "/idees/fauteuil-vintage", label: "Fauteuils vintage" },
+      { href: "/guides/choisir-son-canape", label: "Bien choisir son canapé" },
+      { href: "/idees/deco-cognac-camel", label: "Déco cognac et camel" },
+    ],
+  },
+  {
+    slug: "table-basse-travertin",
+    title: "Table basse en travertin : avis, entretien et comment bien la choisir",
+    h1: "Table basse en travertin : le guide pour bien choisir",
+    description:
+      "Travertin, marbre ou pierre reconstituée ? Avantages, défauts, entretien, forme et taille : tout ce qu'il faut savoir avant d'acheter une table basse en travertin.",
+    kicker: "Matières",
+    minutes: 6,
+    intro: [
+      "La table basse en travertin est partout depuis quelques années, et ce n'est pas qu'une mode : cette pierre calcaire beige et douce réchauffe un salon, se marie avec le bois, le lin et le cuir, et donne immédiatement une allure plus soignée à la pièce.",
+      "Mais le travertin est une pierre naturelle, avec ses qualités et ses caprices. Voici ce qu'il faut savoir avant de se décider.",
+    ],
+    sections: [
+      {
+        h: "1. Le travertin, c'est quoi exactement ?",
+        p: [
+          "Le travertin est un calcaire qui se forme autour des sources chaudes. Les bulles de gaz piégées pendant sa formation lui donnent ses petits trous et ses veines horizontales caractéristiques. On le trouve surtout en Italie et en Turquie, dans des teintes qui vont du crème au beige rosé, au miel et au noyer.",
+        ],
+        list: [
+          "Travertin rebouché (ou « bouché ») : les trous sont remplis d'une résine de la même couleur. Surface lisse, plus facile à vivre.",
+          "Travertin non rebouché : les alvéoles restent ouvertes. Plus brut, plus authentique, mais les miettes et la poussière s'y logent.",
+          "Finition polie, adoucie (mate) ou brute : la finition adoucie est la plus courante en déco, douce au toucher et moins brillante.",
+        ],
+      },
+      {
+        h: "2. Travertin ou marbre ?",
+        p: [
+          "Le marbre est plus dense, plus veiné et souvent plus froid visuellement, avec des contrastes marqués (blanc et gris, vert, noir). Le travertin est plus chaud, plus uniforme et plus doux. Pour une ambiance chaleureuse, naturelle ou méditerranéenne, le travertin est plus facile à intégrer. Pour une ambiance graphique ou art déco, le marbre a plus de présence.",
+        ],
+      },
+      {
+        h: "3. Les défauts à connaître",
+        p: [
+          "Le travertin est poreux : il absorbe les liquides et craint les acides. Un verre de vin, un jus de citron ou un vinaigre posé directement peuvent laisser une auréole mate ou une tache. C'est le principal point d'attention, surtout avec des enfants ou si la table sert d'appui pour l'apéritif.",
+          "Il est aussi lourd : une table basse en travertin massif dépasse facilement 60 à 100 kg. Vérifiez qu'elle passe dans l'escalier, et prévoyez de la déplacer à deux.",
+        ],
+      },
+      {
+        h: "4. L'entretien au quotidien",
+        p: [
+          "Une table bien traitée vit très bien au quotidien. Le secret tient en trois gestes.",
+        ],
+        list: [
+          "Un hydrofuge ou imperméabilisant pour pierre naturelle, à renouveler une fois par an : c'est la meilleure protection contre les taches.",
+          "Des sous-verres et un plateau pour les bouteilles, surtout pour les boissons acides.",
+          "Un chiffon doux et de l'eau, avec quelques gouttes de savon noir au besoin. Jamais de vinaigre, d'anticalcaire ou de produit acide, qui attaquent la pierre.",
+        ],
+      },
+      {
+        h: "5. Choisir la bonne taille et la bonne forme",
+        p: [
+          "La table basse idéale fait environ les deux tiers de la longueur du canapé et se place à 40 à 45 cm de l'assise, pour pouvoir circuler et attraper son verre sans se lever. Sa hauteur doit être proche de celle de l'assise, ou légèrement en dessous.",
+          "Une table ronde ou ovale adoucit un salon carré et facilite la circulation. Une table rectangulaire convient mieux devant un grand canapé droit. Les modèles sur pied central (la fameuse forme « champignon » ou colonne) allègent la silhouette malgré le poids de la pierre.",
+        ],
+      },
+      {
+        h: "6. Avec quoi l'associer ?",
+        p: [
+          "Le travertin aime les matières naturelles : lin lavé, bois clair ou noyer, cuir cognac, laine bouclée, céramique mate. Pour éviter un salon trop monochrome beige, ajoutez une touche de contraste : un métal noir, une lampe en laiton, un tapis avec du motif ou une couleur profonde comme le vert sauge ou le terracotta.",
+        ],
+      },
+    ],
+    faq: [
+      ["Le travertin est-il fragile ?", "Il est solide mais sensible aux taches et aux acides car poreux. Avec un traitement hydrofuge annuel et des sous-verres, il vieillit très bien."],
+      ["Comment enlever une tache sur une table en travertin ?", "Agissez vite avec de l'eau et un savon neutre. Pour une tache incrustée, il existe des cataplasmes spéciaux pierre naturelle. Évitez tout produit acide, qui aggrave le problème."],
+      ["Une table basse en travertin, est-ce encore à la mode ?", "C'est devenu un classique de la déco naturelle et méditerranéenne, comme le rotin ou le lin. Bien choisie, elle traverse les tendances."],
+      ["Quel prix pour une table basse en travertin ?", "Comptez de 300 à 600 € pour des modèles en pierre fine ou reconstituée, et de 800 à plus de 2 000 € pour du travertin massif ou une pièce vintage."],
+    ],
+    filter: { cats: ["tables"], all: [["basse", "coffee", "d appoint", "appoint"], ["travertin", "travertine", "marbre", "marble", "pierre"]] },
+    piecesTitle: "Des tables en travertin et en marbre",
+    related: [
+      { href: "/idees/table-basse-travertin-marbre", label: "Tables basses travertin et marbre" },
+      { href: "/idees/table-basse-bois", label: "Tables basses en bois" },
+      { href: "/idees/deco-beige-lin", label: "Déco beige et lin" },
+      { href: "/guides/choisir-taille-tapis-salon", label: "Choisir la taille de son tapis" },
+    ],
+  },
+  {
+    slug: "tapis-beni-ouarain",
+    title: "Tapis Beni Ouarain : reconnaître un vrai, prix et entretien",
+    h1: "Tapis Beni Ouarain : le guide pour ne pas se tromper",
+    description:
+      "Origine, laine, motifs, prix : comment reconnaître un vrai tapis berbère Beni Ouarain, éviter les copies et l'entretenir pour qu'il dure des décennies.",
+    kicker: "Matières",
+    minutes: 6,
+    intro: [
+      "Épais, crème, traversé de lignes brunes ou noires qui dessinent des losanges : le tapis Beni Ouarain est devenu l'un des tapis les plus copiés de la déco. Il doit son succès à sa douceur et à sa simplicité graphique, qui fonctionne aussi bien dans un salon scandinave que dans une chambre bohème.",
+      "Mais entre les vrais tapis noués à la main au Maroc et les copies industrielles vendues sous le même nom, la différence de qualité est immense. Voici comment s'y retrouver.",
+    ],
+    sections: [
+      {
+        h: "1. D'où vient le Beni Ouarain ?",
+        p: [
+          "Les Beni Ouarain sont un ensemble de tribus berbères du Moyen Atlas, au Maroc. Dans ces montagnes froides, les femmes tissaient des tapis épais, à poils longs, en laine de mouton non teinte, qui servaient autant de couverture que de tapis de sol. Les motifs, transmis de génération en génération, sont propres à chaque tisserande : il n'y a jamais deux tapis identiques.",
+        ],
+      },
+      {
+        h: "2. Reconnaître un vrai Beni Ouarain",
+        p: [
+          "Retournez le tapis : c'est au dos qu'on voit la différence.",
+        ],
+        list: [
+          "Au dos, on voit les nœuds un par un et le motif apparaît en négatif. Un dos lisse, collé ou recouvert d'une toile signale un tapis tufté, pas noué.",
+          "La laine est naturelle, un peu grasse au toucher, dans des teintes allant du blanc écru au crème. Un blanc parfaitement uniforme et éclatant est souvent synthétique ou blanchi.",
+          "Les motifs sont légèrement irréguliers : les lignes ondulent, les losanges ne sont pas parfaitement symétriques. C'est la signature du travail à la main.",
+          "Les franges sont la continuation des fils de chaîne du tissage, pas un galon cousu après coup.",
+          "Le poids : un vrai Beni Ouarain de 2 x 3 m pèse lourd, souvent 15 à 25 kg.",
+        ],
+      },
+      {
+        h: "3. Quel prix pour un vrai ?",
+        p: [
+          "Un tapis noué main demande plusieurs semaines de travail. Comptez en général quelques centaines d'euros le mètre carré pour un tapis neuf de bonne qualité, et davantage pour une pièce ancienne. Un « Beni Ouarain » de 2 x 3 m à moins de 200 € est presque toujours une copie tuftée ou synthétique : ce n'est pas forcément un mauvais tapis, mais ce n'est pas le même objet.",
+          "Les copies d'inspiration berbère ont leur place si le budget est serré : choisissez-les alors en pure laine plutôt qu'en polyester, elles vieilliront beaucoup mieux.",
+        ],
+      },
+      {
+        h: "4. Les autres tapis berbères",
+        p: [
+          "Le Beni Ouarain n'est qu'une famille parmi les tapis berbères. Le Azilal est plus coloré, avec des motifs vifs sur fond crème. Le Boucherouite est fait de chutes de tissus recyclés, très coloré et souple. Le kilim est tissé à plat, sans poils, plus fin et facile à entretenir. Selon la pièce, l'un ou l'autre sera plus adapté.",
+        ],
+      },
+      {
+        h: "5. L'entretenir",
+        p: [
+          "La laine berbère est naturellement grasse : elle repousse bien les taches et la poussière. Les premières semaines, il est normal qu'un tapis neuf perde des fibres, ça s'arrête ensuite.",
+        ],
+        list: [
+          "Aspirez sans brosse rotative, dans le sens des poils, une fois par semaine.",
+          "Une tache : tamponnez avec de l'eau froide et un peu de savon neutre, jamais de frottement.",
+          "Une fois par an, secouez-le dehors ou faites-le nettoyer par un professionnel du tapis.",
+          "Tournez-le de temps en temps pour qu'il s'use et se décolore de façon uniforme.",
+        ],
+      },
+      {
+        h: "6. Où le mettre ?",
+        p: [
+          "Ses poils longs le rendent parfait dans un salon ou une chambre, là où on marche pieds nus. Évitez l'entrée ou sous une table à manger, où les chaises le tirent et l'abîment : un kilim ou un tapis en jute y sera plus à l'aise. Pour bien choisir la taille, gardez en tête que les pieds avant du canapé doivent reposer dessus.",
+        ],
+      },
+    ],
+    faq: [
+      ["Comment savoir si un tapis Beni Ouarain est authentique ?", "Regardez le dos : on doit voir les nœuds et le motif en négatif. La laine doit être naturelle, les motifs légèrement irréguliers et les franges issues du tissage."],
+      ["Un tapis Beni Ouarain perd-il ses poils ?", "Oui, les premières semaines c'est normal pour une laine nouée main. Aspirez régulièrement sans brosse rotative, la perte diminue rapidement."],
+      ["Peut-on mettre un tapis berbère avec des enfants ?", "Oui, la laine grasse résiste bien aux taches. Évitez seulement les copies blanches en synthétique, qui grisent vite."],
+      ["Quelle différence entre Beni Ouarain et Azilal ?", "Le Beni Ouarain est crème avec des lignes sombres géométriques. L'Azilal vient de la même région mais il est beaucoup plus coloré."],
+    ],
+    filter: { cats: ["tapis"], all: [["berbere", "beni", "kilim", "laine", "wool", "marocain"]] },
+    piecesTitle: "Des tapis berbères et en laine",
+    related: [
+      { href: "/idees/tapis-berbere", label: "Tapis berbères" },
+      { href: "/guides/choisir-taille-tapis-salon", label: "Choisir la taille de son tapis" },
+      { href: "/idees/tapis-salon", label: "Tapis de salon" },
+      { href: "/idees/deco-boheme", label: "Déco bohème" },
+    ],
+  },
+  {
+    slug: "couleurs-avec-cognac-camel",
+    title: "Quelles couleurs associer au cognac et au camel en déco ?",
+    h1: "Quelles couleurs associer au cognac et au camel ?",
+    description:
+      "Canapé cognac, fauteuil camel, cuir patiné : les couleurs de mur, de textiles et de bois qui vont avec, et 5 associations qui marchent à coup sûr.",
+    kicker: "Couleurs",
+    minutes: 5,
+    intro: [
+      "Le cognac et le camel sont les couleurs du cuir patiné, du noyer et des tissus chauds. Ils ont un énorme avantage : ce sont presque des neutres. Ils réchauffent une pièce sans la saturer, et se marient avec beaucoup plus de couleurs qu'on ne le croit.",
+      "La règle d'or est simple : plus la pièce est claire et douce autour, plus le cognac ressort. Voici comment construire une palette autour.",
+    ],
+    sections: [
+      {
+        h: "1. Cognac ou camel, quelle différence ?",
+        p: [
+          "Le cognac est un brun orangé profond, celui d'un cuir de selle ou d'un canapé chesterfield patiné. Le camel est plus clair, plus doré, proche du sable foncé : c'est la couleur d'un manteau en laine ou d'un daim. On peut parfaitement les mélanger dans une même pièce, ils appartiennent à la même famille.",
+        ],
+      },
+      {
+        h: "2. Quelle couleur de mur avec un canapé cognac ?",
+        p: [
+          "Les murs donnent le ton de toute la pièce. Avec du cognac, trois directions fonctionnent particulièrement bien.",
+        ],
+        list: [
+          "Blanc cassé, crème ou beige rosé : la valeur sûre. Le cuir ressort, la pièce reste lumineuse et chaleureuse.",
+          "Vert profond (sapin, olive, vert anglais) : l'association la plus élégante, très « club anglais ».",
+          "Bleu nuit ou bleu pétrole : un contraste chaud-froid qui met le cognac en valeur, idéal dans un salon ou un bureau.",
+        ],
+      },
+      {
+        h: "3. Cinq associations qui marchent à coup sûr",
+        p: [
+          "Pour une pièce réussie, choisissez une couleur dominante (souvent les murs), le cognac en couleur d'accent principal, et une ou deux touches complémentaires.",
+        ],
+        list: [
+          "Crème + cognac + laiton : chic et chaleureux, l'esprit années 70 revisité.",
+          "Vert sauge + cognac + bois clair : naturel, doux, très facile à vivre.",
+          "Bleu marine + cognac + blanc : intemporel, un peu marin, très lumineux.",
+          "Terracotta + camel + lin : méditerranéen et solaire.",
+          "Gris chaud + cognac + noir : plus urbain, avec une touche industrielle.",
+        ],
+      },
+      {
+        h: "4. Les textiles et le tapis",
+        p: [
+          "Autour d'un canapé cognac, les textiles servent à équilibrer. Le lin écru, la laine crème et la bouclette adoucissent le cuir. Un tapis clair, berbère ou en jute, évite que l'ensemble devienne trop sombre. Pour les coussins, osez la rouille, le vert olive, le bleu nuit ou un motif géométrique dans les mêmes tons.",
+        ],
+      },
+      {
+        h: "5. Les bois et les métaux",
+        p: [
+          "Le noyer et le teck prolongent naturellement la chaleur du cognac. Le chêne clair apporte de la légèreté. Côté métaux, le laiton et le bronze sont les meilleurs alliés : ils reflètent la lumière chaude du cuir. Le noir mat donne du contraste et modernise l'ensemble.",
+        ],
+      },
+      {
+        h: "6. Les erreurs à éviter",
+        p: [
+          "Évitez d'accumuler trop de bruns différents qui ne se répondent pas : un cuir cognac, un parquet orangé et des meubles acajou finissent par se battre. Évitez aussi les gris froids et bleutés, qui rendent le cognac terne. Enfin, ne multipliez pas les couleurs d'accent : deux suffisent.",
+        ],
+      },
+    ],
+    faq: [
+      ["Quelle couleur de coussin sur un canapé cognac ?", "Crème, lin, vert olive, rouille ou bleu nuit. Mélangez deux couleurs maximum et variez les matières (lin, velours, laine)."],
+      ["Le cognac va-t-il avec le gris ?", "Avec un gris chaud, tirant vers le beige (greige), oui. Avec un gris froid et bleuté, le cognac paraît terne."],
+      ["Quelle couleur de tapis avec un canapé marron ?", "Un tapis clair (crème, écru, beige) ou un berbère à motifs pour équilibrer. Un tapis sombre alourdit la pièce."],
+      ["Cognac et vert, c'est une bonne idée ?", "C'est l'une des plus belles associations : vert sapin ou olive avec un cuir cognac donne un salon élégant et chaleureux."],
+    ],
+    filter: { colors: ["brun"] },
+    piecesTitle: "Des pièces cognac et camel",
+    related: [
+      { href: "/idees/deco-cognac-camel", label: "Déco cognac et camel" },
+      { href: "/looks/salon-cognac", label: "Look : salon cuir & cognac" },
+      { href: "/idees/canape-cuir-vintage", label: "Canapés en cuir vintage" },
+      { href: "/idees/deco-vert-sauge", label: "Déco vert sauge" },
+    ],
+  },
+  {
+    slug: "organiser-cremaillere",
+    title: "Organiser sa crémaillère : invitations, budget, cadeaux et cagnotte",
+    h1: "Organiser sa crémaillère sans stress",
+    description:
+      "Quand la faire, qui inviter, quoi servir, combien prévoir et comment demander des cadeaux utiles (cagnotte, liste) sans gêne : le guide complet de la crémaillère.",
+    kicker: "Emménagement",
+    minutes: 6,
+    intro: [
+      "Pendre la crémaillère, c'est la tradition de fêter son nouveau chez-soi avec ses proches. L'expression vient de la tige de métal crantée qui servait à suspendre la marmite au-dessus du feu : l'installer était la dernière étape de l'emménagement, et on invitait ceux qui avaient aidé à partager le premier repas.",
+      "Aujourd'hui, c'est surtout l'occasion de faire visiter, de remercier ceux qui ont porté les cartons, et de recevoir de quoi finir de s'installer. Voici comment l'organiser simplement.",
+    ],
+    sections: [
+      {
+        h: "1. Quand la faire ?",
+        p: [
+          "Idéalement un à trois mois après l'emménagement : assez tôt pour que ce soit encore une « nouvelle maison », assez tard pour que les cartons soient vidés et que l'essentiel soit en place. Pas besoin que tout soit parfait : une crémaillère dans un appartement encore un peu vide est aussi l'occasion de montrer ce qu'il reste à faire.",
+        ],
+      },
+      {
+        h: "2. Qui inviter et comment",
+        p: [
+          "Les amis proches, la famille, ceux qui ont aidé au déménagement, et pourquoi pas les voisins : c'est le meilleur moyen de démarrer en bons termes, et de les prévenir du bruit. Envoyez l'invitation deux à trois semaines avant, avec l'adresse complète, le digicode et l'étage.",
+        ],
+      },
+      {
+        h: "3. Le format et le budget",
+        p: [
+          "Le format le plus simple est l'apéritif dînatoire : pas besoin de places assises pour tout le monde, chacun circule et visite. Comptez une dizaine de pièces salées et quelques pièces sucrées par personne, et environ une bouteille pour deux à trois invités.",
+        ],
+        list: [
+          "Budget serré : demandez à chacun d'apporter un plat ou une bouteille, vous fournissez le principal.",
+          "Préparez la veille ce qui peut l'être : les invités arrivent toujours au moment où on finit de couper.",
+          "Prévoyez de la place pour les manteaux, des sacs poubelle et quelques chaises pliantes.",
+        ],
+      },
+      {
+        h: "4. Les cadeaux : oser dire ce qui ferait plaisir",
+        p: [
+          "La plupart des invités viennent avec un cadeau, et se demandent quoi offrir. Résultat : beaucoup de bougies, de plantes et de bouteilles. Si vous avez besoin de choses précises pour finir de vous installer, dites-le : c'est un service rendu à vos invités, pas une impolitesse.",
+          "Deux options fonctionnent bien : une liste de quelques objets précis (avec leurs liens), ou une cagnotte pour une pièce plus importante qu'aucun invité n'offrirait seul, comme un canapé, une table ou une belle lampe.",
+        ],
+      },
+      {
+        h: "5. Faire une cagnotte de crémaillère sans gêne",
+        p: [
+          "Une cagnotte réussie est concrète : on participe plus volontiers à « la table en chêne de notre salle à manger » qu'à une somme abstraite. Montrez la pièce, le montant, l'avancement, et laissez chacun donner ce qu'il veut.",
+        ],
+        list: [
+          "Mentionnez-la discrètement dans l'invitation : « si vous voulez nous faire plaisir, on rêve de cette table ».",
+          "Fixez un objectif réaliste : mieux vaut une pièce entièrement financée que trois à moitié.",
+          "Remerciez chaque participant, et envoyez une photo de la pièce une fois installée.",
+        ],
+      },
+      {
+        h: "6. Le jour J",
+        p: [
+          "Faites une vraie visite au début de la soirée, quand tout le monde arrive : c'est ce que vos invités attendent. Prévoyez une playlist, une lumière douce (lampes d'appoint et bougies plutôt que plafonnier), et une pièce fermée pour les sacs et les manteaux. Le lendemain, un petit message de remerciement avec une photo de la soirée fait toujours plaisir.",
+        ],
+      },
+    ],
+    faq: [
+      ["Combien de temps après l'emménagement faire la crémaillère ?", "En général un à trois mois après, une fois les cartons vidés. Il n'y a pas de règle stricte : certains la font plus tard, quand la décoration est terminée."],
+      ["Est-ce malpoli de faire une cagnotte pour une crémaillère ?", "Non, c'est de plus en plus courant et ça évite les cadeaux en double. L'important est de la proposer sans l'imposer et de montrer à quoi elle servira."],
+      ["Quoi offrir pour une crémaillère ?", "Un objet utile qu'ils ont choisi (d'où l'intérêt d'une liste ou d'une cagnotte), une belle pièce de déco, une plante, ou une participation à un meuble."],
+      ["Quel budget pour une crémaillère ?", "Pour un apéritif dînatoire, comptez environ 10 à 20 € par invité selon ce que vous servez, moins si chacun apporte quelque chose."],
+    ],
+    filter: { maxPrice: 600, cats: ["luminaires", "assises", "tables", "miroirs", "tapis"] },
+    piecesTitle: "Des idées de pièces pour une cagnotte de crémaillère",
+    related: [
+      { href: "/idees/cagnotte-cremaillere", label: "Cagnotte de crémaillère" },
+      { href: "/idees/liste-cremaillere", label: "Liste de crémaillère" },
+      { href: "/idees/cadeau-emmenagement", label: "Idées cadeau d'emménagement" },
+      { href: "/guides/cagnotte-pour-meubler-son-appartement", label: "Faire une cagnotte pour meubler son appartement" },
+    ],
+  },
+  {
+    slug: "acheter-meubles-vintage-en-ligne",
+    title: "Acheter des meubles vintage en ligne sans se tromper",
+    h1: "Acheter des meubles vintage en ligne sans se tromper",
+    description:
+      "Photos, dimensions, état, livraison, prix : les vérifications à faire avant d'acheter un meuble vintage ou d'occasion en ligne, et les questions à poser au vendeur.",
+    kicker: "Vintage",
+    minutes: 6,
+    intro: [
+      "Acheter un meuble vintage en ligne, c'est accéder à des pièces introuvables près de chez soi : un buffet scandinave, un fauteuil de designer, une table en travertin des années 70. Mais on ne peut ni toucher, ni s'asseoir, ni ouvrir les tiroirs. Tout repose sur ce que l'annonce montre, et sur les bonnes questions.",
+      "Voici la méthode pour acheter sereinement, que ce soit sur une plateforme spécialisée ou auprès d'un brocanteur.",
+    ],
+    sections: [
+      {
+        h: "1. Choisir où acheter",
+        p: [
+          "Les plateformes spécialisées en vintage sélectionnent leurs vendeurs, organisent la livraison et offrent en général un délai de rétractation et une protection en cas de problème. Les sites de petites annonces entre particuliers sont moins chers, mais tout repose sur la confiance et il faut souvent aller chercher le meuble soi-même.",
+          "Pour une pièce chère ou fragile, la sécurité d'une plateforme avec livraison suivie vaut souvent la différence de prix.",
+        ],
+      },
+      {
+        h: "2. Lire les photos comme un pro",
+        p: [
+          "Une bonne annonce montre le meuble sous tous les angles, en lumière naturelle. Méfiez-vous des annonces avec une seule photo, ou des photos visiblement retouchées.",
+        ],
+        list: [
+          "Regardez les zones d'usure : arêtes, pieds, plateau, accoudoirs.",
+          "Cherchez les signes d'humidité : taches sombres, bois gonflé, placage qui se décolle.",
+          "Comparez la couleur entre plusieurs photos : une teinte qui change beaucoup signale une retouche.",
+          "Demandez une photo du dos et du dessous, qui révèlent la qualité de fabrication.",
+        ],
+      },
+      {
+        h: "3. Les questions à poser au vendeur",
+        p: [
+          "Un vendeur sérieux répond volontiers et précisément. Avant d'acheter, demandez :",
+        ],
+        list: [
+          "Les dimensions exactes, y compris la hauteur d'assise pour une chaise ou un canapé.",
+          "L'état réel : rayures, restaurations passées, odeur, présence de vers à bois traités ou non.",
+          "Si les tiroirs coulissent bien et si les portes ferment correctement.",
+          "S'il existe une signature, une étiquette ou un tampon d'éditeur, pour une pièce de designer.",
+        ],
+      },
+      {
+        h: "4. Les dimensions, encore et toujours",
+        p: [
+          "C'est l'erreur numéro un : le meuble est parfait, mais il ne passe pas la porte, ou il écrase la pièce. Mesurez l'emplacement, mais aussi les portes, le couloir, l'escalier et l'ascenseur. Tracez l'emprise au sol avec du ruban de masquage pour visualiser la place qu'il prendra.",
+        ],
+      },
+      {
+        h: "5. Le prix juste",
+        p: [
+          "Comparez avec des pièces similaires vendues ailleurs : le même modèle, la même époque, dans le même état. Une pièce de designer authentique se vend nettement plus cher qu'un modèle « dans le style de ». À l'inverse, un prix très bas sur une pièce recherchée doit faire poser des questions. Et n'oubliez pas d'ajouter la livraison, qui peut représenter une part importante du prix pour un grand meuble.",
+        ],
+      },
+      {
+        h: "6. Réception et livraison",
+        p: [
+          "À la livraison, déballez et inspectez le meuble devant le livreur si possible. Notez toute casse ou tout dommage sur le bon de livraison et prenez des photos immédiatement : c'est indispensable pour faire jouer une garantie. Une fois chez vous, laissez un meuble en bois massif s'acclimater quelques jours avant de le nourrir ou de le traiter.",
+        ],
+      },
+    ],
+    faq: [
+      ["Où acheter des meubles vintage en ligne ?", "Sur des plateformes spécialisées comme Selency, chez des brocanteurs qui vendent en ligne, ou sur des sites d'annonces entre particuliers. Atelier Nama réunit des pièces de plusieurs boutiques pour les comparer."],
+      ["Comment savoir si un meuble de designer est authentique ?", "Cherchez une signature, une étiquette d'éditeur ou un tampon, comparez les détails de fabrication avec le modèle d'origine, et demandez au vendeur sa provenance."],
+      ["Peut-on retourner un meuble vintage acheté en ligne ?", "Auprès d'un vendeur professionnel, vous bénéficiez en général d'un délai de rétractation de 14 jours. Entre particuliers, ce n'est pas obligatoire : vérifiez les conditions avant d'acheter."],
+      ["Comment éviter les arnaques ?", "Payez via la plateforme plutôt que par virement direct, méfiez-vous des prix trop bas et des vendeurs pressés, et demandez toujours des photos supplémentaires."],
+    ],
+    filter: { shop: "Selency" },
+    piecesTitle: "Des pièces vintage sélectionnées",
+    related: [
+      { href: "/guides/reconnaitre-un-meuble-vintage", label: "Reconnaître un meuble vintage" },
+      { href: "/idees/meubles-chines", label: "Meubles chinés" },
+      { href: "/idees/buffet-vintage", label: "Buffets vintage" },
+      { href: "/idees/deco-vintage", label: "Déco vintage" },
+    ],
+  },
 ];
 
 export const guide = (slug: string) => GUIDES.find((g) => g.slug === slug) ?? null;
