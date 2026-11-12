@@ -229,7 +229,7 @@ export const MORE: Landing[] = [
     faq: [["Comment rénover une commode vintage ?", "Un léger ponçage et une huile adaptée au bois suffisent souvent ; changez les poignées pour la moderniser."]],
     filter: { all: [["commode"]] },
     catalogue: "/catalogue?cat=rangement",
-    related: ["buffet-vintage", "meubles-chines", "table-de-chevet"],
+    related: ["buffet-vintage", "meubles-chines", "table-de-chevet", "meuble-scandinave-vintage"],
   },
   {
     slug: "etagere-bibliotheque",
