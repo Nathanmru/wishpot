@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BrandPage({ params }: { params: Promise<{ slug: string }> }) {
   const b = brand((await params).slug);
   if (!b) notFound();
-  const pieces = await fetchPieces({ shop: b.shop });
+  const pieces = await fetchPieces({ shop: b.shop }, b.shop === "Selency" ? 48 : 24);
   const prices = pieces.map((p) => p.price);
   const base = siteUrl();
   const others = BRANDS.filter((x) => x.slug !== b.slug);
