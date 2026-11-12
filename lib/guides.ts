@@ -858,10 +858,93 @@ export const GUIDES: Guide[] = [
     filter: { shop: "Selency" },
     piecesTitle: "Des pièces vintage sélectionnées",
     related: [
+      { href: "/vintage", label: "Toutes nos pièces vintage" },
+      { href: "/guides/selency-avis", label: "Notre avis sur Selency" },
       { href: "/guides/reconnaitre-un-meuble-vintage", label: "Reconnaître un meuble vintage" },
-      { href: "/idees/meubles-chines", label: "Meubles chinés" },
       { href: "/idees/buffet-vintage", label: "Buffets vintage" },
       { href: "/idees/deco-vintage", label: "Déco vintage" },
+    ],
+  },
+  {
+    slug: "selency-avis",
+    title: "Selency : notre avis sur la brocante en ligne (fonctionnement, conseils)",
+    h1: "Selency : notre avis sur la brocante en ligne",
+    description:
+      "Comment fonctionne Selency, qui vend, comment se passe l'achat et la livraison, ce qu'on y trouve et nos conseils pour bien acheter un meuble vintage sur la plateforme.",
+    kicker: "Vintage",
+    minutes: 6,
+    intro: [
+      "Selency est une brocante en ligne française, spécialisée dans le mobilier et la décoration de seconde main. On y trouve des fauteuils, des buffets, des lampes, des miroirs et des objets d'époque, vendus par des brocanteurs professionnels et par des particuliers.",
+      "Nous mettons beaucoup de pièces Selency en avant sur Atelier Nama. Voici comment fonctionne la plateforme, ce qu'on y trouve, et nos conseils pour bien y acheter. Transparence : Selency est notre partenaire, nous touchons une commission si vous achetez depuis nos liens, sans aucun surcoût pour vous.",
+    ],
+    sections: [
+      {
+        h: "1. Selency, c'est quoi ?",
+        p: [
+          "Selency a été créée en 2014 à Paris par Charlotte Cadé et Maxime Brousse, sous le nom de BrocanteLab, avant de prendre le nom de Selency. Le principe : une place de marché où des vendeurs proposent des meubles et objets de seconde main, avec une sélection orientée déco et design.",
+          "C'est ce qui la distingue des sites de petites annonces généralistes : on y cherche moins une bonne affaire au hasard qu'une belle pièce, avec des photos soignées et une description détaillée.",
+        ],
+      },
+      {
+        h: "2. Ce qu'on y trouve",
+        p: [
+          "Le catalogue couvre presque tout l'intérieur, avec des pièces de toutes les époques, du XIXe siècle aux années 90.",
+        ],
+        list: [
+          "Assises : fauteuils club, chaises bistrot et cannées, canapés en cuir, chaises scandinaves.",
+          "Rangements : enfilades en teck, buffets, commodes, secrétaires.",
+          "Tables : tables de ferme, tables basses en travertin ou en verre, bureaux.",
+          "Luminaires : lampes en laiton ou céramique, suspensions, appliques.",
+          "Objets : miroirs, vases, vaisselle, cadres, textiles.",
+        ],
+      },
+      {
+        h: "3. Comment se passe un achat",
+        p: [
+          "Chaque annonce indique le prix, les dimensions, l'état et le vendeur. Le paiement se fait sur la plateforme, ce qui est plus sûr qu'un virement direct à un inconnu. Selon la pièce et le vendeur, la livraison est organisée à domicile ou la pièce est à récupérer : c'est précisé dans l'annonce, avec le coût.",
+          "Pour un grand meuble, la livraison peut représenter une part importante du prix : regardez toujours le total avant de vous décider.",
+        ],
+      },
+      {
+        h: "4. Les points forts",
+        list: [
+          "Des pièces uniques, qu'on ne retrouvera chez personne d'autre.",
+          "Des meubles souvent mieux construits que du neuf au même prix : bois massif, assemblages solides.",
+          "Une sélection orientée déco : on trouve vite des pièces qui ont du style.",
+          "Un achat de seconde main, qui évite de produire un meuble de plus.",
+        ],
+        p: [],
+      },
+      {
+        h: "5. Les points d'attention",
+        list: [
+          "Une pièce unique peut partir vite : si elle vous plaît vraiment, n'attendez pas trop.",
+          "Les traces d'usage sont normales sur du vintage : lisez bien la description de l'état.",
+          "Les frais de livraison varient beaucoup selon la taille de la pièce et la distance.",
+          "Les conditions de retour peuvent dépendre du vendeur (professionnel ou particulier) : vérifiez-les avant d'acheter.",
+        ],
+        p: [],
+      },
+      {
+        h: "6. Nos conseils pour bien acheter",
+        p: [
+          "Mesurez votre emplacement, mais aussi vos portes et votre escalier. Demandez des photos supplémentaires si un détail vous inquiète (dessous, dos, tiroirs). Comparez avec des pièces similaires pour juger le prix. Et si une pièce dépasse votre budget du moment, mettez-la dans une cagnotte Atelier Nama pour l'épargner, ou la faire offrir à plusieurs.",
+        ],
+      },
+    ],
+    faq: [
+      ["Selency est-il fiable ?", "C'est une plateforme française qui existe depuis 2014. Le paiement passe par le site, ce qui protège davantage qu'un paiement direct au vendeur. Comme pour tout achat de seconde main, lisez bien l'annonce et posez vos questions avant d'acheter."],
+      ["Qui vend sur Selency ?", "Des brocanteurs et antiquaires professionnels, ainsi que des particuliers. Le type de vendeur est indiqué sur chaque annonce."],
+      ["Comment est livré un meuble acheté sur Selency ?", "Selon l'annonce, par une livraison organisée jusqu'à chez vous ou en retrait chez le vendeur. Le mode et le coût de livraison sont indiqués avant l'achat."],
+      ["Comment trouver les meilleures pièces Selency ?", "Sur Atelier Nama, nos pages vintage regroupent une sélection de pièces Selency par type de meuble, mise à jour chaque jour."],
+    ],
+    filter: { shop: "Selency" },
+    piecesTitle: "Une sélection de pièces Selency",
+    related: [
+      { href: "/vintage", label: "Toutes nos pièces vintage" },
+      { href: "/marques/selency", label: "Selency : notre sélection" },
+      { href: "/guides/acheter-meubles-vintage-en-ligne", label: "Acheter des meubles vintage en ligne" },
+      { href: "/idees/meubles-chines", label: "Meubles chinés" },
     ],
   },
 ];
