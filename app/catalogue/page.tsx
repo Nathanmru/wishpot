@@ -84,8 +84,23 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
   if (max) query = query.lte("price", max);
   query = tri === "prix" ? query.order("price", { ascending: true }) : tri === "prix-desc" ? query.order("price", { ascending: false }) : query.order("id", { ascending: false });
   const { data, count } = await query.range(0, tri === "selection" ? 799 : limit - 1);
+  // En « Sélection » sans marque choisie, on ajoute assez de pièces Selency (partenaire affilié) pour qu'elles soient bien présentes
+  let rows = (data ?? []) as Product[];
+  if (tri === "selection" && !shop) {
+    let sq = supabase.from("products").select("id, shop, title, price, image_url, url, room, category, style, color, niche").eq("active", true).eq("shop", "Selency");
+    if (room) sq = sq.eq("room", room.id);
+    if (cat) sq = sq.eq("category", cat);
+    if (style) sq = sq.eq("style", style);
+    if (color) sq = sq.eq("color", color);
+    if (pepites) sq = sq.eq("niche", true);
+    for (const g of terms) sq = sq.or(g.map((w) => `search.ilike."*${w.replace(/"/g, "")}*"`).join(","));
+    if (max) sq = sq.lte("price", max);
+    const { data: sel } = await sq.order("id", { ascending: false }).range(0, 399);
+    const seen = new Set(rows.map((r) => r.id));
+    rows = [...rows, ...((sel ?? []) as Product[]).filter((r) => !seen.has(r.id))];
+  }
   // « Sélection » : on alterne les familles et les enseignes pour une vitrine variée
-  const products = (tri === "selection" ? mix((data ?? []) as Product[]) : ((data ?? []) as Product[])).slice(0, limit);
+  const products = (tri === "selection" ? mix(rows) : rows).slice(0, limit);
   const total = count ?? products.length;
 
   // Les cagnottes de l'utilisateur (maison uniquement)
@@ -431,9 +446,17 @@ function mix(list: Product[]) {
   for (const [k, g] of groups) {
     const byShop = new Map<string, Product[]>();
     for (const p of g) byShop.set(p.shop, [...(byShop.get(p.shop) ?? []), p]);
+    // Selency (partenaire affilié) prend une place sur deux, les autres maisons alternent sur l'autre
+    const sel = byShop.get("Selency") ?? [];
+    byShop.delete("Selency");
     const lanes = [...byShop.values()];
+    const rest: Product[] = [];
+    for (let i = 0; rest.length < g.length - sel.length; i++) for (const l of lanes) if (l[i]) rest.push(l[i]);
     const out: Product[] = [];
-    for (let i = 0; out.length < g.length; i++) for (const l of lanes) if (l[i]) out.push(l[i]);
+    for (let i = 0; out.length < g.length; i++) {
+      if (sel[i]) out.push(sel[i]);
+      if (rest[i]) out.push(rest[i]);
+    }
     groups.set(k, out);
   }
   const order = ["assises", "luminaires", "tables", "tapis", "lits", "rangement", "deco", "textiles", "miroirs", "vaisselle", "plantes", "art"];
