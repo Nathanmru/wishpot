@@ -25,7 +25,10 @@ function hash(n: number, salt: number) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
-export const pieceSlot = (id: number) => START + (hash(id, 0x9e37) % DAYS) * 86400000 + (hash(id, 0x7f4a) % 24) * 3600000;
+/** Selency (notre partenaire affilié) est publié plus vite : tout le stock en 120 jours au lieu d'un an. */
+const PARTNER_DAYS = 120;
+
+export const pieceSlot = (id: number, days = DAYS) => START + (hash(id, 0x9e37) % days) * 86400000 + (hash(id, 0x7f4a) % 24) * 3600000;
 
 type Row = { id: number; title: string; shop: string; price: number };
 
@@ -43,10 +46,10 @@ export async function boardPieces(board: string, now = Date.now(), limit = 25): 
     if (!data || data.length < 1000) break;
   }
   return rows
-    .map((r) => ({ r, at: pieceSlot(r.id) }))
+    .map((r) => ({ r, at: pieceSlot(r.id, board === "vintage" ? PARTNER_DAYS : DAYS) }))
     .filter((x) => x.at <= now)
     .sort((a, b) => b.at - a.at)
-    .slice(0, limit)
+    .slice(0, board === "vintage" ? limit * 2 : limit)
     .map(({ r, at }) => ({
       path: piecePath(r),
       pin: `/piece/${r.id}/pin`,
