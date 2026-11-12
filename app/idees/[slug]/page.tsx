@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { APP_NAME, siteUrl } from "@/lib/config";
 import { GROUPS, LANDINGS, landing } from "@/lib/landings";
+import { GUIDES } from "@/lib/guides";
 import { fetchPieces, pinUrl } from "@/lib/landingPieces";
 import ProductGrid from "@/components/ProductGrid";
 import JsonLd from "@/components/JsonLd";
@@ -30,6 +31,7 @@ export default async function LandingPage({ params }: { params: Promise<{ slug: 
   if (!l) notFound();
   const pieces = await fetchPieces(l.filter);
   const related = l.related.map(landing).filter((x): x is NonNullable<typeof x> => !!x);
+  const guides = GUIDES.filter((g) => g.related.some((r) => r.href === `/idees/${l.slug}`));
   const base = siteUrl();
   const prices = pieces.map((p) => p.price);
 
@@ -145,6 +147,22 @@ export default async function LandingPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
+
+      {guides.length > 0 && (
+        <section className="mt-20 border-t border-line pt-14">
+          <h2 className="caps text-muted">Nos guides sur le sujet</h2>
+          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+            {guides.map((g) => (
+              <li key={g.slug}>
+                <Link href={`/guides/${g.slug}`} className="group flex h-full flex-col gap-2 bg-white p-5 transition hover:bg-ink hover:text-white">
+                  <span className="caps text-xs text-muted group-hover:text-white/70">{g.kicker} · {g.minutes} min</span>
+                  <span className="display text-xl leading-tight">{g.h1}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="mt-20 border-t border-line pt-14">
