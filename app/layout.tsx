@@ -84,6 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="flex flex-col gap-3 text-[11px] uppercase tracking-label">
               <Link href="/inspiration/maison" className="hover:opacity-60">{fr ? "Tendances maison" : "Home trends"}</Link>
               <Link href="/catalogue" className="hover:opacity-60">{fr ? "Dénicher une pièce" : "Find a piece"}</Link>
+              <Link href="/vintage" className="hover:opacity-60">{fr ? "Meubles vintage" : "Vintage furniture"}</Link>
               <Link href="/selection" className="hover:opacity-60">{fr ? "Ma sélection" : "My picks"}</Link>
               <Link href="/aide-deco" className="hover:opacity-60">{fr ? "Aide déco" : "Decor guide"}</Link>
               <Link href="/idees" className="hover:opacity-60">{fr ? "Idées déco" : "Decor ideas"}</Link>
@@ -100,6 +101,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 ["lampe-laiton", "Lampe laiton"],
                 ["deco-terracotta", "Déco terracotta"],
                 ["meubles-chines", "Meubles chinés"],
+                ["chaise-vintage", "Chaise vintage"],
+                ["lampe-vintage", "Lampe vintage"],
+                ["meuble-scandinave-vintage", "Meuble scandinave vintage"],
                 ["cagnotte-deco", "Cagnotte déco"],
               ].map(([slug, label]) => (
                 <Link key={slug} href={`/idees/${slug}`} className="hover:opacity-60">
