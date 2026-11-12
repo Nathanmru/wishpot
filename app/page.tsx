@@ -54,7 +54,7 @@ export default async function Home() {
   const fr = lang === "fr";
   const L = fr ? "fr" : "en";
 
-  const [{ data: fx }, { data: picks }, { data: gemsRaw }] = await Promise.all([
+  const [{ data: fx }, { data: picks }, { data: gemsRaw }, { data: vintageRaw }] = await Promise.all([
     supabase.rpc("catalog_facets", { p_room: null }),
     supabase.from("products").select("id, title, shop, price, image_url, url").in("id", exampleIds()),
     supabase
@@ -65,7 +65,26 @@ export default async function Home() {
       .in("category", ["assises", "luminaires", "deco", "tables", "miroirs", "tapis"])
       .order("id", { ascending: false })
       .limit(600),
+    // Les trouvailles vintage Selency (partenaire affilié)
+    supabase
+      .from("products")
+      .select("id, title, shop, price, image_url, url, category, niche")
+      .eq("active", true)
+      .eq("shop", "Selency")
+      .in("category", ["assises", "luminaires", "tables", "rangement", "miroirs", "deco"])
+      .order("id", { ascending: false })
+      .limit(400),
   ]);
+
+  // Les trouvailles vintage du jour : 8 pièces Selency, deux par famille au plus, qui changent chaque jour
+  const vPool = (vintageRaw ?? []).map((p) => ({ ...p, price: Number(p.price) })) as { id: number; title: string; shop: string; price: number; image_url: string; url: string; category: string; niche: boolean }[];
+  const vRot = vPool.length ? (Math.floor(Date.now() / 86_400_000) * 53) % vPool.length : 0;
+  const vintage: typeof vPool = [];
+  for (const p of [...vPool.slice(vRot), ...vPool.slice(0, vRot)]) {
+    if (vintage.length >= 8) break;
+    if (vintage.filter((v) => v.category === p.category).length >= 2) continue;
+    vintage.push(p);
+  }
 
   // Les pépites du jour : une pièce par maison et par famille, qui change chaque jour
   const day = Math.floor(Date.now() / 86_400_000);
@@ -269,6 +288,29 @@ export default async function Home() {
           </Reveal>
           <div className="mt-12">
             <ProductStrip items={gems} fr={fr} />
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Trouvailles vintage (Selency) ---------- */}
+      {vintage.length > 0 && (
+        <section className="border-t border-line py-20 sm:py-28">
+          <Reveal className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="caps text-muted">{fr ? "Seconde main · pièces uniques" : "Second hand · one-offs"}</p>
+              <h2 className="display mt-4 text-5xl leading-[0.95] sm:text-6xl">{fr ? "Trouvailles vintage du jour." : "Today's vintage finds."}</h2>
+              <p className="mt-5 max-w-xl text-muted">
+                {fr
+                  ? "Des meubles et objets d'époque chinés par des brocanteurs, chacun en un seul exemplaire. Quand une pièce est vendue, elle ne revient pas."
+                  : "Period furniture and objects sourced by dealers, each one of a kind. Once sold, it is gone."}
+              </p>
+            </div>
+            <Link href="/vintage" className="link-caps">
+              {fr ? "Tout le vintage" : "All vintage"} →
+            </Link>
+          </Reveal>
+          <div className="mt-12">
+            <ProductStrip items={vintage} fr={fr} />
           </div>
         </section>
       )}
